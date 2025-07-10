@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星原抱月 | Vtuber 自己紹介</title>
+  <link rel="stylesheet" href="styles-ja.css">
+  <!-- 引入 Font Awesome 图标库 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'ZCOOL KuaiLe', 'Sawarabi Gothic', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans', sans-serif;
+      background: url('https://www.loliapi.com/acg/') no-repeat center center fixed;
+      background-size: cover;
+      color: #333;
+      min-height: 100vh;
+      overflow-x: hidden;
+      cursor: url('/furina/normal.ani'), auto;
+    }
+
+    /* 日系手绘樱花鼠标指针，所有页面统一使用 */
+    body {
+      cursor: url('/furina/normal.ani'), auto;
+    }
+  </style>
+  <style>
+    .modal {
+      display: none; /* 默认隐藏 */
+      position: fixed;
+      z-index: 2000;
+      left: 0; top: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 24px 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+      max-width: 90vw;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .close-modal {
+      position: absolute;
+      right: 16px; top: 16px;
+      font-size: 28px;
+      color: #e91e63;
+      cursor: pointer;
+    }
+  </style>
+  <style>
+    /* 主要内容卡片50%透明，播放器区域不变 */
+    .container,
+    .profile,
+    .socials,
+    .announcements {
+      background: rgba(255,255,255,0.5) !important;
+    }
+    .embed-responsive,
+    .embed-responsive iframe {
+      background: #fff !important;
+    }
+  </style>
+</head>
+<body class="bg-white text-black">
+  <!-- ナビゲーションバー -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="#" class="nav-logo">星原抱月</a>
+      <ul class="nav-links">
+        <li><a href="ja/index.html">ホーム</a></li>
+        <li><a href="ja/live.html">配信</a></li>
+        <li><a href="ja/about.html">紹介</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- スプラッシュアニメーション -->
+  <div id="splash-screen" class="art-splash-screen">
+    <div class="splash-circle"></div>
+    <div class="splash-tips" id="splash-tips" style="position:fixed;right:2.5vw;bottom:3vh;z-index:2100;min-width:160px;max-width:60vw;background:rgba(255,240,246,0.95);color:#e91e63;padding:10px 18px;border-radius:12px;box-shadow:0 2px 12px rgba(255,174,200,0.16);font-size:1.05em;display:none;pointer-events:none;user-select:none;text-align:left;line-height:1.7;"></div>
+  </div>
+
+  <div class="container" id="mainContent">
+    <header>
+      <h1>星原抱月（ほうつき）</h1>
+      <span class="typed-text"></span>
+    </header>
+
+    <!-- お知らせエリア -->
+    <section class="announcements">
+      <h2>お知らせ</h2>
+      <ul>
+        <li>2025/7/2 - 現在のドメイン: xinyuanbaoyue.xyz（中国）、houtsuki.eu.cc（日本）、xyby.dpdns.org（国際）</li>
+        <li>2025/5/25 - サイトフレームワークを変更、内容は今後追加予定</li>
+        <li>2025/5/10 - 毎日が素敵な日になりますように</li>
+        <li>2025/5/1 - サイト誕生、星原抱月の個人サイトです</li>
+      </ul>
+      <button id="more-announcement-btn" class="more-btn">もっと見る</button>
+    </section>
+
+    <!-- お知らせモーダル（非表示） -->
+    <div id="announcement-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal" id="close-modal-btn">&times;</span>
+        <h2>すべてのお知らせ</h2>
+        <ul id="modal-announcement-list">
+          <li>2025/7/2 - 現在のドメイン: xinyuanbaoyue.xyz（中国）、houtsuki.eu.cc（日本）、xyby.dpdns.org（国際）</li>
+          <li>2025/5/25 - サイトフレームワークを変更、内容は今後追加予定</li>
+          <li>2025/5/10 - 毎日が素敵な日になりますように</li>
+          <li>2025/5/1 - サイト誕生、星原抱月の個人サイトです</li>
+          <li>ここはお知らせの例です。最新情報を記載できます。</li>
+          <li>複数のお知らせに対応、内容が多い場合は分割表示可能です。</li>
+          <li>ここでさらにお知らせを追加し、一括管理・表示できます。</li>
+        </ul>
+      </div>
+    </div>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .social-icons a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      background-color: #ffd9ec;
+      border-radius: 50%;
+      color: #c15689;
+      font-size: 24px;
+      text-decoration: none;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .social-icons a:hover {
+      background-color: #ffc1e0;
+      color: #ffffff;
+      transform: scale(1.1);
+    }
+
+    .bilibili-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    @media (max-width: 480px) {
+      .social-icons {
+        gap: 16px;
+        padding: 16px;
+      }
+      .social-icons a {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 社交图标栏 -->
+  <div class="social-icons">
+    <a href="https://github.com/xingyuanbaoyue" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://youtube.com/@星原抱月" target="_blank"><i class="fab fa-youtube"></i></a>
+    <a href="https://twitch.tv/xingyuanbaoyue" target="_blank"><i class="fab fa-twitch"></i></a>
+    <a href="https://x.com/HougetsuV" target="_blank"><i class="fab fa-twitter"></i></a>
+    <a href="https://www.tiktok.com/@baoyuexingyuan?is_from_webapp=1&sender_device=pc" target="_blank"><i class="fab fa-tiktok"></i></a>
+    <a href="https://space.bilibili.com/3493270734768520?spm_id_from=333.337.0.0" target="_blank">
+      <img src="https://www.bilibili.com/favicon.ico" alt="Bilibili" class="bilibili-icon">
+	    </a>
+    <a href="https://wa.me/447756536580" target="_blank"><i class="fab fa-whatsapp"></i></a>
+    <a href="https://www.pixiv.net/users/112211031" target="_blank"><i class="fab fa-pixiv"></i></a>
+  </div>
+
+    <!-- 立ち絵展示エリア -->
+    <section class="artwork">
+      <h2>立ち絵展示</h2>
+      <div class="art-placeholder">
+        <!-- ここに立ち絵画像を挿入（例：<img src="your-art.png" alt="立ち絵">） -->
+        <span>立ち絵画像スペース</span>
+      </div>
+    </section>
+  </div>
+
+  <!-- フッター・著作権情報 -->
+  <footer id="fixed-footer">
+    <div class="copyright">
+      2024-2025 <a href="https://xingyuanbaoyue.xyz" target="_blank">星原抱月</a>
+    </div>
+    <div>
+      <a href="https://icp.gov.moe/?keyword=20250460" target="_blank">萌ICP备20250460号</a>
+    </div>
+  </footer>
+
+  <script>
+    // サイト稼働時間（2025-05-01より）
+    function updateRuntime() {
+      const start = new Date('2025-05-01T00:00:00+09:00');
+      const now = new Date();
+      let diff = Math.floor((now - start) / 1000);
+      const days = Math.floor(diff / 86400);
+      diff %= 86400;
+      const hours = Math.floor(diff / 3600);
+      diff %= 3600;
+      const mins = Math.floor(diff / 60);
+      const secs = diff % 60;
+      document.getElementById('runtime-txt').textContent = `${days}日 ${hours}時間 ${mins}分 ${secs}秒`;
+    }
+    updateRuntime();
+    setInterval(updateRuntime, 1000);
+  </script>
+
+  <!-- スプラッシュアニメーションスクリプト -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      // splash tips
+      const tips = [
+        'ヒント：左下メニューからページを切り替えられます！',
+        'Tip：BilibiliやTwitchをフォローして配信を見逃さないでね！',
+        '星原抱月ファンコミュニティに参加しよう！',
+        'ぜひブックマークして最新情報をゲット！',
+        'このページはモバイル対応です。',
+        'ご意見・ご要望はGithubまで。',
+        '今日も素敵な一日を！',
+        '星原抱月があなたを待っています！',
+        '「紹介」ページもぜひご覧ください。'
+      ];
+      const tipsEl = document.getElementById('splash-tips');
+      if (tipsEl) {
+        const tip = tips[Math.floor(Math.random() * tips.length)];
+        tipsEl.textContent = tip;
+        tipsEl.style.display = 'block';
+      }
+      setTimeout(() => {
+        document.body.classList.add('splash-finished');
+        if (tipsEl) tipsEl.style.display = 'none';
+        const splash = document.getElementById('splash-screen');
+        if (splash) splash.style.display = 'none';
+      }, 1800);
+    });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var modal = document.getElementById('announcement-modal');
+      var btn = document.getElementById('more-announcement-btn');
+      var closeBtn = document.getElementById('close-modal-btn');
+
+      if (btn && modal) {
+        btn.onclick = function() {
+          modal.style.display = "flex";
+        }
+      }
+      if (closeBtn && modal) {
+        closeBtn.onclick = function() {
+          modal.style.display = "none";
+        }
+      }
+      // 点击遮罩关闭
+      window.onclick = function(event) {
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      }
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      new Typed(".typed-text", {
+        strings: ["それで、チャンネル登録して「いいね！」してもらえますか？", "君たちが好きだよ、これは絶対に嘘じゃない..."],
+        typeSpeed: 80,
+        backSpeed: 50,
+        loop: true
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+
+@font-face {
+  font-family: 'ZQKJingYaGuPu';
+  src: url('../郑庆科静雅体-古朴版.ttf') format('truetype');
+  font-display: swap;
+}
+body {
+  margin: 0;
+  font-family: 'ZQKJingYaGuPu', 'Noto Sans SC', sans-serif;
+  background: url('https://moe.jitsu.top/img/?sort=pc&size=mw1024') no-repeat center center fixed;
+  background-size: cover;
+  color: #333;
+  overflow-x: hidden;
+}
+.hero {
+  text-align: center;
+  padding-top: 20vh;
+}
+.typed-text {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+}
+
+#fixed-footer {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  font-size: 0.8rem;
+  background-color: rgba(255, 240, 245, 0.85);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  z-index: 999;
+  text-align: right;
+  color: #333;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+}
+#fixed-footer a {
+  color: #ec407a;
+  text-decoration: none;
+}
+.github-badge {
+  margin-top: 0.3rem;
+}
+.badge-subject {
+  background-color: #f06292;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-right: 5px;
+}
+.badge-value.bg-cai {
+  background-color: #ba68c8;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+}

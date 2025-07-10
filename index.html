@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星原抱月 | 语言选择 | Language Select</title>
+  <!-- 日系圆体/手写风字体 -->
+  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Sawarabi+Gothic&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
+  <style>
+    @font-face {
+      font-family: 'ZQKJingYaGuPu';
+      src: url('郑庆科静雅体-古朴版.ttf') format('truetype');
+      font-display: swap;
+    }
+    body {
+      margin: 0;
+      font-family: 'ZQKJingYaGuPu', 'ZCOOL KuaiLe', 'Sawarabi Gothic', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans', sans-serif;
+      background: url('https://www.loliapi.com/acg/') no-repeat center center fixed;
+      background-size: cover;
+      color: #333;
+      min-height: 100vh;
+      overflow-x: hidden;
+      cursor: url('/furina/ani'), auto;
+    }
+    .sakura {
+      pointer-events: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 2;
+    }
+    .splash {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(255,240,246,0.98);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s;
+    }
+    .splash.hide { opacity: 0; pointer-events: none; }
+    .sakura-spinner {
+      width: 60px; height: 60px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+      animation: sakura-spin 1.2s linear infinite;
+    }
+    @keyframes sakura-spin { 100% { transform: rotate(360deg); } }
+    .sakura-spinner svg {
+      width: 60px; height: 60px;
+      filter: drop-shadow(0 2px 8px #f8bbd0cc);
+    }
+    main {
+      max-width: 410px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.85);
+      border-radius: 26px;
+      box-shadow: 0 4px 24px 6px #f8bbd066;
+      padding: 32px 0 18px 0;
+      margin-top: 7vh;
+      margin-bottom: 5vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      font-size: 2.3em;
+      color: #e573b9;
+      font-family: 'ZCOOL KuaiLe','Sawarabi Gothic',sans-serif;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 8px #ffecf5;
+      margin-bottom: 0.18em;
+      margin-top: 0;
+    }
+    .subtitle {
+      font-size: 1.08em;
+      color: #ba68c8;
+      margin-bottom: 2.4em;
+      margin-top: 0.1em;
+      letter-spacing: 1px;
+    }
+    .lang-select {
+      margin-top: 36px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+    }
+    .lang-btn {
+      font-size: 1.2em;
+      padding: 12px 38px;
+      border: none;
+      border-radius: 13px;
+      margin: 0 8px;
+      background: linear-gradient(90deg,#f8bbd0 0%,#f06292 100%);
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.22s,transform 0.18s,box-shadow 0.18s;
+      box-shadow: 0 2px 10px rgba(240,98,146,0.09);
+      outline: none;
+      font-family: 'ZCOOL KuaiLe','Sawarabi Gothic',sans-serif;
+      font-weight: 500;
+    }
+    .lang-btn:hover {
+      background: linear-gradient(90deg,#ba68c8 0%,#f06292 100%);
+      transform: scale(1.045) rotate(-2deg);
+      box-shadow: 0 4px 18px 0 #e1bee7cc;
+    }
+    .footer {
+      position: fixed;
+      left: 0; right: 0; bottom: 2vw;
+      text-align: center;
+      background: rgba(255,240,246,0.95);
+      padding: 12px 0 5px 0;
+      font-size: 0.95em;
+      z-index: 10;
+      border-radius: 14px 14px 0 0;
+      box-shadow: 0 0 8px rgba(0,0,0,0.06);
+      font-family: 'ZCOOL KuaiLe','Sawarabi Gothic',sans-serif;
+    }
+    .github-badge { margin-top: 0.5em; }
+    .badge-subject {
+      background-color: #f06292;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-right: 5px;
+    }
+    .badge-value.bg-cai {
+      background-color: #ba68c8;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .card {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+    @media (max-width: 600px) {
+      main { padding: 12px 2vw 18px 2vw; }
+      .lang-btn { width: 90vw; font-size: 1em; }
+      .footer { font-size: 0.85em; }
+    }
+  </style>
+</head>
+<body class="bg-white text-black">
+  <!-- 隐藏本地樱花瓣图片预加载，供JS动画和旋转用 -->
+  <img src="1.png" id="hidden-sakura" style="display:none" alt="sakura" />
+  <!-- SVG樱花瓣漂浮动画层 -->
+  <svg class="sakura" id="sakura-bg"></svg>
+  <!-- Splash Animation -->
+  <div class="splash" id="splash-screen">
+    <div class="sakura-spinner">
+      <!-- PNG樱花花瓣旋转动画 -->
+      <img src="1.png" alt="sakura" class="sakura-spinner-img" style="width:60px;height:60px;" />
+    </div>
+    <div style="font-size:1.3em;color:#e91e63;font-family:'ZCOOL KuaiLe','Sawarabi Gothic',sans-serif;letter-spacing:1.5px;">欢迎来到星原抱月多语主页<br>Welcome! ようこそ！</div>
+    <div id="splash-tips" style="margin-top:16px;color:#ad1457;font-size:1em;"></div>
+  </div>
+
+  <main>
+    <h1>星原抱月 Hoshihara Houtsuki</h1>
+    <div class="subtitle">请选择语言 / Select Language / 言語を選択</div>
+    <div class="lang-select">
+      <button class="lang-btn" onclick="location.href='zh/index.html'">简体中文</button>
+      <button class="lang-btn" onclick="location.href='ja/index.html'">日本語</button>
+      <button class="lang-btn" onclick="location.href='en/index.html'">English</button>
+    </div>
+  </main>
+
+  <footer class="footer" id="fixed-footer">
+    <div class="copyright">
+      &copy; 2024-2025 <a href="https://xingyuanbaoyue.xyz" target="_blank">星原抱月</a>
+    </div>
+    <div>
+      <a href="https://icp.gov.moe/?keyword=20250460" target="_blank">萌ICP备20250460号</a>
+    </div>
+    <div class="github-badge">
+      <span class="badge-subject">雾备</span>
+      <a style="color:#fff" href="https://icp.scfc.top/id.php?keyword=20250460" rel="external" target="_blank">
+        <span class="badge-value bg-cai">20250460号</span>
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    // Splash tips
+    const tips = [
+      '可通过下方按钮选择语言版本进入主页',
+      'Tip: Choose your preferred language below!',
+      'ヒント：下のボタンから言語を選択できます！',
+      '星原抱月欢迎你！',
+      'Welcome to Hoshihara Houtsuki\'s site!',
+      'ようこそ星原抱月のページへ！'
+    ];
+    // PNG樱花瓣下落动画（更自然的樱花雨）
+    function createSakuraPetal() {
+      // 用于容纳花瓣img的绝对定位div
+      let sakuraLayer = document.getElementById('sakura-img-layer');
+      if (!sakuraLayer) {
+        sakuraLayer = document.createElement('div');
+        sakuraLayer.id = 'sakura-img-layer';
+        sakuraLayer.style.position = 'fixed';
+        sakuraLayer.style.left = '0';
+        sakuraLayer.style.top = '0';
+        sakuraLayer.style.width = '100vw';
+        sakuraLayer.style.height = '100vh';
+        sakuraLayer.style.pointerEvents = 'none';
+        sakuraLayer.style.zIndex = '2';
+        document.body.appendChild(sakuraLayer);
+      }
+      const petal = document.createElement('img');
+      petal.src = '1.png';
+      petal.alt = 'sakura';
+      petal.style.position = 'absolute';
+      petal.style.width = (32 + Math.random()*28) + 'px';
+      petal.style.height = 'auto';
+      petal.style.opacity = 0.93 + Math.random()*0.07;
+      // 随机初始位置、缩放和初始旋转
+      const startX = Math.random() * window.innerWidth;
+      const scale = 0.7 + Math.random() * 0.7;
+      const initRot = Math.random() * 360;
+      petal.style.left = `${startX}px`;
+      petal.style.top = `-40px`;
+      petal.style.transform = `scale(${scale}) rotate(${initRot}deg)`;
+      sakuraLayer.appendChild(petal);
+      // 动画参数
+      const duration = 9000 + Math.random() * 4000;
+      const drift = (Math.random() - 0.5) * 100; // 左右摆幅更大
+      const swingFreq = 1.2 + Math.random() * 0.7; // 摆动频率
+      const swingAmp = 16 + Math.random() * 20; // 摆动幅度
+      const rotDir = Math.random() > 0.5 ? 1 : -1;
+      let start = null;
+      function animate(ts) {
+        if (!start) start = ts;
+        const progress = (ts - start) / duration;
+        if (progress > 1) {
+          petal.remove();
+          return;
+        }
+        // y轴匀速下落，x轴随正弦摆动，旋转仿真实花瓣
+        const y = progress * (window.innerHeight + 60);
+        const x = startX + drift * Math.sin(progress * Math.PI * swingFreq) + swingAmp * Math.sin(progress * Math.PI * 2 * swingFreq);
+        const rot = initRot + rotDir * (progress * 160 + 16 * Math.sin(progress * Math.PI * 2 * swingFreq));
+        petal.style.left = `${x}px`;
+        petal.style.top = `${y}px`;
+        petal.style.transform = `scale(${scale}) rotate(${rot}deg)`;
+        requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+    }
+
+    // 定期生成樱花瓣
+    function sakuraLoop() {
+      createSakuraPetal();
+      setTimeout(sakuraLoop, 700 + Math.random() * 700);
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      // Splash tips
+      const tips = [
+        '可通过下方按钮选择语言版本进入主页',
+        'Tip: Choose your preferred language below!',
+        'ヒント：下のボタンから言語を選択できます！',
+        '星原抱月欢迎你！',
+        "Welcome to Hoshihara Houtsuki's site!",
+        'ようこそ星原抱月のページへ！'
+      ];
+      const tipsEl = document.getElementById('splash-tips');
+      if (tipsEl) {
+        const tip = tips[Math.floor(Math.random() * tips.length)];
+        tipsEl.textContent = tip;
+      }
+      setTimeout(() => {
+        document.getElementById('splash-screen').classList.add('hide');
+      }, 1800);
+      // 启动樱花瓣动画
+      sakuraLoop();
+    });
+  </script>
+</body>
+</html>
