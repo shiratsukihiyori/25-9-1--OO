@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>直播间 | 星原抱月</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- 看板娘 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
+  <script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js"></script>
+  <style>
+    /* 日系手绘樱花鼠标指针，所有页面统一使用 */
+    body {
+      cursor: url('/static/css/furina/normal.ani'), url('/static/css/furina/normal.cur'), auto;
+      background: url('https://www.loliapi.com/acg/') no-repeat center center fixed;
+      background-size: cover;
+    }
+    /* 直播间主要内容卡片50%透明，播放器区域不变 */
+    .container,
+    .profile,
+    .socials,
+    .announcements {
+      background: rgba(255,255,255,0.5) !important;
+    }
+    /* 保证播放器区域背景仍为不透明 */
+    .embed-responsive,
+    .embed-responsive iframe {
+      background: #fff !important;
+    }
+  </style>
+</head>
+<body class="bg-white text-black">
+  <!-- 开屏动画 -->
+  <div id="splash-screen" class="art-splash-screen">
+  <div class="splash-circle"></div>
+  <div class="splash-tips" id="splash-tips" style="position:fixed;right:2.5vw;bottom:3vh;z-index:2100;min-width:160px;max-width:60vw;background:rgba(255,240,246,0.95);color:#e91e63;padding:10px 18px;border-radius:12px;box-shadow:0 2px 12px rgba(255,174,200,0.16);font-size:1.05em;display:none;pointer-events:none;user-select:none;text-align:left;line-height:1.7;"></div>
+</div>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">🌸 星原抱月</a>
+      <ul class="nav-links">
+        <li><a href="/zh/index.html">首页</a></li>
+        <li><a href="/zh/live.html" class="active">直播间</a></li>
+        <li><a href="/zh/about.html">介绍</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container" id="mainContent">
+    <header>
+      <h1>直播间</h1>
+      <p class="subtitle">无聊的话，来找我玩吧。</p>
+    </header>
+
+    <section class="stream-links">
+      <h2>直播平台</h2>
+      <ul>
+        <li><a href="https://space.bilibili.com/349308747" target="_blank">Bilibili 直播</a></li>
+        <li><a href="https://twitch.tv/xingyuanbaoyue" target="_blank">Twitch</a></li>
+        <li><a href="https://youtube.com/@星原抱月" target="_blank">YouTube</a></li>
+      </ul>
+    </section>
+
+    <section class="embed-stream">
+      <h2>直播预览</h2>
+      <!-- 可根据实际平台替换src -->
+      <div class="embed-responsive">
+        <iframe src="https://player.twitch.tv/?channel=xingyuanbaoyue&parent=houtsuki.eu.cc" frameborder="0" allowfullscreen style="width:100%;height:400px;border-radius:12px;background:#fff;"></iframe>
+      </div>
+      <p style="font-size:0.95em;color:#b84a73;margin-top:0.5em;">如直播未开，可关注各平台最新动态~</p>
+    </section>
+  </div>
+
+  <footer id="fixed-footer">
+    <div class="copyright">
+      &copy; 2024-2025 <a href="https://xingyuanbaoyue.xyz" target="_blank">星原抱月</a>
+    </div>
+    <div>
+      <a href="https://icp.gov.moe/?keyword=20250460" target="_blank">萌ICP备20250460号</a>
+    </div>
+  </footer>
+
+  <script>
+    function updateRuntime() {
+      const start = new Date('2025-05-01T00:00:00+08:00');
+      const now = new Date();
+      let diff = Math.floor((now - start) / 1000);
+      const days = Math.floor(diff / 86400);
+      diff %= 86400;
+      const hours = Math.floor(diff / 3600);
+      diff %= 3600;
+      const mins = Math.floor(diff / 60);
+      const secs = diff % 60;
+      document.getElementById('runtime-txt').textContent = `${days}天 ${hours}小时 ${mins}分 ${secs}秒`;
+    }
+    updateRuntime();
+    setInterval(updateRuntime, 1000);
+  </script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+  // splash tips
+  const tips = [
+    '小贴士：可以通过左下角菜单切换页面哦！',
+    'Tip：关注B站和Twitch，不错过每一次直播！',
+    '欢迎加入星原抱月的粉丝群！',
+    '记得收藏本站，获取最新动态~',
+    '本页面支持移动端自适应。',
+    '遇到问题可在Github反馈。',
+    '祝你每天开心！',
+    '星原抱月在等你来玩！',
+    '可在“介绍”页面查看更多信息。'
+  ];
+  const tipsEl = document.getElementById('splash-tips');
+  if (tipsEl) {
+    const tip = tips[Math.floor(Math.random() * tips.length)];
+    tipsEl.textContent = tip;
+    tipsEl.style.display = 'block';
+  }
+  // 动画时长与首页一致 1800ms
+  setTimeout(() => {
+    document.body.classList.add('splash-finished');
+    if (tipsEl) tipsEl.style.display = 'none';
+    // 动画结束隐藏开屏层
+    const splash = document.getElementById('splash-screen');
+    if (splash) splash.style.display = 'none';
+  }, 1800);
+});
+  </script>
+</body>
+</html>
