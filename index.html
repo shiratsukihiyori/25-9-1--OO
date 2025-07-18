@@ -280,4 +280,115 @@
     });
   </script>
 </body>
+
+  <!-- 日系风 Marshmallow 弹窗 -->
+<style>
+  #marshmallow-popup {
+    display: none;
+    position: fixed;
+    top: 25%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff0f6;
+    border: 2px solid #f8c1d8;
+    border-radius: 15px;
+    padding: 25px 30px;
+    width: 320px;
+    box-shadow: 0 8px 16px rgba(248,193,216,0.6);
+    font-family: "Yu Gothic", "Hiragino Kaku Gothic Pro", Meiryo, sans-serif;
+    color: #9c4778;
+    z-index: 9999;
+  }
+  #marshmallow-popup p {
+    font-size: 16px;
+    margin-bottom: 15px;
+    line-height: 1.5;
+  }
+  #marshmallow-popup a {
+    display: inline-block;
+    background: #f8c1d8;
+    color: #662244;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 12px;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(248,193,216,0.8);
+    transition: background-color 0.3s ease;
+  }
+  #marshmallow-popup a:hover {
+    background: #f48fb1;
+    color: #fff;
+  }
+  #popup-close {
+    margin-top: 20px;
+    background: #f48fb1;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(244,143,177,0.7);
+    transition: background-color 0.3s ease;
+  }
+  #popup-close:hover {
+    background: #d46a8c;
+  }
+</style>
+
+<div id="marshmallow-popup">
+  <p id="popup-text">...</p>
+  <a href="https://marshmallow-qa.com/f9nava8c2dh71k1" target="_blank" rel="noopener noreferrer" id="popup-link">...</a>
+  <br>
+  <button id="popup-close">关闭</button>
+</div>
+
+<script>
+  // 多语言内容字典
+  const messages = {
+    zh: {
+      text: "星原抱月欢迎你的反馈喵~<br>来Marshmallow进行你的反馈吧",
+      linkText: "点击这里进入 Marshmallow 页面",
+      closeText: "关闭"
+    },
+    ja: {
+      text: "星原ほうつきへようこそ〜<br>Marshmallowの特別コンテンツをチェックしてね〜",
+      linkText: "こちらをクリックして Marshmallow ページへ",
+      closeText: "閉じる"
+    },
+    en: {
+      text: "Senior Baoyue welcomes your feedback. Please come to Marshmallow to give your feedback.",
+      linkText: "Click here to visit Marshmallow page",
+      closeText: "Close"
+    }
+  };
+
+  // 获取浏览器语言，取前2位
+  const userLang = navigator.language.slice(0, 2);
+  // 选择对应语言内容，默认英文
+  const langContent = messages[userLang] || messages.en;
+
+  // 页面加载后显示弹窗并填充语言内容
+  window.onload = () => {
+    const popup = document.getElementById('marshmallow-popup');
+    const text = document.getElementById('popup-text');
+    const link = document.getElementById('popup-link');
+    const closeBtn = document.getElementById('popup-close');
+
+    // 设置文字内容
+    text.innerHTML = langContent.text;
+    link.textContent = langContent.linkText;
+    closeBtn.textContent = langContent.closeText;
+
+    setTimeout(() => {
+      popup.style.display = 'block';
+    }, 1000);
+
+    // 关闭按钮事件
+    closeBtn.onclick = () => {
+      popup.style.display = 'none';
+    };
+  };
+</script>
+  
 </html>
