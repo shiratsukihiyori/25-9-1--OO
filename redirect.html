@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="5;url=http://houtsukitv.dpdns.org">
+    <title>跳转中...</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f3f4f6;
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            font-size: 18px;
+            color: #555;
+        }
+        .countdown {
+            font-size: 24px;
+            color: #ff5733;
+        }
+        .language-select {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="heading">即将跳转到 MoonTV</h1>
+    <p id="description">您将被引导到开源视频网站搭建页面，网站内的内容可能会涉及版权，但本网站不做任何保存视频的行为，且本网站为中国大陆的第三方视频搜索网站，网站将在5秒后自动跳转。<br>如果没有自动跳转，请点击下面的链接。</p>
+    <p class="countdown" id="countdown">跳转中... 5秒</p>
+    <a href="http://houtsukitv.dpdns.org" target="_blank" id="link">点击这里立即跳转</a>
+
+    <!-- 语言选择 -->
+    <div class="language-select">
+        <label for="language">选择语言：</label>
+        <select id="language" onchange="changeLanguage()">
+            <option value="zh">中文</option>
+            <option value="en">English</option>
+            <option value="jp">日本語</option>
+        </select>
+    </div>
+
+    <script>
+        // 倒计时函数
+        let countdown = 5;
+        const countdownElement = document.querySelector('.countdown');
+        const heading = document.getElementById('heading');
+        const description = document.getElementById('description');
+        const link = document.getElementById('link');
+
+        const interval = setInterval(function() {
+            countdown--;
+            countdownElement.textContent = `跳转中... ${countdown}秒`;
+            if (countdown <= 0) {
+                clearInterval(interval);
+            }
+        }, 1000);
+
+        // 语言切换函数
+        function changeLanguage() {
+            const language = document.getElementById('language').value;
+            switch (language) {
+                case 'en':
+                    heading.textContent = 'Redirecting to MoonTV';
+                    description.textContent = 'You will be directed to a page for setting up an open-source video website. The content on the site may involve copyright issues, but this site does not store any videos. This site is a third-party video search website in mainland China, and the page will automatically redirect after 5 seconds.<br>If not, click the link below.';
+                    link.textContent = 'Click here to go to MOONTV';
+                    break;
+                case 'jp':
+                    heading.textContent = 'MoonTVへリダイレクト中';
+                    description.textContent = 'オープンソースの動画サイト構築ページに移動します。サイト内のコンテンツには著作権が関わる場合がありますが、本サイトは動画の保存行為を行いません。また、本サイトは中国大陸のサードパーティ動画検索サイトです。ページは5秒後に自動的にリダイレクトされます。
+
+<br>自動でリダイレクトされない場合は、下のリンクをクリックしてください。';
+                    link.textContent = 'MOONTVへ移動するにはここをクリック';
+                    break;
+                default:
+                    heading.textContent = '即将跳转到 MoonTV';
+                    description.textContent = '您将被引导到开源视频网站搭建页面，网站内的内容可能会涉及版权，但本网站不做任何保存视频的行为，且本网站为中国大陆的第三方视频搜索网站，网站将在5秒后自动跳转。<br>如果没有自动跳转，请点击下面的链接。';
+                    link.textContent = '点击这里立即跳转';
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>
