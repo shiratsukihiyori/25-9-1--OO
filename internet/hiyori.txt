@@ -1,2 +1,2 @@
-vless://de243d24-ff1a-4323-9bbe-a170448572f3@live.xyby.dpdns.org:2090?type=kcp&headerType=srtp&seed=G2uyBa4K0G&security=none#游戏用（UDP）
+vless://de243d24-ff1a-4323-9bbe-a170448572f3@live.xyby.dpdns.org:2020?type=kcp&headerType=srtp&seed=G2uyBa4K0G&security=none#%E6%B8%B8%E6%88%8F%E7%94%A8UDP%EF%BC%88%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%9C%B0%E5%9D%80%E8%AE%B0%E5%BE%97%E6%94%B9%E6%88%9045.196.233.178%EF%BC%89-jtpg2t2q
 vless://0011b7c3-9778-40dc-9cc4-3a8158e3bc0c@live.xyby.dpdns.org:2087?type=ws&path=%2F&host=live.xyby.dpdns.org&security=tls&fp=chrome&alpn=http%2F1.1&sni=live.xyby.dpdns.org#白月日和
