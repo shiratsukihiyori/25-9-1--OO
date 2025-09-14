@@ -1,0 +1,2 @@
+vless://de243d24-ff1a-4323-9bbe-a170448572f3@live.xyby.dpdns.org:2020?type=kcp&headerType=srtp&seed=G2uyBa4K0G&security=none#%E6%B8%B8%E6%88%8F%E7%94%A8UDP%EF%BC%88%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%9C%B0%E5%9D%80%E8%AE%B0%E5%BE%97%E6%94%B9%E6%88%9045.196.233.178%EF%BC%89-jtpg2t2q
+vless://086d6ce4-4645-4b56-8f37-db124084069d@live.xyby.dpdns.org:2053?type=ws&path=%2Fsupernova&host=live.xyby.dpdns.org&security=tls&fp=chrome&alpn=h2%2Chttp%2F1.1&sni=live.xyby.dpdns.org#SuperNova-10jy9uwq
