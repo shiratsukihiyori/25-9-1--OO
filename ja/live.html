@@ -63,12 +63,46 @@
 
     <section class="stream-links">
       <h2>配信プラットフォーム</h2>
-      <ul>
-        <li><a href="https://space.bilibili.com/349308747" target="_blank">Bilibili ライブ</a></li>
-        <li><a href="https://twitch.tv/hoshiharahoutsuki" target="_blank">Twitch</a></li>
-        <li><a href="https://www.youtube.com/@%E7%99%BD%E6%9C%88%E6%97%A5%E5%92%8C" target="_blank">YouTube</a></li>
+      <ul class="stream-buttons">
+        <li><a id="btn-bilibili" class="btn-sakura" href="https://live.bilibili.com/31248353" target="_blank"><span class="emoji">🌸</span> Bilibili ライブ</a></li>
+        <li><a class="btn-sakura" href="https://twitch.tv/hoshiharahoutsuki" target="_blank"><span class="emoji">🎮</span> Twitch</a></li>
+        <li><a class="btn-sakura" href="https://www.youtube.com/@%E7%99%BD%E6%9C%88%E6%97%A5%E5%92%8C" target="_blank"><span class="emoji">▶️</span> YouTube</a></li>
       </ul>
     </section>
+
+    <!-- Bilibili 入口選択モーダル -->
+    <div id="bili-modal" class="mini-modal" aria-hidden="true">
+      <div class="mini-modal-content" role="dialog" aria-modal="true" aria-labelledby="bili-modal-title">
+        <div class="mini-modal-title" id="bili-modal-title">視聴入口を選択</div>
+        <div style="font-size:.95rem;color:#7e2957;margin-bottom:8px;">Bilibili または 自建ライブへ移動できます</div>
+        <div class="mini-modal-actions">
+          <a class="btn-sakura" href="https://live.bilibili.com/31248353" target="_blank"><span class="emoji">🌸</span> Bilibili ライブへ</a>
+          <a class="btn-outline-sakura" href="https://livehouse.xyby.dpdns.org" target="_blank"><span class="emoji">🏠</span> 自建ライブへ</a>
+        </div>
+        <div class="mini-modal-close" id="bili-modal-close">閉じる</div>
+      </div>
+    </div>
+    <script>
+      (function() {
+        const trigger = document.getElementById('btn-bilibili');
+        const modal = document.getElementById('bili-modal');
+        const closeBtn = document.getElementById('bili-modal-close');
+        if (!trigger || !modal || !closeBtn) return;
+        function openModal(e) {
+          if (e) e.preventDefault();
+          modal.classList.add('show');
+          modal.setAttribute('aria-hidden', 'false');
+        }
+        function closeModal() {
+          modal.classList.remove('show');
+          modal.setAttribute('aria-hidden', 'true');
+        }
+        trigger.addEventListener('click', openModal);
+        closeBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+      })();
+    </script>
 
     <section class="embed-stream">
       <h2>配信プレビュー</h2>

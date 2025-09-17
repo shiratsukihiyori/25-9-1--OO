@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hiyori.webn.cc/sitemap.xml
