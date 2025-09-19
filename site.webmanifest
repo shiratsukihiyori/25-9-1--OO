@@ -1,0 +1,17 @@
+{
+  "name": "白月 日和 | Shiratsuki Hiyori",
+  "short_name": "Hiyori",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#f48fb1",
+  "background_color": "#fff0f6",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48 64x64 96x96",
+      "type": "image/x-icon"
+    }
+  ]
+}

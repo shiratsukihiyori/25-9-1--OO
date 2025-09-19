@@ -46,12 +46,12 @@ hr {
     overflow: visible;
 }
 body, li, span, p, a {
-    /* 强制全站日系樱花鼠标指针，覆盖所有原有 cursor */
-    cursor: url('/static/css/furina/normal.ani'), url('/static/css/furina/normal.cur'), auto !important;
+    /* 强制全站日系樱花鼠标指针（跨浏览器：使用 .cur；可选再补 .png 热点） */
+    cursor: url('/static/css/furina/normal.cur'), auto !important;
 }
 a {
     background-color: transparent;
-    cursor: url('/static/css/furina/normal.ani'), auto;
+    cursor: url('/static/css/furina/link.cur'), pointer;
 }
 strong{
     color: #FF0066;
