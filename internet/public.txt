@@ -1,1 +1,1 @@
-vless://e7a8d028-1d8a-4bde-a179-fa97e1e78237@live.xyby.dpdns.org:8443?type=ws&path=%2F&host=live.xyby.dpdns.org&security=tls&fp=chrome&alpn=http%2F1.1&sni=live.xyby.dpdns.org#%E5%AF%B9%E5%A4%96%E5%BC%80%E6%94%BE01-pt247af0
+vless://e7a8d028-1d8a-4bde-a179-fa97e1e78237@live.xyby.dpdns.org:8443?type=ws&path=%2F&host=live.xyby.dpdns.org&security=tls&fp=chrome&alpn=http%2F1.1%2Ch2&sni=live.xyby.dpdns.org#%E5%AF%B9%E5%A4%96%E5%BC%80%E6%94%BE01
