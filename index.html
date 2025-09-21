@@ -3,434 +3,267 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="白月 日和（しらつき ひより）多语言主页。选择中文 / 日本語 / English，进入Vtuber个人介绍与直播信息。">
-  <title>白月 日和 · 官方网站</title>
-  <!-- 日系圆体/手写风字体 -->
-  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Sawarabi+Gothic&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
+  <title>白月 日和 - 语言检测中</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="img/Q版.png" type="image/png">
+  <link rel="apple-touch-icon" href="img/Q版.png">
+  <link rel="shortcut icon" href="img/Q版.png" type="image/x-icon">
 
-  <!-- Canonical & hreflang alternates -->
-  <link rel="canonical" href="https://hiyori.webn.cc/" />
-  <link rel="alternate" href="https://hiyori.webn.cc/zh/index.html" hreflang="zh-CN" />
-  <link rel="alternate" href="https://hiyori.webn.cc/ja/index.html" hreflang="ja" />
-  <link rel="alternate" href="https://hiyori.webn.cc/en/index.html" hreflang="en" />
-  <link rel="alternate" href="https://hiyori.webn.cc/" hreflang="x-default" />
-
-  <!-- Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Shiratsuki Hiyori" />
-  <meta property="og:title" content="白月 日和 · 官方网站" />
-  <meta property="og:description" content="白月 日和（しらつき ひより）多语言主页。选择中文 / 日本語 / English，进入Vtuber个人介绍与直播信息。" />
-  <meta property="og:url" content="https://hiyori.webn.cc/" />
-  <meta property="og:image" content="https://hiyori.webn.cc/1.png" />
-  <meta property="og:locale" content="zh-CN" />
-  <meta property="og:locale:alternate" content="ja-JP" />
-  <meta property="og:locale:alternate" content="en-US" />
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="白月 日和 · 官方网站" />
-  <meta name="twitter:description" content="白月 日和（しらつき ひより）多语言主页。选择中文 / 日本語 / English，进入Vtuber个人介绍与直播信息。" />
-  <meta name="twitter:image" content="https://hiyori.webn.cc/1.png" />
-  <meta name="theme-color" content="#f48fb1" />
-  <link rel="manifest" href="/site.webmanifest" />
-
-  <!-- JSON-LD WebSite -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Shiratsuki Hiyori",
-    "url": "https://hiyori.webn.cc/",
-    "inLanguage": ["zh-CN","ja","en"],
-    "potentialAction": {
-      "@type": "ReadAction",
-      "target": ["https://hiyori.webn.cc/zh/index.html","https://hiyori.webn.cc/ja/index.html","https://hiyori.webn.cc/en/index.html"]
-    }
-  }
-  </script>
   <style>
     @font-face {
       font-family: 'ZQKJingYaGuPu';
       src: url('郑庆科静雅体-古朴版.ttf') format('truetype');
       font-display: swap;
     }
+    
     body {
       margin: 0;
-      font-family: 'ZQKJingYaGuPu', 'ZCOOL KuaiLe', 'Sawarabi Gothic', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans', sans-serif;
-      background: url('https://www.loliapi.com/acg/') no-repeat center center fixed;
-      background-size: cover;
+      font-family: 'ZQKJingYaGuPu', 'ZCOOL KuaiLe', 'Sawarabi Gothic', sans-serif;
+      background: linear-gradient(135deg, #fff0f6 0%, #ffe4ec 100%);
       color: #333;
       min-height: 100vh;
-      overflow-x: hidden;
-      cursor: url('/static/css/furina/normal.cur'), url('/static/css/furina/normal.cur'), auto;
-    }
-    .sakura {
-      pointer-events: none;
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      z-index: 2;
-    }
-    .splash {
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(255,240,246,0.98);
-      z-index: 1000;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      transition: opacity 0.6s;
+      overflow: hidden;
     }
-    .splash.hide { opacity: 0; pointer-events: none; }
-    .sakura-spinner {
-      width: 60px; height: 60px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 20px;
-      animation: sakura-spin 1.2s linear infinite;
-    }
-    @keyframes sakura-spin { 100% { transform: rotate(360deg); } }
-    .sakura-spinner svg {
-      width: 60px; height: 60px;
-      filter: drop-shadow(0 2px 8px #f8bbd0cc);
-    }
-    main {
-      max-width: 410px;
-      margin: 0 auto;
-      background: rgba(255,255,255,0.85);
-      border-radius: 26px;
-      box-shadow: 0 4px 24px 6px #f8bbd066;
-      padding: 32px 0 18px 0;
-      margin-top: 7vh;
-      margin-bottom: 5vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    h1 {
-      font-size: 2.3em;
-      color: #e573b9;
-      font-family: 'ZCOOL KuaiLe','Sawarabi Gothic',sans-serif;
-      letter-spacing: 2px;
-      text-shadow: 0 2px 8px #ffecf5;
-      margin-bottom: 0.18em;
-      margin-top: 0;
-    }
-    .subtitle {
-      font-size: 1.08em;
-      color: #ba68c8;
-      margin-bottom: 2.4em;
-      margin-top: 0.1em;
-      letter-spacing: 1px;
-    }
-    .lang-select {
-      margin-top: 36px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 22px;
-    }
-    .lang-btn {
-      font-size: 1.2em;
-      padding: 12px 38px;
-      border: none;
-      border-radius: 13px;
-      margin: 0 8px;
-      background: linear-gradient(90deg,#f8bbd0 0%,#f06292 100%);
-      color: #fff;
-      cursor: pointer;
-      transition: background 0.22s,transform 0.18s,box-shadow 0.18s;
-      box-shadow: 0 2px 10px rgba(240,98,146,0.09);
-      outline: none;
-      font-family: 'ZCOOL KuaiLe','Sawarabi Gothic',sans-serif;
-      font-weight: 500;
-    }
-    .lang-btn:hover {
-      background: linear-gradient(90deg,#ba68c8 0%,#f06292 100%);
-      transform: scale(1.045) rotate(-2deg);
-      box-shadow: 0 4px 18px 0 #e1bee7cc;
-    }
-    .footer {
-      position: fixed;
-      left: 0; right: 0; bottom: 2vw;
+    
+    .container {
       text-align: center;
-      background: rgba(255,240,246,0.95);
-      padding: 12px 0 5px 0;
-      font-size: 0.95em;
-      z-index: 10;
-      border-radius: 14px 14px 0 0;
-      box-shadow: 0 0 8px rgba(0,0,0,0.06);
-      font-family: 'ZCOOL KuaiLe','Sawarabi Gothic',sans-serif;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(255, 174, 200, 0.2);
+      max-width: 500px;
+      animation: fadeIn 1s ease-out;
     }
-    .github-badge { margin-top: 0.5em; }
-    .badge-subject {
-      background-color: #f06292;
+    
+    .hiyori-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #f8bbd0, #f48fb1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
       color: white;
-      padding: 2px 6px;
-      border-radius: 3px;
-      margin-right: 5px;
+      box-shadow: 0 4px 16px rgba(244, 143, 177, 0.3);
+      animation: float 3s ease-in-out infinite;
     }
-    .badge-value.bg-cai {
-      background-color: #ba68c8;
+    
+    h1 {
+      color: #e91e63;
+      margin-bottom: 20px;
+      font-size: 2.2em;
+      background: linear-gradient(135deg, #e91e63, #ec407a, #f06292);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .message {
+      font-size: 1.2em;
+      color: #7e2957;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+    
+    .loading-bar {
+      width: 100%;
+      height: 6px;
+      background: #ffe4ec;
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+    
+    .progress {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #f8bbd0, #f48fb1, #ec407a);
+      border-radius: 3px;
+      transition: width 5s linear;
+    }
+    
+    .countdown {
+      font-size: 1.1em;
+      color: #ba68c8;
+      margin-top: 15px;
+    }
+    
+    .language-detected {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(248, 187, 208, 0.2);
+      border-radius: 12px;
+      border-left: 4px solid #ec407a;
+    }
+    
+    .manual-select {
+      margin-top: 20px;
+    }
+    
+    .manual-btn {
+      padding: 8px 16px;
+      background: #f48fb1;
+      border: none;
+      border-radius: 8px;
       color: white;
-      padding: 2px 6px;
-      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.9em;
     }
-    .card {
-      background-color: rgba(255, 255, 255, 0.5);
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    @media (max-width: 600px) {
-      main { padding: 12px 2vw 18px 2vw; }
-      .lang-btn { width: 90vw; font-size: 1em; }
-      .footer { font-size: 0.85em; }
+    
+    @keyframes float {
+     0%, 100% { transform: translateY(0px); }
+     50% { transform: translateY(-10px); }
     }
   </style>
 </head>
-<body class="bg-white text-black">
-  <!-- 隐藏本地樱花瓣图片预加载，供JS动画和旋转用 -->
-  <img src="1.png" id="hidden-sakura" style="display:none" alt="sakura" />
-  <!-- SVG樱花瓣漂浮动画层 -->
-  <svg class="sakura" id="sakura-bg"></svg>
-  <!-- Splash Animation -->
-  <div class="splash" id="splash-screen">
-    <div class="sakura-spinner">
-      <!-- PNG樱花花瓣旋转动画 -->
-      <img src="1.png" alt="sakura" class="sakura-spinner-img" style="width:60px;height:60px;" />
+<body>
+  <div class="container">
+    <div class="hiyori-avatar">🌸</div>
+    <h1>白月 日和</h1>
+    
+    <div class="message" id="status-message">
+      Hiyori正在帮你选择适合的语言页面...
     </div>
-    <div style="font-size:1.3em;color:#e91e63;font-family:'ZCOOL KuaiLe','Sawarabi Gothic',sans-serif;letter-spacing:1.5px;">シラツキ ヒヨリ<br>Welcome! ようこそ！</div>
-    <div id="splash-tips" style="margin-top:16px;color:#ad1457;font-size:1em;"></div>
+    
+    <div class="loading-bar">
+      <div class="progress" id="progress-bar"></div>
+    </div>
+    
+    <div class="countdown" id="countdown">
+      5秒后自动跳转
+    </div>
+    
+    <div class="language-detected" id="language-info" style="display: none;">
+      <strong id="detected-text">检测到的语言:</strong> <span id="detected-lang"></span>
+    </div>
+    
+    <div class="manual-select">
+      <button class="manual-btn" onclick="showManualSelection()">手动选择语言</button>
+    </div>
+    
+    <div id="manual-buttons" style="display: none; margin-top: 20px;">
+      <button style="margin: 5px; padding: 10px 20px; background: #f8bbd0; border: none; border-radius: 8px; cursor: pointer;" onclick="redirectTo('zh')">简体中文</button>
+      <button style="margin: 5px; padding: 10px 20px; background: #f8bbd0; border: none; border-radius: 8px; cursor: pointer;" onclick="redirectTo('ja')">日本語</button>
+      <button style="margin: 5px; padding: 10px 20px; background: #f8bbd0; border: none; border-radius: 8px; cursor: pointer;" onclick="redirectTo('en')">English</button>
+    </div>
   </div>
 
-  <main>
-    <h1>白月 日和（しらつき ひより） </h1>
-    <div class="subtitle">请选择语言 / Select Language / 言語を選択</div>
-    <div class="subtitle">✦ Shiratsuki from Hiyori ✦</div>
-    <div class="lang-select">
-      <button class="lang-btn" onclick="location.href='zh/index.html'">简体中文</button>
-      <button class="lang-btn" onclick="location.href='ja/index.html'">日本語</button>
-      <button class="lang-btn" onclick="location.href='https://lit.link/zh-tw/Hiyori'">日本語（Lit.Link）</button>
-      <button class="lang-btn" onclick="location.href='en/index.html'">English</button>
-      <button class="lang-btn" onclick="location.href='https://ai.xyby.dpdns.org'">AIchatroom（7/20-10/20）</button>
-      <button class="lang-btn" onclick="location.href='chat.html'">Hiyori@SafeMoon（Point-to-point encrypted chat）</button>
-      <div class="copyright">
-      &copy; 2025 <a href="https://xyby.dpdns.org" target="_blank">白月 日和</a>
-    </div>
-    <a href="https://old.xyby.dpdns.org/redirect.html" target="_blank">MoonTV</a>
-    <div>
-      <a href="https://icp.gov.moe/?keyword=20250460" target="_blank">萌ICP备20250460号</a>
-    </div>
-    <div class="github-badge">
-      <span class="badge-subject">雾备</span>
-      <a style="color:#fff" href="https://icp.scfc.top/id.php?keyword=20250460" rel="external" target="_blank">
-        <span class="badge-value bg-cai">20250460号</span>
-      </a>
-    </div>
-  </main>
-
   <script>
-    // Splash tips
-    const tips = [
-      '可通过下方按钮选择语言版本进入主页',
-      'Tip: Choose your preferred language below!',
-      'ヒント：下のボタンから言語を選択できます！',
-      '白月 日和欢迎你！',
-      'Welcome to Shiratsuki Hiyori\'s site!',
-      'ようこそ白月 日和のページへ！'
-    ];
-    // PNG樱花瓣下落动画（更自然的樱花雨）
-    function createSakuraPetal() {
-      // 用于容纳花瓣img的绝对定位div
-      let sakuraLayer = document.getElementById('sakura-img-layer');
-      if (!sakuraLayer) {
-        sakuraLayer = document.createElement('div');
-        sakuraLayer.id = 'sakura-img-layer';
-        sakuraLayer.style.position = 'fixed';
-        sakuraLayer.style.left = '0';
-        sakuraLayer.style.top = '0';
-        sakuraLayer.style.width = '100vw';
-        sakuraLayer.style.height = '100vh';
-        sakuraLayer.style.pointerEvents = 'none';
-        sakuraLayer.style.zIndex = '2';
-        document.body.appendChild(sakuraLayer);
+    // 多语言消息配置
+    const messages = {
+      'zh': {
+        title: '白月 日和 - 语言检测中',
+        status: 'Hiyori正在帮你选择适合的语言页面...',
+        detected: '检测到的语言:',
+        countdown: '秒后自动跳转',
+        redirecting: '正在准备跳转...'
+      },
+      'ja': {
+        title: '白月 日和 - 言語検出中',
+        status: 'ひよりが適切な言語ページを選択しています...',
+        detected: '検出された言語:',
+        countdown: '秒後に自動的に移動します',
+        redirecting: '移動の準備をしています...'
+      },
+      'en': {
+        title: 'Shiratsuki Hiyori - Language Detection',
+        status: 'Hiyori is selecting the appropriate language page for you...',
+        detected: 'Detected language:',
+        countdown: 'seconds until automatic redirect',
+        redirecting: 'Preparing to redirect...'
       }
-      const petal = document.createElement('img');
-      petal.src = '1.png';
-      petal.alt = 'sakura';
-      petal.style.position = 'absolute';
-      petal.style.width = (32 + Math.random()*28) + 'px';
-      petal.style.height = 'auto';
-      petal.style.opacity = 0.93 + Math.random()*0.07;
-      // 随机初始位置、缩放和初始旋转
-      const startX = Math.random() * window.innerWidth;
-      const scale = 0.7 + Math.random() * 0.7;
-      const initRot = Math.random() * 360;
-      petal.style.left = `${startX}px`;
-      petal.style.top = `-40px`;
-      petal.style.transform = `scale(${scale}) rotate(${initRot}deg)`;
-      sakuraLayer.appendChild(petal);
-      // 动画参数
-      const duration = 9000 + Math.random() * 4000;
-      const drift = (Math.random() - 0.5) * 100; // 左右摆幅更大
-      const swingFreq = 1.2 + Math.random() * 0.7; // 摆动频率
-      const swingAmp = 16 + Math.random() * 20; // 摆动幅度
-      const rotDir = Math.random() > 0.5 ? 1 : -1;
-      let start = null;
-      function animate(ts) {
-        if (!start) start = ts;
-        const progress = (ts - start) / duration;
-        if (progress > 1) {
-          petal.remove();
-          return;
-        }
-        // y轴匀速下落，x轴随正弦摆动，旋转仿真实花瓣
-        const y = progress * (window.innerHeight + 60);
-        const x = startX + drift * Math.sin(progress * Math.PI * swingFreq) + swingAmp * Math.sin(progress * Math.PI * 2 * swingFreq);
-        const rot = initRot + rotDir * (progress * 160 + 16 * Math.sin(progress * Math.PI * 2 * swingFreq));
-        petal.style.left = `${x}px`;
-        petal.style.top = `${y}px`;
-        petal.style.transform = `scale(${scale}) rotate(${rot}deg)`;
-        requestAnimationFrame(animate);
-      }
-      requestAnimationFrame(animate);
-    }
+    };
 
-    // 定期生成樱花瓣
-    function sakuraLoop() {
-      createSakuraPetal();
-      setTimeout(sakuraLoop, 700 + Math.random() * 700);
-    }
-    window.addEventListener('DOMContentLoaded', () => {
-      // Splash tips
-      const tips = [
-        '可通过下方按钮选择语言版本进入主页',
-        'Tip: Choose your preferred language below!',
-        'ヒント：下のボタンから言語を選択できます！',
-        '白月 日和欢迎你！',
-        "Welcome to Shiratsuki Hiyori's site!",
-        'ようこそ白月 日和のページへ！'
-      ];
-      const tipsEl = document.getElementById('splash-tips');
-      if (tipsEl) {
-        const tip = tips[Math.floor(Math.random() * tips.length)];
-        tipsEl.textContent = tip;
+    // 语言检测和重定向逻辑
+    function detectLanguage() {
+      const userLang = navigator.language || navigator.userLanguage;
+      let targetLang = 'zh'; // 默认中文
+      
+      // 检测浏览器语言
+      if (userLang.includes('ja') || userLang.includes('jp')) {
+        targetLang = 'ja'; // 日语
+      } else if (userLang.includes('en')) {
+        targetLang = 'en'; // 英语
       }
-      setTimeout(() => {
-        document.getElementById('splash-screen').classList.add('hide');
-      }, 1800);
-      // 启动樱花瓣动画
-      sakuraLoop();
+      
+      return targetLang;
+    }
+    
+    function setLanguageContent(lang) {
+      const langData = messages[lang];
+      document.title = langData.title;
+      document.getElementById('status-message').textContent = langData.status;
+      document.getElementById('detected-text').textContent = langData.detected;
+      document.getElementById('countdown').textContent = `5${langData.countdown}`;
+    }
+    
+    let countdownInterval = null;
+    let seconds = 5;
+    
+    function startCountdown() {
+      const targetLang = detectLanguage();
+      const langNames = {
+        'zh': '简体中文',
+        'ja': '日本語', 
+        'en': 'English'
+      };
+      
+      // 设置对应语言的内容
+      setLanguageContent(targetLang);
+      
+      // 显示检测结果
+      document.getElementById('detected-lang').textContent = langNames[targetLang];
+      document.getElementById('language-info').style.display = 'block';
+      
+      // 开始进度条动画
+      document.getElementById('progress-bar').style.width = '100%';
+      
+      // 倒计时显示
+      const countdownElement = document.getElementById('countdown');
+      countdownInterval = setInterval(() => {
+        seconds--;
+        countdownElement.textContent = `${seconds}${messages[targetLang].countdown}`;
+        
+        if (seconds <= 0) {
+          clearInterval(countdownInterval);
+          window.location.href = `${targetLang}/index.html`;
+        }
+      }, 1000);
+      
+      // 允许用户手动跳过等待
+      document.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          clearInterval(countdownInterval);
+          window.location.href = `${targetLang}/index.html`;
+        }
+      });
+    }
+    
+    function showManualSelection() {
+      clearInterval(countdownInterval);
+      document.getElementById('manual-buttons').style.display = 'block';
+      document.querySelector('.manual-select').style.display = 'none';
+    }
+    
+    function redirectTo(lang) {
+      window.location.href = `${lang}/index.html`;
+    }
+    
+    // 页面加载后开始倒计时
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(startCountdown, 1000);
     });
   </script>
 </body>
-
-  <!-- 日系风 Marshmallow 弹窗 -->
-<style>
-  #marshmallow-popup {
-    display: none;
-    position: fixed;
-    top: 25%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #fff0f6;
-    border: 2px solid #f8c1d8;
-    border-radius: 15px;
-    padding: 25px 30px;
-    width: 320px;
-    box-shadow: 0 8px 16px rgba(248,193,216,0.6);
-    font-family: "Yu Gothic", "Hiragino Kaku Gothic Pro", Meiryo, sans-serif;
-    color: #9c4778;
-    z-index: 9999;
-  }
-  #marshmallow-popup p {
-    font-size: 16px;
-    margin-bottom: 15px;
-    line-height: 1.5;
-  }
-  #marshmallow-popup a {
-    display: inline-block;
-    background: #f8c1d8;
-    color: #662244;
-    font-weight: 600;
-    padding: 10px 18px;
-    border-radius: 12px;
-    text-decoration: none;
-    box-shadow: 0 4px 8px rgba(248,193,216,0.8);
-    transition: background-color 0.3s ease;
-  }
-  #marshmallow-popup a:hover {
-    background: #f48fb1;
-    color: #fff;
-  }
-  #popup-close {
-    margin-top: 20px;
-    background: #f48fb1;
-    border: none;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 15px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(244,143,177,0.7);
-    transition: background-color 0.3s ease;
-  }
-  #popup-close:hover {
-    background: #d46a8c;
-  }
-</style>
-
-<div id="marshmallow-popup">
-  <p id="popup-text">...</p>
-  <a href="https://marshmallow-qa.com/f9nava8c2dh71k1" target="_blank" rel="noopener noreferrer" id="popup-link">...</a>
-  <br>
-  <button id="popup-close">关闭</button>
-</div>
-
-<script>
-  // 多语言内容字典
-  const messages = {
-    zh: {
-      text: "白月 日和欢迎你的反馈喵~<br>来Marshmallow进行你的反馈吧",
-      linkText: "点击这里进入 Marshmallow 页面",
-      closeText: "关闭"
-    },
-    ja: {
-      text: "白月 日和へようこそ〜<br>Marshmallowの特別コンテンツをチェックしてね〜",
-      linkText: "こちらをクリックして Marshmallow ページへ",
-      closeText: "閉じる"
-    },
-    en: {
-      text: "Senior Shiratsuki Hiyori welcomes your feedback. Please come to Marshmallow to give your feedback.",
-      linkText: "Click here to visit Marshmallow page",
-      closeText: "Close"
-    }
-  };
-
-  // 获取浏览器语言，取前2位
-  const userLang = navigator.language.slice(0, 2);
-  // 选择对应语言内容，默认英文
-  const langContent = messages[userLang] || messages.en;
-
-  // 页面加载后显示弹窗并填充语言内容
-  window.onload = () => {
-    const popup = document.getElementById('marshmallow-popup');
-    const text = document.getElementById('popup-text');
-    const link = document.getElementById('popup-link');
-    const closeBtn = document.getElementById('popup-close');
-
-    // 设置文字内容
-    text.innerHTML = langContent.text;
-    link.textContent = langContent.linkText;
-    closeBtn.textContent = langContent.closeText;
-
-    setTimeout(() => {
-      popup.style.display = 'block';
-    }, 1000);
-
-    // 关闭按钮事件
-    closeBtn.onclick = () => {
-      popup.style.display = 'none';
-    };
-  };
-</script>
-  
 </html>
