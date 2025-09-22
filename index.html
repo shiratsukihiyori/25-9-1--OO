@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>白月 日和 - 语言检测中</title>
   
   <!-- Favicon -->
@@ -157,14 +157,22 @@
     .modal-container {
       background: white;
       border-radius: 16px;
-      width: 90%;
+      width: 95%;
       max-width: 1000px;
       max-height: 90vh;
       overflow: hidden;
       display: flex;
+      flex-direction: column;
       box-shadow: 0 10px 50px rgba(0, 0, 0, 0.2);
       transform: translateY(20px);
       transition: transform 0.3s ease;
+    }
+    
+    @media (min-width: 768px) {
+      .modal-container {
+        flex-direction: row;
+        width: 90%;
+      }
     }
     
     .modal-overlay.show .modal-container {
@@ -173,8 +181,15 @@
     
     .modal-panel {
       flex: 1;
-      padding: 30px;
+      padding: 20px;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    @media (min-width: 768px) {
+      .modal-panel {
+        padding: 30px;
+      }
     }
     
     .modal-panel:first-child {
@@ -183,7 +198,8 @@
     
     .modal-panel iframe {
       width: 100%;
-      height: 80vh;
+      height: 60vh;
+      min-height: 400px;
       border: none;
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -211,19 +227,17 @@
     }
     
     .modal-close {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.9);
-      width: 30px;
-      height: 30px;
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(0,0,0,0.1);
+      border: none;
       border-radius: 50%;
+      width: 40px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      z-index: 10000;
-      border: none;
       font-size: 24px;
       cursor: pointer;
       color: #999;
