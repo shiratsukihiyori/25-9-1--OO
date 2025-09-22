@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hiyori Project - 白月 日和</title>
+  
+  <!-- 使用与主页面相同的样式 -->
+  <style>
+    /* 框架卡片悬停效果 */
+    .framework-card {
+      transition: all 0.3s ease;
+    }
+    
+    .framework-card:hover {
+      transform: translateY(-5px);
+      text-decoration: none !important;
+    }
+    
+    .framework-card:hover div {
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15) !important;
+    }
+    
+    .framework-card h3 {
+      color: #e91e63;
+      margin: 10px 0 5px;
+    }
+    
+    .framework-card img {
+      transition: transform 0.3s ease;
+    }
+    
+    .framework-card:hover img {
+      transform: scale(1.1);
+    }
+    
+    @font-face {
+      font-family: 'ZQKJingYaGuPu';
+      src: url('../郑庆科静雅体-古朴版.ttf') format('truetype');
+      font-display: swap;
+      font-weight: normal;
+      font-style: normal;
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'ZQKJingYaGuPu', 'ZCOOL KuaiLe', 'Sawarabi Gothic', sans-serif;
+      background: linear-gradient(135deg, #fff0f6 0%, #ffe4ec 100%);
+      color: #333;
+      min-height: 100vh;
+      padding: 20px 0;
+    }
+    
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      max-width: 90%;
+      width: 100%;
+      box-sizing: border-box;
+      margin: 20px auto;
+      position: relative;
+      padding-bottom: 60px;
+    }
+    
+    .hiyori-avatar {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #f8bbd0, #f48fb1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      color: white;
+      box-shadow: 0 4px 16px rgba(244, 143, 177, 0.3);
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    h1 {
+      color: #e91e63;
+      margin-bottom: 20px;
+      font-size: 2.2em;
+      background: linear-gradient(135deg, #e91e63, #ec407a, #f06292);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .description {
+      font-size: 1.2em;
+      color: #7e2957;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+    
+    .back-btn {
+      padding: 12px 30px;
+      background: #f8bbd0;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1.1em;
+      color: #7e2957;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+    
+    .back-btn:hover {
+      background: #f48fb1;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(244, 143, 177, 0.3);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hiyori-avatar">🌸</div>
+    <h1 data-i18n="title">Hiyori Project</h1>
+    
+    <div class="description">
+      <p data-i18n="welcome">欢迎来到 Hiyori 的专属页面！</p>
+      <p data-i18n="content1">这里将会展示 Hiyori 已经搭建在服务器上的内容。</p>
+      <p data-i18n="content2">页面正在开发中，敬请期待更多精彩内容！</p>
+    </div>
+    
+    <button class="back-btn" data-i18n="back" onclick="window.location.href='../index.html'">返回首页</button>
+    
+    <!-- 语言选择按钮 -->
+    <div class="manual-select" style="margin-top: 30px;">
+      <button class="manual-btn" onclick="showManualSelection()">选择语言 / 言語 / Language</button>
+    </div>
+    
+    <div id="manual-buttons" style="display: none; margin-top: 20px;">
+      <button style="margin: 5px; padding: 10px 20px; background: #f8bbd0; border: none; border-radius: 8px; cursor: pointer;" onclick="redirectTo('zh')">简体中文</button>
+      <button style="margin: 5px; padding: 10px 20px; background: #f8bbd0; border: none; border-radius: 8px; cursor: pointer;" onclick="redirectTo('ja')">日本語</button>
+      <button style="margin: 5px; padding: 10px 20px; background: #f8bbd0; border: none; border-radius: 8px; cursor: pointer;" onclick="redirectTo('en')">English</button>
+    </div>
+    
+    <!-- 框架展示区域 -->
+    <div class="frameworks-section" style="margin: 50px auto 0; width: 100%; max-width: 1000px; display: flex; flex-direction: column; align-items: center;">
+      <h2 style="color: #e91e63; margin-bottom: 20px; text-align: center;" data-i18n="recommendedFrameworks">推荐框架 & 工具</h2>
+      
+      <div class="framework-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 20px; width: 100%; justify-items: center; max-width: 900px;">
+        <!-- 前端框架 -->
+        <a href="https://reactjs.org/" target="_blank" class="framework-card" style="display: block; text-decoration: none; color: inherit;">
+          <div style="background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1280px-React-icon.svg.png" alt="React" style="width: 60px; height: 60px; margin-bottom: 10px;">
+            <h3>React</h3>
+            <p style="font-size: 0.9em; color: #666;">用于构建用户界面的 JavaScript 库</p>
+          </div>
+        </a>
+        
+        <a href="https://vuejs.org/" target="_blank" class="framework-card" style="display: block; text-decoration: none; color: inherit;">
+          <div style="background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+            <img src="https://vuejs.org/images/logo.png" alt="Vue" style="width: 60px; height: 60px; margin-bottom: 10px;">
+            <h3>Vue.js</h3>
+            <p style="font-size: 0.9em; color: #666;">渐进式 JavaScript 框架</p>
+          </div>
+        </a>
+        
+        <a href="https://angular.io/" target="_blank" class="framework-card" style="display: block; text-decoration: none; color: inherit;">
+          <div style="background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+            <img src="https://angular.io/assets/images/logos/angular/angular.png" alt="Angular" style="width: 60px; height: 60px; margin-bottom: 10px;">
+            <h3>Angular</h3>
+            <p style="font-size: 0.9em; color: #666;">一个平台和框架</p>
+          </div>
+        </a>
+        
+        <a href="https://svelte.dev/" target="_blank" class="framework-card" style="display: block; text-decoration: none; color: inherit;">
+          <div style="background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+            <img src="https://svelte.dev/svelte-logo-horizontal.svg" alt="Svelte" style="width: 60px; height: 60px; margin-bottom: 10px;">
+            <h3>Svelte</h3>
+            <p style="font-size: 0.9em; color: #666;">控制论增强的 Web 应用</p>
+          </div>
+        </a>
+        
+        <!-- 后端框架 -->
+        <a href="https://expressjs.com/" target="_blank" class="framework-card" style="display: block; text-decoration: none; color: inherit;">
+          <div style="background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+            <img src="https://expressjs.com/images/express-facebook-share.png" alt="Express" style="width: 60px; height: 60px; margin-bottom: 10px;">
+            <h3>Express.js</h3>
+            <p style="font-size: 0.9em; color: #666;">Node.js Web 应用框架</p>
+          </div>
+        </a>
+        
+        <a href="https://nextjs.org/" target="_blank" class="framework-card" style="display: block; text-decoration: none; color: inherit;">
+          <div style="background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+            <img src="https://assets.vercel.com/image/upload/v1607554385/repositories/next-js/next-logo.png" alt="Next.js" style="width: 60px; height: 60px; margin-bottom: 10px;">
+            <h3>Next.js</h3>
+            <p style="font-size: 0.9em; color: #666;">React 框架</p>
+          </div>
+        </a>
+        
+        <a href="https://nuxtjs.org/" target="_blank" class="framework-card" style="display: block; text-decoration: none; color: inherit;">
+          <div style="background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+            <img src="https://nuxtjs.org/logos/nuxt-square.svg" alt="Nuxt.js" style="width: 60px; height: 60px; margin-bottom: 10px;">
+            <h3>Nuxt.js</h3>
+            <p style="font-size: 0.9em; color: #666;">Vue 框架</p>
+          </div>
+        </a>
+        
+        <a href="https://svelte.dev/" target="_blank" class="framework-card" style="display: block; text-decoration: none; color: inherit;">
+          <div style="background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+            <img src="https://svelte.dev/logos/svelte-kit.png" alt="SvelteKit" style="width: 60px; height: 60px; margin-bottom: 10px;">
+            <h3>SvelteKit</h3>
+            <p style="font-size: 0.9em; color: #666;">Svelte 框架</p>
+          </div>
+        </a>
+      </div>
+    </div>
+    
+    <!-- 我的项目标题 -->
+    <div class="projects-section" style="margin: 80px auto 0; width: 100%; max-width: 1000px; display: flex; flex-direction: column; align-items: center;">
+      <h2 style="color: #e91e63; margin-bottom: 20px; text-align: center;" data-i18n="myProjects">我的项目</h2>
+    </div>
+    
+  </div>
+  
+  <script>
+    // 多语言消息配置
+    const messages = {
+      'zh': {
+        title: 'Hiyori Project - 白月 日和',
+        welcome: '欢迎来到 Hiyori 的专属页面！',
+        content1: '这里将会展示 Hiyori 已经搭建在服务器上的内容。',
+        content2: '页面正在开发中，敬请期待更多精彩内容！',
+        back: '返回首页',
+        selectLang: '选择语言',
+        recommendedFrameworks: '推荐框架 & 工具',
+        myProjects: '我的项目'
+      },
+      'ja': {
+        title: 'Hiyori Project - 白月 日和',
+        welcome: 'ひよりの専用ページへようこそ！',
+        content1: 'ここではひよりがサーバー上に構築したコンテンツを紹介します。',
+        content2: '現在準備中です。お楽しみに！',
+        back: 'ホームに戻る',
+        selectLang: '言語を選択',
+        recommendedFrameworks: 'おすすめフレームワーク & ツール',
+        myProjects: '私のプロジェクト'
+      },
+      'en': {
+        title: 'Hiyori Project - Shiratsuki Hiyori',
+        welcome: 'Welcome to Hiyori\'s Page!',
+        content1: 'This is where Hiyori\'s server-hosted content will be displayed.',
+        content2: 'Page under construction. Stay tuned for more!',
+        back: 'Back to Home',
+        selectLang: 'Select Language',
+        recommendedFrameworks: 'Recommended Frameworks & Tools',
+        myProjects: 'My Projects'
+      }
+    };
+
+    // 语言切换函数
+    function setLanguage(lang) {
+      if (messages[lang]) {
+        // 保存语言偏好
+        localStorage.setItem('preferredLanguage', lang);
+        document.title = messages[lang].title;
+        
+        // 更新所有带 data-i18n 属性的元素
+        const elements = document.querySelectorAll('[data-i18n]');
+        elements.forEach(el => {
+          const key = el.getAttribute('data-i18n');
+          if (messages[lang][key] !== undefined) {
+            el.textContent = messages[lang][key];
+          }
+        });
+      }
+    }
+
+    // 重定向函数
+    function redirectTo(lang) {
+      // 这里可以添加语言切换逻辑
+      setLanguage(lang);
+      // 隐藏语言选择按钮
+      document.getElementById('manual-buttons').style.display = 'none';
+    }
+
+    // 显示语言选择
+    function showManualSelection() {
+      const manualButtons = document.getElementById('manual-buttons');
+      manualButtons.style.display = manualButtons.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // 检测用户语言并跳转
+    function detectAndRedirectLanguage() {
+      const userLang = navigator.language || navigator.userLanguage || 'en';
+      let targetLang = 'en'; // 默认英语
+      
+      // 检测浏览器语言
+      if (userLang.includes('zh') || userLang.includes('cn') || userLang.includes('tw') || userLang.includes('hk')) {
+        targetLang = 'zh';
+      } else if (userLang.includes('ja') || userLang.includes('jp')) {
+        targetLang = 'ja';
+      }
+      
+      // 如果用户已经手动选择过语言，则使用用户的选择
+      const savedLang = localStorage.getItem('preferredLanguage');
+      if (savedLang) {
+        targetLang = savedLang;
+      } else {
+        // 保存检测到的语言
+        localStorage.setItem('preferredLanguage', targetLang);
+      }
+      
+      // 设置当前页面语言
+      setLanguage(targetLang);
+      
+      return targetLang;
+    }
+    
+    // 检测用户语言（不跳转）
+    function detectLanguage() {
+      const userLang = navigator.language || navigator.userLanguage || 'en';
+      if (userLang.includes('zh') || userLang.includes('cn') || userLang.includes('tw') || userLang.includes('hk')) return 'zh';
+      if (userLang.includes('ja') || userLang.includes('jp')) return 'ja';
+      return 'en';
+    }
+
+    // 显示加载状态
+    function showLoading() {
+      const loading = document.createElement('div');
+      loading.id = 'loading';
+      loading.style.position = 'fixed';
+      loading.style.top = '0';
+      loading.style.left = '0';
+      loading.style.width = '100%';
+      loading.style.height = '100%';
+      loading.style.background = 'rgba(255, 255, 255, 0.9)';
+      loading.style.display = 'flex';
+      loading.style.flexDirection = 'column';
+      loading.style.justifyContent = 'center';
+      loading.style.alignItems = 'center';
+      loading.style.zIndex = '1000';
+      loading.innerHTML = `
+        <div class="hiyori-avatar" style="width: 80px; height: 80px; font-size: 36px;">🌸</div>
+        <p style="margin-top: 20px; font-size: 1.2em; color: #e91e63;">检测语言中...</p>
+      `;
+      document.body.appendChild(loading);
+    }
+    
+    // 隐藏加载状态
+    function hideLoading() {
+      const loading = document.getElementById('loading');
+      if (loading) {
+        loading.style.opacity = '0';
+        setTimeout(() => {
+          loading.remove();
+        }, 300);
+      }
+    }
+    
+    // 初始化页面
+    function initPage() {
+      // 显示加载状态
+      showLoading();
+      
+      // 检测并设置语言
+      detectAndRedirectLanguage();
+      
+      // 页面加载动画
+      const container = document.querySelector('.container');
+      if (container) {
+        container.style.animation = 'fadeIn 1s ease-out';
+      }
+      
+      // 隐藏加载状态
+      setTimeout(hideLoading, 1000);
+      
+      // 添加点击效果
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          // 防止默认行为
+          e.preventDefault();
+          
+          // 按钮点击效果
+          button.style.transform = 'scale(0.98)';
+          setTimeout(() => {
+            button.style.transform = '';
+          }, 150);
+          
+          // 如果是语言选择按钮，阻止默认跳转
+          if (button.getAttribute('onclick') && button.getAttribute('onclick').includes('redirectTo')) {
+            return false;
+          }
+        });
+      });
+    }
+
+    // 初始化页面
+    initPage();
+  </script>
+</body>
+</html>
