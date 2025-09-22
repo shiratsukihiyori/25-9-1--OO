@@ -367,13 +367,18 @@
       const countdownElement = document.getElementById('modalCountdown');
       let countdown = 10;
       
+      // 清除可能存在的旧计时器
+      if (window.modalCountdownInterval) {
+        clearInterval(window.modalCountdownInterval);
+      }
+      
       // 更新倒计时显示
       const updateCountdown = () => {
         if (countdown >= 0) {
           countdownElement.textContent = `${countdown}秒後に自動的に閉じます`;
           countdown--;
         } else {
-          clearInterval(countdownInterval);
+          clearInterval(window.modalCountdownInterval);
           closeJapaneseModal();
           // 倒计时结束后跳转到日语页面
           window.location.href = 'ja/index.html';
@@ -384,13 +389,10 @@
       updateCountdown();
       
       // 开始倒计时
-      const countdownInterval = setInterval(updateCountdown, 1000);
+      window.modalCountdownInterval = setInterval(updateCountdown, 1000);
       
       // 显示弹窗
       modal.classList.add('show');
-      
-      // 保存倒计时引用，方便后续清除
-      modal.dataset.countdownInterval = countdownInterval;
       
       // 暂停主倒计时
       if (window.mainCountdownInterval) {
@@ -408,9 +410,9 @@
       if (!modal) return;
       
       // 清除弹窗倒计时
-      if (modal.dataset.countdownInterval) {
-        clearInterval(parseInt(modal.dataset.countdownInterval));
-        delete modal.dataset.countdownInterval;
+      if (window.modalCountdownInterval) {
+        clearInterval(window.modalCountdownInterval);
+        window.modalCountdownInterval = null;
       }
       
       // 添加关闭动画
