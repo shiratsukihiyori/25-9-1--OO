@@ -71,6 +71,13 @@
       line-height: 1.6;
     }
     
+    .days-counter {
+      font-size: 1.1em;
+      color: #e91e63;
+      margin: 10px 0 20px;
+      font-weight: bold;
+    }
+    
     .loading-bar {
       width: 100%;
       height: 6px;
@@ -232,6 +239,7 @@
   <div class="container">
     <div class="hiyori-avatar">🌸</div>
     <h1>白月 日和</h1>
+    <div class="days-counter" id="daysCounter"></div>
     
     <div class="message" id="status-message">
       Hiyori正在帮你选择适合的语言页面...
@@ -464,8 +472,49 @@
       }
     }
     
+    // 获取当前语言
+    function getCurrentLanguage() {
+      // 这里可以根据您的实际语言切换逻辑来获取当前语言
+      // 例如从localStorage或URL参数中获取
+      const lang = localStorage.getItem('userLanguage') || 'zh';
+      return lang;
+    }
+    
+    // 计算并显示天数
+    function updateDaysCounter() {
+      const birthDate = new Date('2025-05-01T00:00:00+09:00');
+      const now = new Date();
+      const diffTime = now - birthDate;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      // 根据当前语言显示不同文本
+      const lang = getCurrentLanguage();
+      let counterText = '';
+      
+      switch(lang) {
+        case 'en':
+          counterText = `Hiyori has been seeing the world for ${diffDays} days`;
+          break;
+        case 'ja':
+          counterText = `ひよりが世界を見てから${diffDays}日目`;
+          break;
+        case 'zh':
+        default:
+          counterText = `日和见到世界的第${diffDays}天`;
+      }
+      
+      const counterElement = document.getElementById('daysCounter');
+      if (counterElement) {
+        counterElement.textContent = counterText;
+      }
+      
+      // 设置每分钟更新一次
+      setTimeout(updateDaysCounter, 60000 - (now % 60000));
+    }
+
     // 页面加载后开始倒计时
     document.addEventListener('DOMContentLoaded', () => {
+      updateDaysCounter();
       setTimeout(startCountdown, 1000);
     });
   </script>
