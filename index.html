@@ -305,8 +305,9 @@
           <p>こんにちは！白月ひよりと申します。</p>
           <p>このページでは、私のプロフィールや活動内容をご紹介しています。</p>
           <p>左側には私の自己紹介、右側には他のプラットフォームでの活動をご覧いただけます。</p>
+          <p style="color: #e91e63; font-weight: bold;">※ 日本語の閉じるボタンに問題があったため、表示時間を長くしています。ご不便をおかけして申し訳ありません。</p>
           <p>10秒後に自動的に閉じますが、閉じるボタンでいつでも閉じることができます。</p>
-          <p>よろしくお願いいたします！</p>
+          <p>ご理解のほど、よろしくお願いいたします！</p>
         </div>
         <div class="modal-countdown" id="modalCountdown">10秒後に閉じます</div>
       </div>
@@ -345,7 +346,7 @@
       }
     };
 
-    // 语言检测和重定向逻辑
+    // 语言检测
     function detectLanguage() {
       const userLang = navigator.language || navigator.userLanguage;
       let targetLang = 'zh'; // 默认中文
@@ -353,7 +354,6 @@
       // 检测浏览器语言
       if (userLang.includes('ja') || userLang.includes('jp')) {
         targetLang = 'ja'; // 日语
-        showJapaneseModal();
       } else if (userLang.includes('en')) {
         targetLang = 'en'; // 英语
       }
@@ -471,7 +471,9 @@
       document.getElementById('language-info').style.display = 'block';
       
       // 开始进度条动画
-      document.getElementById('progress-bar').style.width = '100%';
+      const progressBar = document.getElementById('progress-bar');
+      progressBar.style.width = '100%';
+      progressBar.style.transition = 'none';
       
       // 清除已有的倒计时
       if (window.mainCountdownInterval) {
@@ -479,19 +481,35 @@
         window.mainCountdownInterval = null;
       }
       
-      // 如果是日语，倒计时从10开始
-      seconds = targetLang === 'ja' ? 10 : 5;
+      // 设置倒计时总秒数
+      const totalSeconds = targetLang === 'ja' ? 10 : 5;
+      let remainingSeconds = totalSeconds;
       
       // 倒计时显示
       const countdownElement = document.getElementById('countdown');
-      countdownElement.textContent = `${seconds}${messages[targetLang].countdown}`;
+      
+      // 更新倒计时显示和进度条
+      const updateDisplay = () => {
+        countdownElement.textContent = `${remainingSeconds}${messages[targetLang].countdown}`;
+        const progress = (remainingSeconds / totalSeconds) * 100;
+        progressBar.style.transition = 'width 0.3s linear';
+        progressBar.style.width = `${progress}%`;
+      };
+      
+      // 初始显示
+      updateDisplay();
       
       // 开始新的倒计时
       window.mainCountdownInterval = setInterval(() => {
-        seconds--;
-        countdownElement.textContent = `${seconds}${messages[targetLang].countdown}`;
+        remainingSeconds--;
+        updateDisplay();
         
-        if (seconds <= 0) {
+        // 如果是日语且倒计时到5秒，显示弹窗
+        if (targetLang === 'ja' && remainingSeconds === 5) {
+          showJapaneseModal();
+        }
+        
+        if (remainingSeconds <= 0) {
           clearInterval(window.mainCountdownInterval);
           window.location.href = `${targetLang}/index.html`;
         }
@@ -500,7 +518,7 @@
       // 允许用户手动跳过等待
       document.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
-          clearInterval(countdownInterval);
+          clearInterval(window.mainCountdownInterval);
           window.location.href = `${targetLang}/index.html`;
         }
       });
@@ -513,8 +531,18 @@
     }
     
     function redirectTo(lang) {
+      // 重置倒计时
+      if (window.mainCountdownInterval) {
+        clearInterval(window.mainCountdownInterval);
+        window.mainCountdownInterval = null;
+      }
+      
       if (lang === 'ja') {
-        showJapaneseModal();
+        // 手动切换到日语时，也显示弹窗
+        const totalSeconds = 10;
+        startCountdown('ja', totalSeconds);
+        // 立即显示弹窗
+        setTimeout(() => showJapaneseModal(), 100);
       } else {
         window.location.href = `${lang}/index.html`;
       }
@@ -563,7 +591,10 @@
     // 页面加载后开始倒计时
     document.addEventListener('DOMContentLoaded', () => {
       updateDaysCounter();
-      setTimeout(startCountdown, 1000);
+      const targetLang = detectLanguage();
+      // 如果是日语浏览器，使用10秒倒计时，其他语言保持5秒
+      const delay = (targetLang === 'ja') ? 10000 : 5000;
+      startCountdown(targetLang, delay);
     });
   </script>
 </body>
