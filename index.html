@@ -409,9 +409,10 @@
       // 开始进度条动画
       document.getElementById('progress-bar').style.width = '100%';
       
-      // 重置倒计时
-      if (countdownInterval) {
-        clearInterval(countdownInterval);
+      // 清除已有的倒计时
+      if (window.mainCountdownInterval) {
+        clearInterval(window.mainCountdownInterval);
+        window.mainCountdownInterval = null;
       }
       
       // 如果是日语，倒计时从10开始
@@ -421,17 +422,13 @@
       const countdownElement = document.getElementById('countdown');
       countdownElement.textContent = `${seconds}${messages[targetLang].countdown}`;
       
-      // 清除已有的倒计时
-      if (window.mainCountdownInterval) {
-        clearInterval(window.mainCountdownInterval);
-      }
-      
+      // 开始新的倒计时
       window.mainCountdownInterval = setInterval(() => {
         seconds--;
         countdownElement.textContent = `${seconds}${messages[targetLang].countdown}`;
         
         if (seconds <= 0) {
-          clearInterval(countdownInterval);
+          clearInterval(window.mainCountdownInterval);
           window.location.href = `${targetLang}/index.html`;
         }
       }, 1000);
