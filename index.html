@@ -6,9 +6,12 @@
   <title>白月 日和 - 语言检测中</title>
   
   <!-- Favicon -->
-  <link rel="icon" href="img/Q版.png" type="image/png">
-  <link rel="apple-touch-icon" href="img/Q版.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/Q版.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/Q版.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/Q版.png">
   <link rel="shortcut icon" href="img/Q版.png" type="image/x-icon">
+  <meta name="theme-color" content="#f48fb1">
+  <link rel="manifest" href="site.webmanifest">
 
   <style>
     @font-face {
@@ -48,10 +51,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 48px;
-      color: white;
+      overflow: hidden;
       box-shadow: 0 4px 16px rgba(244, 143, 177, 0.3);
       animation: float 3s ease-in-out infinite;
+    }
+    
+    .hiyori-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     
     h1 {
@@ -260,7 +268,7 @@
 </head>
 <body>
   <div class="container">
-    <div class="hiyori-avatar">🌸</div>
+    <div class="hiyori-avatar"><img src="img/Q版.png" alt="Hiyori Avatar"></div>
     <h1>白月 日和</h1>
     <div class="days-counter" id="daysCounter"></div>
     
