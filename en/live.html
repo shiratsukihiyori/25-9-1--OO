@@ -103,30 +103,37 @@
       <h2>Live Preview</h2>
       <!-- Replace src with actual platform embed if available -->
       <div class="embed-responsive">
-        <iframe src="https://player.twitch.tv/?channel=hoshiharahoutsuki&parent=hiyori.webn.cc" frameborder="0" allowfullscreen style="width:100%;height:400px;border-radius:12px;background:#fff;"></iframe>
+        <iframe src="https://player.twitch.tv/?channel=hoshiharahoutsuki&parent=hiyori.webn.cc&parent=home.hiyori.xx.kg" frameborder="0" allowfullscreen style="width:100%;height:400px;border-radius:12px;background:#fff;"></iframe>
       <!-- Twitch 聊天室 -->
     <iframe
       class="twitch-chat"
-      src="https://www.twitch.tv/embed/hoshiharahoutsuki/chat?&parent=hiyori.webn.cc"
+      src="https://www.twitch.tv/embed/hoshiharahoutsuki/chat?&parent=hiyori.webn.cc&parent=home.hiyori.xx.kg"
       frameborder="0">
     </iframe>
-      </div>
       <p style="font-size:0.95em;color:#b84a73;margin-top:0.5em;">If the stream is offline, please check the latest updates on each platform~</p>
     </section>
   </div>
 
   <footer id="fixed-footer">
-    <div class="copyright">
-      &copy; 2025 <a href="https://xyby.dpdns.org" target="_blank">Shiratsuki Hiyori</a>
-    </div>
-    <div>
-      <a href="https://icp.gov.moe/?keyword=20250460" target="_blank">萌ICP备20250460号</a>
+    <div class="footer-container">
+      <div class="copyright">
+        &copy; 2025 <a href="https://home.hiyori.xx.kg" target="_blank">Shiratsuki Hiyori (白月 日和)</a> - Moonlight Cottage
+      </div>
+      <div class="icp">
+        <a href="https://icp.gov.moe/?keyword=20250460" target="_blank">MoeICP No. 20250460</a>
+      </div>
+      <div class="footer-links">
+        <a href="/en/index.html">Home</a>
+        <a href="/en/live.html">Live</a>
+        <a href="/en/about.html">About</a>
+        <a href="https://github.com/xyby/hiyori-web" target="_blank">Source Code</a>
+      </div>
     </div>
   </footer>
 
   <script>
     function updateRuntime() {
-      const start = new Date('2025-05-01T00:00:00+08:00');
+{{ ... }}
       const now = new Date();
       let diff = Math.floor((now - start) / 1000);
       const days = Math.floor(diff / 86400);
