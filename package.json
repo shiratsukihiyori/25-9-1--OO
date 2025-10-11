@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "wrangler pages dev .",
-    "build": "echo 'Build step completed'"
+    "build": "echo 'Build completed'"
   },
   "devDependencies": {
     "wrangler": "^3.0.0"
-  }
+  },
+  "dependencies": {}
 }
