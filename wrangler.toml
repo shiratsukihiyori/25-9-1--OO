@@ -1,37 +1,48 @@
+# Cloudflare Pages 配置
 name = "guestbook"
-main = "_worker.js"
 compatibility_date = "2023-10-11"
 
+# 构建配置
 [build]
 command = ""
 publish = "."
 
-# D1 数据库配置
-[[d1_databases]]
-binding = "DB"
-database_name = "guestbook-db"
-database_id = ""  # 部署后从 Cloudflare Dashboard 获取并填写
+# D1 数据库配置 (需要在 Cloudflare Dashboard 中设置)
+# 在 Cloudflare Dashboard 中创建 D1 数据库并绑定到 Pages 项目
+# 绑定名称为 "DB"
 
-# Pages 配置
-[site]
-bucket = "."
-entry-point = "."
+# 环境变量 (在 Cloudflare Pages 设置中配置)
+# - ADMIN_API_KEY: 用于管理后台认证
+# - DB: D1 数据库绑定
 
-# 环境变量
-[vars]
-NODE_ENV = "production"
+# 页面重定向规则
+[[redirects]]
+from = "/admin"
+to = "/admin/"
+status = 301
 
-# 构建命令
-[build.environment]
-NODE_VERSION = "16"
+[[redirects]]
+from = "/guestbook"
+to = "/guestbook-new.html"
+status = 301
 
-# 路由规则
-[[routes]]
-pattern = "/api/*"
-script_name = "_worker"
-
-# 静态资源缓存
+# 静态资源缓存规则
 [[headers]]
-for = "/*"
+for = "/assets/*"
 [headers.values]
-"Cache-Control" = "public, max-age=3600"
+"Cache-Control" = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/*.js"
+[headers.values]
+"Cache-Control" = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/*.css"
+[headers.values]
+"Cache-Control" = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/*.html"
+[headers.values]
+"Cache-Control" = "public, max-age=300"

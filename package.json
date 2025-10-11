@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "wrangler pages dev",
+    "build": "echo 'No build step required for static site'",
+    "preview": "wrangler pages dev",
     "deploy": "wrangler pages deploy . --project-name=guestbook"
   },
   "dependencies": {
@@ -11,5 +13,8 @@
   },
   "devDependencies": {
     "wrangler": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
