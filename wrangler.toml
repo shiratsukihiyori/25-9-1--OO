@@ -1,17 +1,52 @@
 name = "guestbook"
 compatibility_date = "2023-10-11"
-pages_build_output_dir = "."
+
+# Cloudflare Pages 配置
+[build]
+command = "npm run build"
+publish = "public"
+
+# 构建输出目录
+[site]
+bucket = "public"
 
 # 环境变量
 [vars]
-# 默认环境变量（开发环境）
-ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD = "admin123"
-ADMIN_API_KEY = "your-api-key-here"
+NODE_ENV = "production"
 
-# 生产环境变量（通过 Cloudflare 仪表板设置）
-[env.production]
-# 这些变量需要在 Cloudflare 仪表板中设置为环境变量
-# ADMIN_USERNAME = ""
-# ADMIN_PASSWORD = ""
-# ADMIN_API_KEY = ""
+# 路由规则（如果使用单页应用）
+[[routes]]
+pattern = "/*"
+status = 200
+
+# 静态资源缓存
+[[headers]]
+for = "/*"
+[browser_ttl]
+  default = 3600
+  [headers.values]
+  "Cache-Control" = "public, max-age=3600"
+
+# 排除不需要的文件
+[build.upload]
+exclude = ["node_modules/**"]
+
+# 路由配置
+[[routes]]
+pattern = "/*"
+script_name = "_worker.js"
+
+# 静态资源缓存配置
+[[build.upload.rules]]
+glob = "**/*.{js,css,html,json}"  # 缓存所有静态资源
+
+# 数据库配置
+[[d1_databases]]
+binding = "DB"
+database_name = "guestbook-db"
+database_id = ""  # 部署后从 Cloudflare 控制台获取
+
+# 部署配置
+[site]
+bucket = "."
+entry-point = "."

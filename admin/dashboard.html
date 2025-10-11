@@ -519,24 +519,24 @@
       
       <nav class="sidebar-menu">
         <div class="menu-category">主要</div>
-        <a href="#" class="menu-item active">
+        <a href="javascript:void(0)" class="menu-item active" data-section="dashboard">
           <i class="fas fa-tachometer-alt"></i> 控制台
         </a>
         
         <div class="menu-category">内容管理</div>
-        <a href="#messages" class="menu-item">
+        <a href="javascript:void(0)" class="menu-item" data-section="messages">
           <i class="fas fa-comments"></i> 留言管理
           <span class="badge badge-pill badge-danger ml-auto" id="pendingCount">0</span>
         </a>
-        <a href="#users" class="menu-item">
+        <a href="javascript:void(0)" class="menu-item" data-section="users">
           <i class="fas fa-users"></i> 用户管理
         </a>
         
         <div class="menu-category">系统设置</div>
-        <a href="#settings" class="menu-item">
+        <a href="javascript:void(0)" class="menu-item" data-section="settings">
           <i class="fas fa-cog"></i> 系统设置
         </a>
-        <a href="#profile" class="menu-item">
+        <a href="javascript:void(0)" class="menu-item" data-section="profile">
           <i class="fas fa-user"></i> 个人资料
         </a>
       </nav>
@@ -585,14 +585,103 @@
       
       <!-- 内容区 -->
       <div class="content">
-        <div class="page-header">
-          <h1 class="page-title">留言管理</h1>
-          <div>
-            <button class="btn btn-primary">
-              <i class="fas fa-plus"></i> 添加留言
-            </button>
+        <!-- 控制台 -->
+        <div id="dashboard-section" class="content-section">
+          <div class="page-header">
+            <h1 class="page-title">控制台概览</h1>
+          </div>
+          
+          <!-- 统计卡片 -->
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <div class="card stat-card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="stat-title">总留言数</h6>
+                      <h2 class="stat-value" id="totalMessages">0</h2>
+                    </div>
+                    <div class="stat-icon">
+                      <i class="fas fa-comments"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-3">
+              <div class="card stat-card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="stat-title">待审核</h6>
+                      <h2 class="stat-value text-warning" id="pendingCount">0</h2>
+                    </div>
+                    <div class="stat-icon">
+                      <i class="fas fa-clock"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-3">
+              <div class="card stat-card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="stat-title">已通过</h6>
+                      <h2 class="stat-value text-success" id="approvedCount">0</h2>
+                    </div>
+                    <div class="stat-icon">
+                      <i class="fas fa-check-circle"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-3">
+              <div class="card stat-card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="stat-title">已拒绝</h6>
+                      <h2 class="stat-value text-danger" id="rejectedCount">0</h2>
+                    </div>
+                    <div class="stat-icon">
+                      <i class="fas fa-times-circle"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 最近活动 -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">最近活动</h2>
+            </div>
+            <div class="card-body">
+              <div class="text-center py-4">
+                <i class="fas fa-inbox" style="font-size: 3rem; color: #e9ecef;"></i>
+                <p class="mt-3 text-muted">暂无最近活动</p>
+              </div>
+            </div>
           </div>
         </div>
+        
+        <!-- 留言管理 -->
+        <div id="messages-section" class="content-section" style="display: none;">
+          <div class="page-header">
+            <h1 class="page-title">留言管理</h1>
+            <div>
+              <button class="btn btn-primary" id="addMessageBtn">
+                <i class="fas fa-plus"></i> 添加留言
+              </button>
+            </div>
+          </div>
         
         <div class="card">
           <div class="card-header">
@@ -635,7 +724,67 @@
   </div>
 
   <script>
+    // API 基础 URL
+    const API_BASE_URL = 'http://localhost:3000/api';
+    
+    // 全局变量
+    let allMessages = [];
+    
     document.addEventListener('DOMContentLoaded', function() {
+      // 初始化内容区域
+      const contentSections = document.querySelectorAll('.content-section');
+      contentSections.forEach(section => {
+        section.style.display = 'none';
+      });
+      
+      // 默认显示控制台
+      const defaultSection = document.getElementById('dashboard-section');
+      if (defaultSection) {
+        defaultSection.style.display = 'block';
+      }
+      
+      // 处理侧边栏菜单点击
+      const menuItems = document.querySelectorAll('.sidebar-menu .menu-item');
+      menuItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          // 移除所有菜单项的active类
+          menuItems.forEach(i => i.classList.remove('active'));
+          
+          // 给当前点击的菜单项添加active类
+          this.classList.add('active');
+          
+          // 获取要显示的内容区域
+          const sectionId = this.getAttribute('data-section') + '-section';
+          
+          // 隐藏所有内容区域
+          contentSections.forEach(section => {
+            section.style.display = 'none';
+          });
+          
+          // 显示选中的内容区域
+          const targetSection = document.getElementById(sectionId);
+          if (targetSection) {
+            targetSection.style.display = 'block';
+            
+            // 如果是留言管理，刷新留言列表
+            if (sectionId === 'messages-section') {
+              loadMessages();
+            }
+          }
+          
+          // 如果是移动端，点击后自动收起侧边栏
+          if (window.innerWidth <= 992) {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            if (sidebar && mainContent) {
+              sidebar.classList.remove('show');
+              mainContent.classList.remove('expand');
+            }
+          }
+        });
+      });
       // 侧边栏切换
       const menuToggle = document.getElementById('menuToggle');
       const sidebar = document.getElementById('sidebar');
@@ -667,48 +816,107 @@
       
       // 退出登录
       const logoutBtn = document.getElementById('logoutBtn');
-      logoutBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (confirm('确定要退出登录吗？')) {
-          localStorage.removeItem('admin_token');
-          window.location.href = 'login.html';
-        }
-      });
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (confirm('确定要退出登录吗？')) {
+            // 清除所有登录相关的 localStorage 项
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('adminUsername');
+            localStorage.removeItem('admin_token');
+            // 重定向到登录页
+            window.location.href = 'login.html';
+          }
+        });
+      }
       
       // 检查登录状态
       function checkAuth() {
-        const token = localStorage.getItem('admin_token');
-        if (!token) {
-          window.location.href = 'login.html';
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        const adminUsername = localStorage.getItem('adminUsername');
+        
+        if (!isLoggedIn || !adminUsername) {
+          // 显示未登录提示
+          showNotification('请先登录系统', 'warning');
+          // 2秒后跳转到登录页
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 2000);
+          return false;
+        } else {
+          // 更新页面上的用户名显示
+          const usernameDisplay = document.getElementById('admin-username');
+          if (usernameDisplay) {
+            usernameDisplay.textContent = adminUsername;
+          }
+          return true;
         }
+      }
+      
+      // 更新统计信息
+      function updateStats() {
+        const totalMessages = allMessages.length;
+        const pendingCount = allMessages.filter(m => m.status === 'pending').length;
+        const approvedCount = allMessages.filter(m => m.status === 'approved').length;
+        const rejectedCount = allMessages.filter(m => m.status === 'rejected').length;
+        
+        // 更新统计卡片
+        document.getElementById('totalMessages').textContent = totalMessages;
+        document.getElementById('pendingCount').textContent = pendingCount;
+        document.getElementById('approvedCount').textContent = approvedCount;
+        document.getElementById('rejectedCount').textContent = rejectedCount;
       }
       
       // 加载所有留言
       async function loadMessages() {
+        // 检查登录状态
+        if (!checkAuth()) return;
+        
         try {
-          const response = await fetch('/api/admin/messages', {
-            headers: {
-              'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
+          // 显示加载中状态
+          const messageList = document.getElementById('messageList');
+          if (messageList) {
+            messageList.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">加载中，请稍候...</td></tr>';
+          }
+          
+          // 这里使用模拟数据，实际项目中应该调用API
+          // 模拟API请求延迟
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // 模拟返回的数据
+          const mockMessages = [
+            {
+              id: 1,
+              name: '访客1',
+              email: 'guest1@example.com',
+              message: '这是一条测试留言',
+              status: 'pending',
+              createdAt: new Date().toISOString(),
+              ip: '127.0.0.1'
+            },
+            {
+              id: 2,
+              name: '访客2',
+              email: 'guest2@example.com',
+              message: '这是另一条测试留言',
+              status: 'approved',
+              createdAt: new Date(Date.now() - 86400000).toISOString(), // 昨天
+              ip: '127.0.0.1'
             }
-          });
+          ];
           
-          if (response.status === 401) {
-            // 未授权，跳转到登录页
-            window.location.href = 'login.html';
-            return;
-          }
+          // 更新全局消息列表
+          allMessages = mockMessages;
           
-          const data = await response.json();
+          // 渲染消息列表
+          renderMessages(allMessages);
           
-          if (!response.ok) {
-            throw new Error(data.error || '加载留言失败');
-          }
-          
-          renderMessages(data.data || []);
+          // 更新统计信息
+          updateStats();
           
         } catch (error) {
           console.error('加载留言失败:', error);
-          alert('加载留言失败: ' + error.message);
+          showNotification('加载留言失败: ' + error.message, 'error');
         }
       }
       
@@ -805,9 +1013,140 @@
         }
       }
       
+      // 添加新留言
+      async function addMessage() {
+        if (!checkAuth()) return;
+        
+        const messageContent = prompt('请输入留言内容:');
+        if (!messageContent) return;
+        
+        try {
+          // 显示加载状态
+          showNotification('正在添加留言...', 'info');
+          
+          // 模拟API调用延迟
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // 创建新留言对象
+          const newMessage = {
+            id: Date.now(), // 使用时间戳作为临时ID
+            name: '管理员',
+            email: 'admin@example.com',
+            message: messageContent,
+            status: 'approved',
+            created_at: new Date().toISOString(),
+            ip: '127.0.0.1',
+            is_admin_reply: true
+          };
+          
+          // 添加到消息列表
+          allMessages.unshift(newMessage);
+          
+          // 更新UI
+          renderMessages(allMessages);
+          updateStats();
+          
+          showNotification('留言添加成功', 'success');
+          
+        } catch (error) {
+          console.error('添加留言失败:', error);
+          showNotification('添加留言失败: ' + error.message, 'error');
+        }
+      }
+      
+      // 查看留言详情
+      function viewMessage(messageId) {
+        const message = allMessages.find(m => m.id === messageId);
+        if (!message) {
+          showNotification('未找到该留言', 'error');
+          return;
+        }
+        
+        // 创建详情弹窗
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0,0,0,0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1000;
+          padding: 20px;
+        `;
+        
+        modal.innerHTML = `
+          <div style="background: white; border-radius: 8px; max-width: 600px; width: 100%; max-height: 80vh; overflow-y: auto;">
+            <div style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+              <h5 style="margin: 0;">留言详情 #${message.id}</h5>
+              <button id="closeModal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div style="padding: 20px;">
+              <div style="margin-bottom: 15px;">
+                <strong>留言人：</strong> ${message.name || '匿名用户'}
+              </div>
+              <div style="margin-bottom: 15px;">
+                <strong>邮箱：</strong> ${message.email || '未提供'}
+              </div>
+              <div style="margin-bottom: 15px;">
+                <strong>IP：</strong> ${message.ip || '未知'}
+              </div>
+              <div style="margin-bottom: 15px;">
+                <strong>留言时间：</strong> ${formatDate(message.created_at)}
+              </div>
+              <div style="margin-bottom: 15px;">
+                <strong>状态：</strong>
+                <span class="badge ${message.status === 'approved' ? 'badge-success' : 'badge-secondary'}" style="padding: 3px 8px; border-radius: 12px; font-size: 12px;">
+                  ${message.status === 'approved' ? '已显示' : '已隐藏'}
+                </span>
+              </div>
+              <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 4px;">
+                <strong>留言内容：</strong>
+                <div style="margin-top: 10px; white-space: pre-wrap;">${escapeHtml(message.message || '')}</div>
+              </div>
+              <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button id="deleteMessageBtn" class="btn btn-danger">
+                  <i class="fas fa-trash"></i> 删除留言
+                </button>
+                <button id="closeBtn" class="btn btn-secondary">
+                  关闭
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // 关闭弹窗
+        const closeModal = () => document.body.removeChild(modal);
+        modal.querySelector('#closeModal').addEventListener('click', closeModal);
+        modal.querySelector('#closeBtn').addEventListener('click', closeModal);
+        
+        // 删除留言
+        modal.querySelector('#deleteMessageBtn').addEventListener('click', () => {
+          if (confirm('确定要删除这条留言吗？此操作不可撤销！')) {
+            deleteMessage(messageId);
+            closeModal();
+          }
+        });
+      }
+      
       // 初始化
       checkAuth();
       loadMessages();
+      
+      // 添加事件监听器
+      document.addEventListener('click', function(e) {
+        // 点击添加留言按钮
+        if (e.target.id === 'addMessageBtn' || e.target.closest('#addMessageBtn')) {
+          addMessage();
+        }
+      });
       
       // 全局函数，用于在按钮点击时调用
       window.approveMessage = async function(messageId) {

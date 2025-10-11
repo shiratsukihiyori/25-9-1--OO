@@ -126,22 +126,35 @@ textarea:focus {
     transition: var(--transition);
 }
 
-.submit-btn:hover {
-    background-color: #e91e63;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* 留言列表样式 */
 .messages-container {
-    background: white;
+    background-color: var(--card-bg);
     padding: 25px;
-    border-radius: 15px;
+    border-radius: var(--border-radius);
     box-shadow: var(--shadow);
+    transition: var(--transition);
 }
 
-.messages-list {
-    margin-top: 20px;
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.refresh-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 50%;
+    transition: var(--transition);
+}
+
+.refresh-btn:hover {
+    background-color: var(--background-color);
+    transform: rotate(180deg);
 }
 
 .message-card {
@@ -161,14 +174,40 @@ textarea:focus {
 .message-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 8px;
     font-size: 0.9em;
     color: #666;
 }
 
-.message-name {
-    font-weight: bold;
-    color: var(--primary-color);
+.message-content {
+    line-height: 1.6;
+    color: var(--text-color);
+    white-space: pre-line;
+    word-break: break-word;
+}
+
+.admin-reply-badge {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.admin-reply-badge i {
+    margin-right: 3px;
+}
+
+/* 加载动画 */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.fa-spin {
+    animation: spin 1s linear infinite;
 }
 
 .message-time {
@@ -180,20 +219,17 @@ textarea:focus {
     line-height: 1.5;
 }
 
-.no-messages {
+.no-messages,
+.loading-messages,
+.error-message {
     text-align: center;
     padding: 40px 20px;
-    color: #999;
-}
-
-.no-messages i {
-    font-size: 48px;
-    margin-bottom: 15px;
+    grid-column: 1 / -1;
     color: var(--secondary-color);
 }
 
-/* 通知样式 */
-.notification {
+.loading-messages i {
+    margin-right: 10px;
     position: fixed;
     bottom: 20px;
     right: 20px;

@@ -3,8 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "wrangler pages dev .",
-    "build": "echo 'Build completed'"
+    "dev": "wrangler pages dev public",
+    "build": "npm run db:generate",
+    "start": "wrangler pages dev public",
+    "generate": "node scripts/generate-messages.js",
+    "db:init": "node scripts/init-db.js",
+    "db:generate": "node scripts/generate-messages.js",
+    "preview": "wrangler pages dev public",
+    "deploy": "wrangler pages deploy public"
+  },
+  "dependencies": {
+    "sql.js": "^1.8.0"
   },
   "devDependencies": {
     "wrangler": "^3.0.0"

@@ -2,6 +2,7 @@
 const messageForm = document.getElementById('messageForm');
 const messagesList = document.getElementById('messagesList');
 const notification = document.getElementById('notification');
+const refreshButton = document.getElementById('refreshMessages');
 
 // 主题切换按钮
 const themeSwitch = document.createElement('div');
@@ -9,58 +10,25 @@ themeSwitch.className = 'theme-switch';
 themeSwitch.innerHTML = '<i class="fas fa-moon"></i>';
 document.body.appendChild(themeSwitch);
 
-// 初始化留言数据（使用网站范围的存储）
-let messages = JSON.parse(localStorage.getItem('hiyori_guestbook_messages')) || [];
+// 消息数据路径
+const MESSAGES_JSON_PATH = '/data/messages.json';
+
+// 全局消息数组
+let messages = [];
 
 // 获取当前语言
 function getCurrentLanguage() {
-  const path = window.location.pathname;
-  if (path.includes('/en/')) return 'en';
-  if (path.includes('/ja/')) return 'ja';
-  return 'zh'; // 默认为中文
+  return window.i18n ? window.i18n.currentLang : 'zh';
 }
-
-// 本地化文本
-const i18n = {
-  zh: {
-    noMessages: '还没有留言，快来成为第一个留言的人吧~',
-    messageSent: '留言已发布！',
-    nameRequired: '请填写昵称和留言内容',
-    today: '今天',
-    yesterday: '昨天',
-    daysAgo: '天前',
-    justNow: '刚刚',
-    minutesAgo: '分钟前',
-    hoursAgo: '小时前'
-  },
-  en: {
-    noMessages: 'No messages yet. Be the first to leave a message~',
-    messageSent: 'Message sent!',
-    nameRequired: 'Please enter your name and message',
-    today: 'Today',
-    yesterday: 'Yesterday',
-    daysAgo: ' days ago',
-    justNow: 'Just now',
-    minutesAgo: ' minutes ago',
-    hoursAgo: ' hours ago'
-  },
-  ja: {
-    noMessages: 'まだメッセージがありません。最初のメッセージを送ってみましょう～',
-    messageSent: 'メッセージを送信しました！',
-    nameRequired: 'お名前とメッセージを入力してください',
-    today: '今日',
-    yesterday: '昨日',
-    daysAgo: '日前',
-    justNow: 'たった今',
-    minutesAgo: '分前',
-    hoursAgo: '時間前'
-  }
-};
 
 // 获取本地化文本
 function t(key) {
-  const lang = getCurrentLanguage();
-  return i18n[lang]?.[key] || i18n.zh[key] || key;
+  if (window.i18n && window.i18n.translations[window.i18n.currentLang]) {
+    return window.i18n.translations[window.i18n.currentLang][key] || 
+           window.i18n.translations[window.i18n.defaultLang][key] || 
+           key;
+  }
+  return key;
 }
 
 // 初始化主题
@@ -87,24 +55,32 @@ function updateThemeIcon(theme) {
     const icon = themeSwitch.querySelector('i');
     if (theme === 'dark') {
         icon.className = 'fas fa-sun';
-    } else {
         icon.className = 'fas fa-moon';
     }
 }
 
 // 显示通知
-function showNotification(message, duration = 3000) {
-    notification.textContent = message;
-    notification.classList.add('show');
+function showNotification(message, type = 'success') {
+    const notification = document.getElementById('notification');
+    notification.textContent = typeof message === 'string' ? t(message) : '';
+    notification.className = `notification ${type}`;
+    notification.style.display = 'block';
     
+    // 3秒后自动隐藏
     setTimeout(() => {
-        notification.classList.remove('show');
-    }, duration);
+        notification.style.opacity = '0';
+        setTimeout(() => {
+            notification.style.display = 'none';
+            notification.style.opacity = '1';
+        }, 500);
+    }, 3000);
 }
 
 // 添加表情到输入框
 function addEmojiToInput(emoji) {
     const messageInput = document.getElementById('message');
+    if (!messageInput) return;
+    
     const startPos = messageInput.selectionStart;
     const endPos = messageInput.selectionEnd;
     const currentValue = messageInput.value;
@@ -151,45 +127,101 @@ function formatDate(dateString) {
 }
 
 // 渲染留言列表
-function renderMessages() {
-    if (messages.length === 0) {
+async function renderMessages() {
+    try {
+        // 显示加载中
         messagesList.innerHTML = `
-            <div class="no-messages">
-                <i class="fas fa-comment-slash"></i>
-                <p>${t('noMessages')}</p>
+            <div class="loading-messages">
+                <i class="fas fa-spinner fa-spin"></i> ${t('loadingMessages')}
             </div>`;
-        return;
-    }
-    
-    messagesList.innerHTML = messages.map((msg, index) => `
-        <div class="message-card" data-id="${index}">
-            <div class="message-header">
-                <span class="message-name">${msg.name}</span>
-                <span class="message-time">${formatDate(msg.timestamp)}</span>
+            
+        // 从静态JSON文件加载数据
+        const response = await fetch(MESSAGES_JSON_PATH);
+        
+        if (!response.ok) {
+            throw new Error(`加载失败: ${response.status} ${response.statusText}`);
+        }
+        
+        messages = await response.json();
+        
+        if (!Array.isArray(messages)) {
+            throw new Error('数据格式不正确');
+        }
+        
+        console.log(`成功加载 ${messages.length} 条留言`);
+        
+        if (messages.length === 0) {
+            messagesList.innerHTML = `
+                <div class="no-messages">
+                    <i class="fas fa-comment-slash"></i>
+                    <p>${t('noMessages')}</p>
+                </div>`;
+            return;
+        }
+        
+        // 按时间倒序排序
+        messages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        messagesList.innerHTML = messages.map(msg => `
+            <div class="message-card" data-id="${msg.id}">
+                <div class="message-header">
+                    <span class="message-name">${msg.name}</span>
+                    <span class="message-time">${formatDate(msg.created_at)}</span>
+                </div>
+                <div class="message-content">${msg.message ? msg.message.replace(/\n/g, '<br>') : ''}</div>
+                ${msg.is_admin_reply ? `<div class="admin-reply-badge"><i class="fas fa-shield-alt"></i> ${t('adminReply')}</div>` : ''}
             </div>
-            <div class="message-content">${msg.message}</div>
-        </div>
-    `).join('');
+        `).join('');
+    } catch (error) {
+        console.error('加载留言失败:', error);
+        messagesList.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>${t('loadError')} <a href="javascript:location.reload()">${t('refreshPage')}</a></p>
+                <p class="error-details" style="font-size: 12px; color: #999; margin-top: 5px;">${error.message}</p>
+            </div>`;
+    }
 }
 
 // 添加新留言
-function addMessage(name, email, message) {
-    const newMessage = {
-        name: name.trim(),
-        email: email.trim(),
-        message: message.trim(),
-        timestamp: new Date().toISOString()
-    };
-    
-    messages.unshift(newMessage);
-    // 保存到共享存储，使用网站范围的键名
-  localStorage.setItem('hiyori_guestbook_messages', JSON.stringify(messages));
-    
-    // 重新渲染留言列表
-    renderMessages();
-    
-    // 显示成功消息
-  showNotification(t('messageSent'));
+async function addMessage(name, email, message) {
+    try {
+        // 显示加载状态
+        showNotification(t('sendingMessage'), 'info');
+        
+        // 创建新留言对象
+        const newMessage = {
+            id: Date.now(), // 临时ID
+            name: name.trim(),
+            email: email.trim() || 'guest@example.com',
+            message: message.trim(),
+            status: 'pending',
+            created_at: new Date().toISOString(),
+            is_admin_reply: false
+        };
+        
+        // 添加到本地数组
+        messages.unshift(newMessage);
+        
+        // 更新UI
+        await renderMessages();
+        
+        // 显示成功消息
+        showNotification(t('messageSent'));
+        
+        // 清空表单
+        if (messageForm) {
+            messageForm.reset();
+        }
+        
+        // 注意：在实际部署时，您需要实现一个API端点来处理留言提交
+        // 或者使用表单提交到表单处理服务（如Formspree、Netlify Forms等）
+        console.warn('留言已添加到本地，但需要配置后端API以保存到数据库');
+        
+    } catch (error) {
+        console.error('发送留言失败:', error);
+        showNotification(t('submitError'), 'error');
+    }
 }
 
 // 检查节日
@@ -344,9 +376,9 @@ function showHolidayPopup(title, message, daysLeft = 0) {
             <h3>${title}</h3>
             <p>${message}</p>
             <div class="holiday-popup-actions">
-                <button id="closeHolidayPopup">关闭</button>
+                <button id="closeHolidayPopup">${t('close')}</button>
                 <label>
-                    <input type="checkbox" id="dontShowAgain"> 今天不再显示
+                    <input type="checkbox" id="dontShowAgain"> ${t('dontShowAgain')}
                 </label>
             </div>
         </div>
@@ -444,88 +476,62 @@ function showHolidayPopup(title, message, daysLeft = 0) {
 
 // 初始化事件监听
 function initEventListeners() {
-    if (!messageForm) return;
-    
     // 表单提交
-    messageForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const nameInput = document.getElementById('name');
-        const emailInput = document.getElementById('email');
-        const messageInput = document.getElementById('message');
-        
-        // 验证输入
-  if (!nameInput.value.trim() || !messageInput.value.trim()) {
-    showNotification(t('nameRequired'));
-    return;
-  }      return;
-        }
-        
-        // 添加留言
-        addMessage(nameInput.value, emailInput.value, messageInput.value);
-        
-{{ ... }}
-        // 清空表单
-        messageInput.value = '';
-        emailInput.value = '';
-    });
-    
-    // 表情点击
-    document.querySelectorAll('.emoji').forEach(emoji => {
-        emoji.addEventListener('click', () => {
-            addEmojiToInput(emoji.getAttribute('data-emoji'));
+    if (messageForm) {
+        messageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value || '';
+            const message = document.getElementById('message').value;
+            
+            if (!name || !message) {
+                showNotification(t('nameRequired'));
+                return;
+            }
+            
+            const submitBtn = messageForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            try {
+                // 禁用提交按钮
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发送中...';
+                
+                await addMessage(name, email, message);
+                
+                // 清空表单
+                messageForm.reset();
+                showNotification(t('messageSent'));
+                
+                // 重新加载留言列表
+                await renderMessages();
+                
+            } catch (error) {
+                console.error('提交留言失败:', error);
+                showNotification('提交留言失败，请稍后重试');
+            } finally {
+                // 恢复提交按钮
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
         });
-    });
+    }
     
     // 主题切换
     themeSwitch.addEventListener('click', toggleTheme);
-}
-
-// 检查节日
-function checkHoliday() {
-    const now = new Date();
-    const month = now.getMonth() + 1;
-    const date = now.getDate();
     
-    const holidays = {
-        '0101': { title: '元旦快乐', message: '🎉 新年快乐！愿新的一年充满欢乐和惊喜！', daysBefore: 3 },
-        '0214': { title: '情人节', message: '❤️ 情人节快乐！愿你的每一天都充满爱～', daysBefore: 3 },
-        '0314': { title: '白色情人节', message: '🌸 白色情人节快乐！', daysBefore: 3 },
-        '0401': { title: '愚人节', message: '🎭 今天是愚人节，小心被整蛊哦～', daysBefore: 1 },
-        '0501': { title: '劳动节', message: '👷 劳动节快乐！感谢你的辛勤付出～', daysBefore: 3 },
-        '0601': { title: '儿童节', message: '🎈 儿童节快乐！保持童心，永远年轻～', daysBefore: 3 },
-        '1001': { title: '国庆节', message: '🇨🇳 国庆节快乐！', daysBefore: 5 },
-        '1225': { title: '圣诞节', message: '🎄 圣诞快乐！愿你的生活充满温暖和喜悦～', daysBefore: 7 },
-        '1231': { title: '除夕', message: '🎆 新年快乐！愿新的一年万事如意～', daysBefore: 3 }
-    };
+    // 表情点击事件
+    document.querySelectorAll('.emoji').forEach(emoji => {
+        emoji.addEventListener('click', (e) => {
+            e.preventDefault();
+            const emojiChar = emoji.getAttribute('data-emoji');
+            addEmojiToInput(emojiChar);
+        });
+    });
     
-    // 检查今天是否是节日或节日前几天
-    for (const [key, holiday] of Object.entries(holidays)) {
-        const holidayMonth = parseInt(key.substring(0, 2));
-        const holidayDate = parseInt(key.substring(2));
-        
-        // 检查是否是节日当天
-        if (month === holidayMonth && date === holidayDate) {
-            showHolidayPopup(holiday.title, holiday.message);
-            return;
-        }
-        
-        // 检查是否是节日前几天
-        for (let i = 1; i <= holiday.daysBefore; i++) {
-            const checkDate = new Date(now);
-            checkDate.setDate(date + i);
-            
-            if (checkDate.getMonth() + 1 === holidayMonth && 
-                checkDate.getDate() === holidayDate) {
-                showHolidayPopup(
-                    `即将到来：${holiday.title}`, 
-                    `再${i}天就是${holiday.title}啦！${holiday.message}`,
-                    i
-                );
-                return;
-            }
-        }
-    }
+    // 检查节日
+    checkHoliday();
 }
 
 // 显示节日弹窗
