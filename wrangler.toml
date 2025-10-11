@@ -1,23 +1,28 @@
 name = "guestbook"
 compatibility_date = "2023-10-11"
 
-# Cloudflare Pages 配置
+# 构建命令和输出目录
 [build]
 command = "npm run build"
 publish = "public"
-
-# 构建输出目录
-[site]
-bucket = "public"
 
 # 环境变量
 [vars]
 NODE_ENV = "production"
 
-# 路由规则（如果使用单页应用）
+# 构建输出目录（Cloudflare Pages 专用）
+[site]
+bucket = "public"
+
+# 静态资源处理
+[[build.upload.rules]]
+glob = "**/*"
+type = "ESModule"
+
+# 路由规则
 [[routes]]
 pattern = "/*"
-status = 200
+script_name = "_worker.js"
 
 # 静态资源缓存
 [[headers]]
@@ -29,7 +34,7 @@ for = "/*"
 
 # 排除不需要的文件
 [build.upload]
-exclude = ["node_modules/**"]
+exclude = ["node_modules/**", "**/.*"]
 
 # 路由配置
 [[routes]]
