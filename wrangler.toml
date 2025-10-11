@@ -1,6 +1,10 @@
 name = "guestbook"
 compatibility_date = "2023-10-11"
-main = "_worker.js"
 
-[site]
-bucket = "."
+# 使用兼容性标志
+[compatibility_flags]
+# 启用 Node.js 兼容性
+nodejs_compat = true
+
+# 构建输出目录
+pages_build_output_dir = "."
