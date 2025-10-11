@@ -2,25 +2,9 @@
 name = "guestbook"
 compatibility_date = "2023-10-11"
 
-# 构建输出目录（必须）
+# 构建输出目录
 pages_build_output_dir = "."
 
-# 构建命令（可选）
-[build]
-command = "npm install && npm run build"
-publish = "."
-
 # 环境变量（在 Cloudflare Dashboard 中设置）
-# - ADMIN_API_KEY: 用于管理后台认证
-# - DB: D1 数据库绑定（在 Pages 设置中绑定）
-
-# 重定向规则（在 Pages 设置中配置更好）
-[[redirects]]
-from = "/admin"
-to = "/admin/"
-status = 301
-
-[[redirects]]
-from = "/guestbook"
-to = "/guestbook-new.html"
-status = 301
+# ADMIN_API_KEY: 用于管理后台认证
+# DB: D1 数据库绑定
