@@ -1,0 +1,37 @@
+name = "guestbook"
+main = "_worker.js"
+compatibility_date = "2023-10-11"
+
+[build]
+command = ""
+publish = "."
+
+# D1 数据库配置
+[[d1_databases]]
+binding = "DB"
+database_name = "guestbook-db"
+database_id = ""  # 部署后从 Cloudflare Dashboard 获取并填写
+
+# Pages 配置
+[site]
+bucket = "."
+entry-point = "."
+
+# 环境变量
+[vars]
+NODE_ENV = "production"
+
+# 构建命令
+[build.environment]
+NODE_VERSION = "16"
+
+# 路由规则
+[[routes]]
+pattern = "/api/*"
+script_name = "_worker"
+
+# 静态资源缓存
+[[headers]]
+for = "/*"
+[headers.values]
+"Cache-Control" = "public, max-age=3600"
