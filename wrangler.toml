@@ -1,5 +1,6 @@
 name = "guestbook"
 compatibility_date = "2023-10-11"
+main = "_worker.js"
 
 # 使用兼容性标志
 [compatibility_flags]
@@ -8,3 +9,12 @@ nodejs_compat = true
 
 # 构建输出目录
 pages_build_output_dir = "."
+
+# 站点配置
+[site]
+bucket = "."
+
+# D1 数据库配置（如果使用）
+[[d1_databases]]
+binding = "DB"
+database_name = "guestbook-db"
