@@ -1,6 +1,6 @@
 // _worker.js - Cloudflare Workers 入口文件
 
-// 使用 CommonJS 语法
+// 处理请求
 addEventListener('fetch', event => {
   event.respondWith(handleRequest(event));
 });
@@ -26,24 +26,34 @@ async function handleRequest(event) {
         });
       }
 
-      // 动态导入API处理函数
+      // 导入API处理函数
       const { onRequest } = await import('./functions/api/[[path]].js');
       
+      // 创建环境变量
+      const env = {
+        DB: globalThis.DB, // 从全局变量获取DB绑定
+        ADMIN_API_KEY: globalThis.ADMIN_API_KEY // 从全局变量获取管理密钥
+      };
+      
       // 处理API请求
-      return await onRequest({
+      const response = await onRequest({
         request: event.request,
-        env: {
-          DB: env.DB
-          // 添加其他需要的环境变量
-        },
+        env: env,
         // 添加其他需要的上下文
       });
+      
+      // 添加CORS头到响应
+      for (const [key, value] of Object.entries(corsHeaders)) {
+        response.headers.set(key, value);
+      }
+      
+      return response;
     } catch (error) {
       // 错误处理
-      console.error('Error:', error);
+      console.error('API Error:', error);
       return new Response(JSON.stringify({
         error: '服务器内部错误',
-        details: error.message
+        details: process.env.NODE_ENV === 'development' ? error.message : ''
       }), { 
         status: 500,
         headers: {
