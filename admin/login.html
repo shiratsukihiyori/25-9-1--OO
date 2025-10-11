@@ -200,8 +200,8 @@
         this.classList.toggle('fa-eye-slash');
       });
 
-      // 处理登录表单提交
-      loginForm.addEventListener('submit', async function(e) {
+      // 登录表单提交
+      loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
         
         const username = usernameInput.value.trim();
@@ -209,50 +209,37 @@
         
         // 验证输入
         if (!username) {
-          showError('usernameError', '请输入用户名');
+          showError('username-error', '请输入用户名');
           return;
         }
         
         if (!password) {
-          showError('passwordError', '请输入密码');
+          showError('password-error', '请输入密码');
           return;
         }
         
-        // 显示加载状态
+        // 禁用登录按钮
         loginBtn.disabled = true;
-        loginText.style.display = 'none';
-        loginSpinner.style.display = 'inline';
+        loginBtn.textContent = '登录中...';
         
-        try {
-          // 发送登录请求
-          const response = await fetch('/api/admin/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
-          });
-          
-          const data = await response.json();
-          
-          if (!response.ok) {
-            throw new Error(data.error || '登录失败，请检查用户名和密码');
-          }
-          
-          // 保存 token 到 localStorage
-          localStorage.setItem('admin_token', data.token);
-          
-          // 跳转到管理后台
-          window.location.href = '/admin/dashboard.html';
-          
-        } catch (error) {
-          console.error('登录失败:', error);
-          showError('passwordError', error.message);
-        } finally {
-          // 重置按钮状态
+        // 从环境变量中获取凭据
+        const adminUsername = window.APP_CONFIG?.adminUsername || 'admin';
+        const adminPassword = window.APP_CONFIG?.adminPassword || 'admin123';
+        
+        // 验证用户名和密码
+        if (username === adminUsername && password === adminPassword) {
+          // 登录成功，保存登录状态到localStorage
+          localStorage.setItem('isLoggedIn', 'true');
+          // 保存管理员用户名，以便在其他页面显示
+          localStorage.setItem('adminUsername', username);
+          // 跳转到管理页面
+          window.location.href = 'index.html';
+        } else {
+          // 登录失败，显示错误信息
+          showError('login-error', '登录失败，用户名或密码错误');
+          // 恢复登录按钮
           loginBtn.disabled = false;
-          loginText.style.display = 'inline';
-          loginSpinner.style.display = 'none';
+          loginBtn.textContent = '登录';
         }
       });
       
@@ -278,8 +265,12 @@
       
       // 自动填充测试凭据（仅开发环境）
       if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        usernameInput.value = 'hiyori';
-        passwordInput.value = 'hiyori';
+        // 从环境变量中获取凭据，如果不存在则使用默认值
+        const defaultUsername = window.APP_CONFIG?.adminUsername || 'admin';
+        const defaultPassword = window.APP_CONFIG?.adminPassword || 'admin123';
+        
+        usernameInput.value = defaultUsername;
+        passwordInput.value = defaultPassword;
       }
     });
   </script>
