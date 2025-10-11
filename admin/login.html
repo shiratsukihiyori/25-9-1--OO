@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理员登录 | 白月 日和</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'ZQKJingYaGuPu', 'ZCOOL KuaiLe', 'Sawarabi Gothic', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: url('https://www.loliapi.com/acg/') no-repeat center center fixed;
+      background-size: cover;
+      color: #333;
+    }
+
+    .login-container {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 30px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .login-header h1 {
+      color: #ff6b9e;
+      margin: 0 0 10px 0;
+    }
+
+    .login-header p {
+      color: #666;
+      margin: 0;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    .form-control:focus {
+      border-color: #ff6b9e;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255, 107, 158, 0.2);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #ff6b9e;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #e64a7e;
+    }
+
+    .btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .error-message {
+      color: #e74c3c;
+      margin-top: 5px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .forgot-password {
+      text-align: right;
+      margin-top: 10px;
+    }
+
+    .forgot-password a {
+      color: #666;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .forgot-password a:hover {
+      color: #ff6b9e;
+      text-decoration: underline;
+    }
+
+    .back-to-home {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .back-to-home a {
+      color: #666;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .back-to-home a:hover {
+      color: #ff6b9e;
+    }
+
+    .back-to-home i {
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <h1><i class="fas fa-lock"></i> 管理员登录</h1>
+      <p>白月 日和 管理后台</p>
+    </div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">用户名</label>
+        <input type="text" id="username" class="form-control" required>
+        <div id="usernameError" class="error-message"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">密码</label>
+        <div style="position: relative;">
+          <input type="password" id="password" class="form-control" required>
+          <i id="togglePassword" class="fas fa-eye" 
+             style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #999;">
+          </i>
+        </div>
+        <div id="passwordError" class="error-message"></div>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" id="loginBtn" class="btn">
+          <span id="loginText">登录</span>
+          <span id="loginSpinner" style="display: none;">
+            <i class="fas fa-spinner fa-spin"></i> 登录中...
+          </span>
+        </button>
+      </div>
+
+      <div class="forgot-password">
+        <a href="#" id="forgotPassword">忘记密码？</a>
+      </div>
+    </form>
+
+    <div class="back-to-home">
+      <a href="/"><i class="fas fa-arrow-left"></i> 返回首页</a>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const loginForm = document.getElementById('loginForm');
+      const usernameInput = document.getElementById('username');
+      const passwordInput = document.getElementById('password');
+      const togglePassword = document.getElementById('togglePassword');
+      const loginBtn = document.getElementById('loginBtn');
+      const loginText = document.getElementById('loginText');
+      const loginSpinner = document.getElementById('loginSpinner');
+      const forgotPassword = document.getElementById('forgotPassword');
+
+      // 切换密码可见性
+      togglePassword.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+      });
+
+      // 处理登录表单提交
+      loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+        
+        // 验证输入
+        if (!username) {
+          showError('usernameError', '请输入用户名');
+          return;
+        }
+        
+        if (!password) {
+          showError('passwordError', '请输入密码');
+          return;
+        }
+        
+        // 显示加载状态
+        loginBtn.disabled = true;
+        loginText.style.display = 'none';
+        loginSpinner.style.display = 'inline';
+        
+        try {
+          // 发送登录请求
+          const response = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+          });
+          
+          const data = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(data.error || '登录失败，请检查用户名和密码');
+          }
+          
+          // 保存 token 到 localStorage
+          localStorage.setItem('admin_token', data.token);
+          
+          // 跳转到管理后台
+          window.location.href = '/admin/dashboard.html';
+          
+        } catch (error) {
+          console.error('登录失败:', error);
+          showError('passwordError', error.message);
+        } finally {
+          // 重置按钮状态
+          loginBtn.disabled = false;
+          loginText.style.display = 'inline';
+          loginSpinner.style.display = 'none';
+        }
+      });
+      
+      // 忘记密码
+      forgotPassword.addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('请联系系统管理员重置密码');
+      });
+      
+      // 显示错误信息
+      function showError(elementId, message) {
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.textContent = message;
+          element.style.display = 'block';
+          
+          // 3秒后隐藏错误信息
+          setTimeout(() => {
+            element.style.display = 'none';
+          }, 3000);
+        }
+      }
+      
+      // 自动填充测试凭据（仅开发环境）
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        usernameInput.value = 'hiyori';
+        passwordInput.value = 'hiyori';
+      }
+    });
+  </script>
+</body>
+</html>

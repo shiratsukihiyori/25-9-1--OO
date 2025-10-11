@@ -22,8 +22,10 @@
   <meta property="og:locale:alternate" content="ja-JP" />
   <title>Moonlit Home | Shiratsuki Hiyori</title>
   <link rel="stylesheet" href="styles-en.css">
-  <!-- 引入 Font Awesome 图标库 -->
+  <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
+  <script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js"></script>
 
   <!-- JSON-LD: WebPage for en index -->
   <script type="application/ld+json">
@@ -43,9 +45,14 @@
   </script>
 
   <style>
+    @font-face {
+      font-family: 'ZQKJingYaGuPu';
+      src: url('../郑庆科静雅体-古朴版.ttf') format('truetype');
+      font-display: swap;
+    }
     body {
       margin: 0;
-      font-family: 'ZCOOL KuaiLe', 'Sawarabi Gothic', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans', sans-serif;
+      font-family: 'ZQKJingYaGuPu', 'ZCOOL KuaiLe', 'Sawarabi Gothic', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans', sans-serif;
       background: url('https://www.loliapi.com/acg/') no-repeat center center fixed;
       background-size: cover;
       color: #333;
@@ -54,12 +61,28 @@
       cursor: url('/static/css/furina/normal.cur'), auto;
     }
 
-    /* 日系手绘樱花鼠标指针，所有页面统一使用 */
-    body {
-      cursor: url('/static/css/furina/normal.cur'), auto;
-    }
   </style>
   <style>
+    /* Main content area cards with 50% transparency, navigation bar and body background remain unchanged */
+    .container,
+    .announcements,
+    .profile,
+    .socials {
+      background: rgba(255,255,255,0.5) !important;
+      /* Retain original borders and shadows if needed */
+    }
+
+    /* 移动端调整 */
+    @media (max-width: 768px) {
+      .container,
+      .announcements,
+      .profile,
+      .socials {
+        margin: 10px;
+        padding: 15px;
+      }
+    }
+
     .modal {
       display: none; /* 默认隐藏 */
       position: fixed;
@@ -93,11 +116,12 @@
   <!-- Top Navigation Bar -->
   <nav class="navbar">
     <div class="nav-container">
-      <a href="#" class="nav-logo"> Shiratsuki Hiyori</a>
+      <a href="#" class="nav-logo">Shiratsuki Hiyori</a>
       <ul class="nav-links">
-        <li><a href="index.html" title="Back to Home page">Home</a></li>
-        <li><a href="live.html" title="Enter the live room to watch streams">Live Room</a></li>
-        <li><a href="about.html" title="View detailed introduction of Hoshihara Houtsuki">About</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="live.html">Live</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="guestbook.html">Guestbook</a></li>
         <li><a href="https://marshmallow-qa.com/f9nava8c2dh71k1" target="_blank">Marshmallow</a></li>
       </ul>
     </div>

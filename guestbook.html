@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留言板 - 白月 日和</title>
+    <link rel="stylesheet" href="css/guestbook.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-book-open"></i> 留言板</h1>
+            <p>留下你的祝福和想法，与日和一起分享快乐时光~</p>
+        </header>
+
+        <section class="message-form">
+            <h2>发表留言</h2>
+            <form id="messageForm">
+                <div class="form-group">
+                    <label for="name">昵称：</label>
+                    <input type="text" id="name" required placeholder="你的名字">
+                </div>
+                <div class="form-group">
+                    <label for="email">邮箱（可选）：</label>
+                    <input type="email" id="email" placeholder="你的邮箱（不会公开）">
+                </div>
+                <div class="form-group">
+                    <label for="message">留言内容：</label>
+                    <textarea id="message" rows="4" required placeholder="想对日和说些什么呢？"></textarea>
+                </div>
+                <div class="emoji-picker">
+                    <span>添加表情：</span>
+                    <span class="emoji" data-emoji="😊">😊</span>
+                    <span class="emoji" data-emoji="❤️">❤️</span>
+                    <span class="emoji" data-emoji="⭐">⭐</span>
+                    <span class="emoji" data-emoji="🎉">🎉</span>
+                    <span class="emoji" data-emoji="🌸">🌸</span>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i> 发送留言
+                </button>
+            </form>
+        </section>
+
+        <section class="messages-container">
+            <h2>大家的留言</h2>
+            <div class="messages-list" id="messagesList">
+                <!-- 留言将通过JavaScript动态加载 -->
+                <div class="no-messages">
+                    <i class="fas fa-comment-slash"></i>
+                    <p>还没有留言，快来成为第一个留言的人吧~</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script src="js/guestbook.js"></script>
+</body>
+</html>
