@@ -16,10 +16,11 @@ database_id = "14b03b98-a188-4e05-ba67-073d879e3779"
 [build.upload]
 format = "service-worker"
 
-[build.upload.rules]
-type = "ESModule"
+# 自定义域名配置
+# 注意：在 Cloudflare 控制台中设置自定义域名，而不是在这里
+# 这里只保留基本配置
 
-# 自定义域名
-[[routes]]
-pattern = "new.hiyori.xx.kg/*"
-script_name = "guestbook"
+# 开发服务器配置
+[dev]
+port = 8787
+local_protocol = "http"
