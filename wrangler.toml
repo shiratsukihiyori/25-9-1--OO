@@ -6,10 +6,6 @@ compatibility_date = "2023-10-11"
 [site]
 bucket = "./public"
 
-# 环境变量
-[vars]
-NODE_ENV = "production"
-
 # D1 数据库绑定
 [[d1_databases]]
 binding = "DB"

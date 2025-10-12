@@ -1,7 +1,18 @@
 // _worker.js - 使用 ES Modules 格式
+// 设置环境变量
+const NODE_ENV = 'production'; // 默认设置为生产环境
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    
+    // 设置响应头
+    const headers = {
+      'Content-Security-Policy': "default-src 'self'",
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
+    };
     
     // 处理API请求
     if (url.pathname.startsWith('/api/')) {
