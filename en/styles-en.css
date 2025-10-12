@@ -5,13 +5,15 @@
 .modal-content {
   background: #fff !important;
 }
+/* 字体文件暂时不可用，使用系统字体替代
 @font-face {
   font-family: 'ZQKJingYaGuPu';
   src: url('../郑庆科静雅体-古朴版.ttf') format('truetype');
   font-display: swap;
 }
+*/
 body, .modal-content, h1, h2, h3, h4, h5, h6, button, input, textarea {
-  font-family: 'ZQKJingYaGuPu', 'Segoe UI', Arial, sans-serif !important;
+  font-family: 'Segoe UI', Arial, sans-serif !important;
 }
 
 /* Professional Footer Styles for English Version */

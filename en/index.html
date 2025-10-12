@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,20 +44,22 @@
   </script>
 
   <style>
+    /* 字体文件暂时不可用，使用系统字体替代
     @font-face {
       font-family: 'ZQKJingYaGuPu';
       src: url('../郑庆科静雅体-古朴版.ttf') format('truetype');
       font-display: swap;
     }
+    */
     body {
       margin: 0;
-      font-family: 'ZQKJingYaGuPu', 'ZCOOL KuaiLe', 'Sawarabi Gothic', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans', sans-serif;
+      font-family: 'ZCOOL KuaiLe', 'Sawarabi Gothic', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans', sans-serif;
       background: url('https://www.loliapi.com/acg/') no-repeat center center fixed;
       background-size: cover;
       color: #333;
       min-height: 100vh;
       overflow-x: hidden;
-      cursor: url('/static/css/furina/normal.cur'), auto;
+      cursor: url('../static/css/furina/normal.cur'), auto;
     }
 
   </style>
@@ -263,7 +264,7 @@
 
   <script>
     // Site runtime (since 2025-05-01)
-{{ ... }}
+    function updateRuntime() {
       const start = new Date('2025-05-01T00:00:00+08:00');
       const now = new Date();
       let diff = Math.floor((now - start) / 1000);
@@ -273,7 +274,10 @@
       diff %= 3600;
       const mins = Math.floor(diff / 60);
       const secs = diff % 60;
-      document.getElementById('runtime-txt').textContent = `${days} days ${hours} hours ${mins} min ${secs} sec`;
+      const runtimeElement = document.getElementById('runtime-txt');
+      if (runtimeElement) {
+        runtimeElement.textContent = `${days} days ${hours} hours ${mins} min ${secs} sec`;
+      }
     }
     updateRuntime();
     setInterval(updateRuntime, 1000);

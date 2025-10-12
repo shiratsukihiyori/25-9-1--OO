@@ -26,25 +26,27 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
   <script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js"></script>
   <style>
+    /* 字体文件暂时不可用，使用系统字体替代
     @font-face {
       font-family: 'ZQKJingYaGuPu';
       src: url('../郑庆科静雅体-古朴版.ttf') format('truetype');
       font-display: swap;
     }
+    */
     body {
       margin: 0;
-      font-family: 'ZQKJingYaGuPu', 'ZCOOL KuaiLe', 'Sawarabi Gothic', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans', sans-serif;
+      font-family: 'ZCOOL KuaiLe', 'Sawarabi Gothic', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans', sans-serif;
       background: url('https://www.loliapi.com/acg/') no-repeat center center fixed;
       background-size: cover;
       color: #333;
       min-height: 100vh;
       overflow-x: hidden;
-      cursor: url('/static/css/furina/normal.cur'), auto;
+      cursor: url('../static/css/furina/normal.cur'), auto;
     }
 
     /* 日系手绘樱花鼠标指针，所有页面统一使用 */
     body {
-      cursor: url('/static/css/furina/normal.cur'), auto;
+      cursor: url('../static/css/furina/normal.cur'), auto;
     }
   </style>
   <!-- JSON-LD: WebPage for zh index -->
@@ -214,8 +216,6 @@
       }
     }
   </style>
-</head>
-<body>
 
   <!-- 社交图标栏 -->
   <div class="social-icons">
@@ -280,7 +280,10 @@
       diff %= 3600;
       const mins = Math.floor(diff / 60);
       const secs = diff % 60;
-      document.getElementById('runtime-txt').textContent = `${days}天 ${hours}小时 ${mins}分 ${secs}秒`;
+      const runtimeElement = document.getElementById('runtime-txt');
+      if (runtimeElement) {
+        runtimeElement.textContent = `${days}天 ${hours}小时 ${mins}分 ${secs}秒`;
+      }
     }
     updateRuntime();
     setInterval(updateRuntime, 1000);
@@ -298,7 +301,7 @@
         '遇到问题可在Github反馈。',
         '祝你每天开心！',
         '白月 日和在等你来玩！',
-        '可在“介绍”页面查看更多信息。'
+        '可在"介绍"页面查看更多信息。'
       ];
       const tipsEl = document.getElementById('splash-tips');
       if (tipsEl) {

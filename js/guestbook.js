@@ -455,17 +455,16 @@ function initEventListeners() {
         const messageInput = document.getElementById('message');
         
         // 验证输入
-  if (!nameInput.value.trim() || !messageInput.value.trim()) {
-    showNotification(t('nameRequired'));
-    return;
-  }      return;
+        if (!nameInput.value.trim() || !messageInput.value.trim()) {
+          showNotification(t('nameRequired'));
+          return;
         }
         
         // 添加留言
         addMessage(nameInput.value, emailInput.value, messageInput.value);
         
-{{ ... }}
         // 清空表单
+        nameInput.value = '';
         messageInput.value = '';
         emailInput.value = '';
     });
