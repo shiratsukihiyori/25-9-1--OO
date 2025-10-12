@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>留言板 | 白月 日和</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'ZQKJingYaGuPu', 'ZCOOL KuaiLe', 'Sawarabi Gothic', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans', sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background: url('https://www.loliapi.com/acg/') no-repeat center center fixed;
+      background-size: cover;
+      color: #333;
+      min-height: 100vh;
+    }
+
+    /* 主要内容区卡片样式 */
+    .container, .announcements, .profile, .socials {
+      background: rgba(255, 255, 255, 0.5) !important;
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 留言表单样式 */
+    .guestbook-form {
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 16px;
+    }
+
+    textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .btn {
+      background-color: #ff6b9e;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #e64a7e;
+    }
+
+    /* 留言列表样式 */
+    .messages-container {
+      margin-top: 30px;
+    }
+
+    .message {
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .message-name {
+      font-weight: bold;
+      color: #ff6b9e;
+    }
+
+    .message-time {
+      color: #888;
+      font-size: 0.9em;
+    }
+
+    .message-content {
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .message-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    .reply-btn, .admin-reply-btn {
+      background: none;
+      border: none;
+      color: #666;
+      cursor: pointer;
+      margin-left: 10px;
+      font-size: 0.9em;
+    }
+
+    .reply-btn:hover, .admin-reply-btn:hover {
+      color: #ff6b9e;
+      text-decoration: underline;
+    }
+
+    .reply-form {
+      margin-top: 15px;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .replies {
+      margin-top: 15px;
+      padding-left: 20px;
+      border-left: 3px solid #ffd6e7;
+    }
+
+    .admin-badge {
+      display: inline-block;
+      background: #ff6b9e;
+      color: white;
+      font-size: 0.7em;
+      padding: 2px 6px;
+      border-radius: 10px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      gap: 10px;
+    }
+
+    .page-btn {
+      padding: 5px 12px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .page-btn.active {
+      background: #ff6b9e;
+      color: white;
+      border-color: #ff6b9e;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #888;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .container, .announcements, .profile, .socials {
+        padding: 15px;
+        margin: 10px 0;
+      }
+      
+      .message-header {
+        flex-direction: column;
+      }
+      
+      .message-time {
+        margin-top: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fas fa-book-open"></i> 留言板</h1>
+    <p>留下你的祝福和想法，与日和一起分享快乐时光~</p>
+    
+    <!-- 留言表单 -->
+    <div class="guestbook-form">
+      <h2>发表留言</h2>
+      <form id="messageForm">
+        <div class="form-group">
+          <label for="name">昵称：</label>
+          <input type="text" id="name" class="form-control" required placeholder="你的名字">
+        </div>
+        <div class="form-group">
+          <label for="email">邮箱（可选）：</label>
+          <input type="email" id="email" class="form-control" placeholder="你的邮箱（不会公开）">
+        </div>
+        <div class="form-group">
+          <label for="message">留言内容：</label>
+          <textarea id="message" class="form-control" rows="4" required placeholder="想对日和说些什么呢？"></textarea>
+        </div>
+        <div class="form-group">
+          <div class="emoji-picker">
+            <span>添加表情：</span>
+            <span class="emoji" data-emoji="😊">😊</span>
+            <span class="emoji" data-emoji="❤️">❤️</span>
+            <span class="emoji" data-emoji="⭐">⭐</span>
+            <span class="emoji" data-emoji="🎉">🎉</span>
+            <span class="emoji" data-emoji="🌸">🌸</span>
+          </div>
+        </div>
+        <button type="submit" class="btn">
+          <i class="fas fa-paper-plane"></i> 发送留言
+        </button>
+      </form>
+    </div>
+
+    <!-- 留言列表 -->
+    <div class="messages-container">
+      <h2>大家的留言</h2>
+      <div id="messagesList">
+        <div class="loading">加载中...</div>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+
+  <div id="notification" class="notification"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const messageForm = document.getElementById('messageForm');
+      const messagesList = document.getElementById('messagesList');
+      const pagination = document.getElementById('pagination');
+      const notification = document.getElementById('notification');
+      
+      let currentPage = 1;
+      const limit = 10;
+      let totalPages = 1;
+
+      // 显示通知
+      function showNotification(message, type = 'success') {
+        notification.textContent = message;
+        notification.className = `notification ${type}`;
+        notification.style.display = 'block';
+        
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          setTimeout(() => {
+            notification.style.display = 'none';
+            notification.style.opacity = '1';
+          }, 500);
+        }, 3000);
+      }
+
+      // 加载留言
+      async function loadMessages(page = 1) {
+        try {
+          messagesList.innerHTML = '<div class="loading">加载中...</div>';
+          currentPage = page;
+          
+          const response = await fetch(`/api/messages?page=${page}&limit=${limit}`);
+          const data = await response.json();
+          
+          if (!response.ok) throw new Error(data.error || '加载留言失败');
+          
+          renderMessages(data.data || []);
+          renderPagination(data.pagination);
+        } catch (error) {
+          console.error('加载留言失败:', error);
+          messagesList.innerHTML = `
+            <div class="error">
+              加载留言失败: ${error.message}
+              <button onclick="loadMessages(${currentPage})" class="btn" style="margin-top: 10px;">重试</button>
+            </div>
+          `;
+        }
+      }
+
+      // 渲染留言列表
+      function renderMessages(messages) {
+        if (!messages || messages.length === 0) {
+          messagesList.innerHTML = `
+            <div class="no-messages">
+              <i class="fas fa-comment-slash"></i>
+              <p>还没有留言，快来成为第一个留言的人吧~</p>
+            </div>
+          `;
+          return;
+        }
+
+        messagesList.innerHTML = messages.map(message => `
+          <div class="message" data-id="${message.id}">
+            <div class="message-header">
+              <div>
+                <span class="message-name">${escapeHtml(message.name)}</span>
+                ${message.is_admin_reply ? '<span class="admin-badge">管理员</span>' : ''}
+              </div>
+              <span class="message-time">${formatDate(message.created_at)}</span>
+            </div>
+            <div class="message-content">${formatMessage(escapeHtml(message.message))}</div>
+            
+            <!-- 回复按钮 -->
+            <div class="message-actions">
+              <button class="reply-btn" onclick="showReplyForm(${message.id})">
+                <i class="fas fa-reply"></i> 回复
+              </button>
+              <!-- 管理员回复按钮（默认隐藏，登录后显示） -->
+              <button class="admin-reply-btn" style="display: ${isAdmin() ? 'inline-block' : 'none'}" 
+                      onclick="submitAdminReply(${message.id})">
+                <i class="fas fa-shield-alt"></i> 管理员回复
+              </button>
+            </div>
+            
+            <!-- 回复表单 -->
+            <div class="reply-form" id="replyForm-${message.id}">
+              <textarea class="form-control" rows="3" placeholder="写下您的回复..."></textarea>
+              <div style="margin-top: 10px; text-align: right;">
+                <button class="btn" onclick="submitReply(${message.id}, false)">提交回复</button>
+                <button class="btn" onclick="hideReplyForm(${message.id})" style="background: #999; margin-left: 10px;">取消</button>
+              </div>
+            </div>
+            
+            <!-- 回复列表 -->
+            ${message.replies && message.replies.length > 0 ? `
+              <div class="replies">
+                ${message.replies.map(reply => `
+                  <div class="message" style="margin-bottom: 10px;">
+                    <div class="message-header">
+                      <div>
+                        <span class="message-name">${escapeHtml(reply.name)}</span>
+                        ${reply.is_admin_reply ? '<span class="admin-badge">管理员</span>' : ''}
+                      </div>
+                      <span class="message-time">${formatDate(reply.created_at)}</span>
+                    </div>
+                    <div class="message-content">${formatMessage(escapeHtml(reply.message))}</div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `).join('');
+
+        // 添加表情选择器事件
+        document.querySelectorAll('.emoji').forEach(emojiBtn => {
+          emojiBtn.addEventListener('click', (e) => {
+            const textarea = document.activeElement;
+            if (textarea && textarea.tagName === 'TEXTAREA') {
+              const emoji = e.target.getAttribute('data-emoji');
+              const start = textarea.selectionStart;
+              const end = textarea.selectionEnd;
+              const text = textarea.value;
+              textarea.value = text.substring(0, start) + emoji + text.substring(end);
+              textarea.focus();
+              textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
+            }
+          });
+        });
+      }
+
+      // 渲染分页
+      function renderPagination(pagination) {
+        if (!pagination || pagination.totalPages <= 1) {
+          pagination.innerHTML = '';
+          return;
+        }
+        
+        let paginationHTML = '';
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(pagination.totalPages, startPage + maxVisiblePages - 1);
+        
+        if (endPage - startPage + 1 < maxVisiblePages) {
+          startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+        
+        // 上一页按钮
+        if (currentPage > 1) {
+          paginationHTML += `
+            <button class="page-btn" onclick="loadMessages(${currentPage - 1})">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+          `;
+        }
+        
+        // 第一页
+        if (startPage > 1) {
+          paginationHTML += `
+            <button class="page-btn" onclick="loadMessages(1)">1</button>
+            ${startPage > 2 ? '<span>...</span>' : ''}
+          `;
+        }
+        
+        // 页码
+        for (let i = startPage; i <= endPage; i++) {
+          paginationHTML += `
+            <button class="page-btn ${i === currentPage ? 'active' : ''}" 
+                    onclick="loadMessages(${i})">
+              ${i}
+            </button>
+          `;
+        }
+        
+        // 最后一页
+        if (endPage < pagination.totalPages) {
+          paginationHTML += `
+            ${endPage < pagination.totalPages - 1 ? '<span>...</span>' : ''}
+            <button class="page-btn" onclick="loadMessages(${pagination.totalPages})">
+              ${pagination.totalPages}
+            </button>
+          `;
+        }
+        
+        // 下一页按钮
+        if (currentPage < pagination.totalPages) {
+          paginationHTML += `
+            <button class="page-btn" onclick="loadMessages(${currentPage + 1})">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          `;
+        }
+        
+        pagination.innerHTML = paginationHTML;
+      }
+
+      // 提交新留言
+      messageForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('name').value.trim();
+        const message = document.getElementById('message').value.trim();
+        const email = document.getElementById('email').value.trim();
+        
+        if (!name || !message) {
+          showNotification('请填写昵称和留言内容', 'error');
+          return;
+        }
+        
+        try {
+          const response = await fetch('/api/messages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+              name, 
+              message,
+              email: email || undefined
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (!response.ok) throw new Error(data.error || '提交留言失败');
+          
+          // 清空表单并重新加载留言
+          messageForm.reset();
+          loadMessages(1);
+          
+          // 滚动到顶部
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          
+          showNotification('留言提交成功，正在等待审核~');
+        } catch (error) {
+          console.error('提交留言失败:', error);
+          showNotification('提交留言失败: ' + error.message, 'error');
+        }
+      });
+
+      // 加载第一页留言
+      loadMessages(1);
+    });
+
+    // 检查是否是管理员
+    function isAdmin() {
+      // 这里可以添加管理员验证逻辑
+      // 例如检查localStorage中的token
+      return localStorage.getItem('admin_token') !== null;
+    }
+
+    // 显示回复表单
+    function showReplyForm(messageId) {
+      // 隐藏所有回复表单
+      document.querySelectorAll('.reply-form').forEach(form => {
+        form.style.display = 'none';
+      });
+      
+      // 显示当前回复表单
+      const replyForm = document.getElementById(`replyForm-${messageId}`);
+      if (replyForm) {
+        replyForm.style.display = 'block';
+        replyForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    // 隐藏回复表单
+    function hideReplyForm(messageId) {
+      const replyForm = document.getElementById(`replyForm-${messageId}`);
+      if (replyForm) {
+        replyForm.style.display = 'none';
+      }
+    }
+
+    // 提交回复
+    async function submitReply(messageId, isAdmin = false) {
+      const replyForm = document.getElementById(`replyForm-${messageId}`);
+      if (!replyForm) return;
+      
+      const textarea = replyForm.querySelector('textarea');
+      const message = textarea.value.trim();
+      
+      if (!message) {
+        showNotification('请输入回复内容', 'error');
+        return;
+      }
+      
+      try {
+        let name = '访客';
+        if (isAdmin) {
+          name = '管理员';
+        } else {
+          const inputName = prompt('请输入您的昵称:', '访客');
+          if (!inputName) return;
+          name = inputName;
+        }
+        
+        const response = await fetch('/api/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': isAdmin ? 'Bearer ' + localStorage.getItem('admin_token') : ''
+          },
+          body: JSON.stringify({
+            name,
+            message,
+            parent_id: messageId,
+            is_admin_reply: isAdmin
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) throw new Error(data.error || '提交回复失败');
+        
+        // 清空回复框并隐藏表单
+        textarea.value = '';
+        hideReplyForm(messageId);
+        
+        // 重新加载留言
+        loadMessages(currentPage);
+        
+        showNotification('回复提交成功！');
+      } catch (error) {
+        console.error('提交回复失败:', error);
+        showNotification('提交回复失败: ' + error.message, 'error');
+      }
+    }
+
+    // 管理员回复
+    async function submitAdminReply(messageId) {
+      const message = prompt('请输入管理员回复内容:');
+      if (!message) return;
+      
+      try {
+        const response = await fetch('/api/admin/reply', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
+          },
+          body: JSON.stringify({
+            parent_id: messageId,
+            message
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) throw new Error(data.error || '提交回复失败');
+        
+        // 重新加载留言
+        loadMessages(currentPage);
+        
+        showNotification('管理员回复已提交！');
+      } catch (error) {
+        console.error('提交管理员回复失败:', error);
+        showNotification('提交管理员回复失败: ' + error.message, 'error');
+      }
+    }
+
+    // 辅助函数：转义HTML
+    function escapeHtml(unsafe) {
+      if (!unsafe) return '';
+      return unsafe
+        .toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // 格式化消息内容（处理换行和链接）
+    function formatMessage(message) {
+      if (!message) return '';
+      
+      // 处理换行
+      let formatted = message.replace(/\n/g, '<br>');
+      
+      // 处理链接（简单URL转链接）
+      formatted = formatted.replace(
+        /(https?:\/\/[^\s]+)/g, 
+        '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+      );
+      
+      return formatted;
+    }
+
+    // 辅助函数：格式化日期
+    function formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+  </script>
+  <style>
+    /* 通知样式 */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      z-index: 1000;
+      display: none;
+      animation: slideIn 0.5s ease-out;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .notification.success {
+      background-color: #4CAF50;
+    }
+
+    .notification.error {
+      background-color: #F44336;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* 表情选择器样式 */
+    .emoji-picker {
+      margin: 10px 0;
+      font-size: 1.2em;
+    }
+
+    .emoji {
+      cursor: pointer;
+      margin: 0 5px;
+      transition: transform 0.2s;
+    }
+
+    .emoji:hover {
+      transform: scale(1.3);
+    }
+
+    /* 无留言提示 */
+    .no-messages {
+      text-align: center;
+      padding: 40px 20px;
+      color: #888;
+    }
+
+    .no-messages i {
+      font-size: 3em;
+      margin-bottom: 15px;
+      display: block;
+      color: #ddd;
+    }
+  </style>
+</body>
+</html>

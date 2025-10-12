@@ -1,14 +1,29 @@
 name = "guestbook"
+main = "_worker.js"
 compatibility_date = "2023-10-11"
 
 # 静态网站配置
 [site]
-bucket = "."
-
-# 构建命令
-[build]
-command = "npm run build"
+bucket = "./public"
 
 # 环境变量
 [vars]
-NODE_ENV = "development"
+NODE_ENV = "production"
+
+# D1 数据库绑定
+[[d1_databases]]
+binding = "DB"
+database_name = "guestbook-db"
+database_id = "14b03b98-a188-4e05-ba67-073d879e3779"
+
+# 路由配置
+[build.upload]
+format = "service-worker"
+
+[build.upload.rules]
+type = "ESModule"
+
+# 自定义域名
+[[routes]]
+pattern = "new.hiyori.xx.kg/*"
+script_name = "guestbook"

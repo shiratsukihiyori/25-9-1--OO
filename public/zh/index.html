@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="白月 日和（しらつき ひより）中文主页：个人介绍、直播信息与多平台入口。">
+  <link rel="canonical" href="https://hiyori.webn.cc/zh/index.html" />
+  <link rel="alternate" href="https://hiyori.webn.cc/zh/index.html" hreflang="zh-CN" />
+  <link rel="alternate" href="https://hiyori.webn.cc/ja/index.html" hreflang="ja" />
+  <link rel="alternate" href="https://hiyori.webn.cc/en/index.html" hreflang="en" />
+  <link rel="alternate" href="https://hiyori.webn.cc/" hreflang="x-default" />
+  <meta name="theme-color" content="#f48fb1" />
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="../img/Q版.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../img/Q版.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../img/Q版.png">
+  <link rel="shortcut icon" href="../img/Q版.png" type="image/x-icon">
+  <link rel="manifest" href="../site.webmanifest" />
+  <meta property="og:locale" content="zh-CN" />
+  <meta property="og:locale:alternate" content="ja-JP" />
+  <meta property="og:locale:alternate" content="en-US" />
+  <title>月光小屋 | 白月 日和</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- 引入 Font Awesome 图标库 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
+  <script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js"></script>
+  <style>
+    @font-face {
+      font-family: 'ZQKJingYaGuPu';
+      src: url('../郑庆科静雅体-古朴版.ttf') format('truetype');
+      font-display: swap;
+    }
+    body {
+      margin: 0;
+      font-family: 'ZQKJingYaGuPu', 'ZCOOL KuaiLe', 'Sawarabi Gothic', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans', sans-serif;
+      background: url('https://www.loliapi.com/acg/') no-repeat center center fixed;
+      background-size: cover;
+      color: #333;
+      min-height: 100vh;
+      overflow-x: hidden;
+      cursor: url('/static/css/furina/normal.cur'), auto;
+    }
+
+    /* 日系手绘樱花鼠标指针，所有页面统一使用 */
+    body {
+      cursor: url('/static/css/furina/normal.cur'), auto;
+    }
+  </style>
+  <!-- JSON-LD: WebPage for zh index -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "月光小屋 | 白月 日和",
+    "url": "https://hiyori.webn.cc/zh/index.html",
+    "inLanguage": "zh-CN",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "Shiratsuki Hiyori",
+      "url": "https://hiyori.webn.cc/"
+    },
+    "description": "白月 日和（しらつき ひより）中文主页：个人介绍、直播信息与多平台入口。"
+  }
+  </script>
+  <style>
+    .modal {
+      display: none; /* 默认隐藏 */
+      position: fixed;
+      z-index: 2000;
+      left: 0; top: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 24px 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+      max-width: 90vw;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .close-modal {
+      position: absolute;
+      right: 16px; top: 16px;
+      font-size: 28px;
+      color: #e91e63;
+      cursor: pointer;
+    }
+  </style>
+  <style>
+    /* 主要内容区卡片统一50%透明，导航栏和body背景不变 */
+    .container,
+    .announcements,
+    .profile,
+    .socials {
+      background: rgba(255,255,255,0.5) !important;
+      /* 若部分卡片原本有边框或阴影，可根据需求保留 */
+    }
+    .modal-content {
+      background: #fff !important;
+      padding: 24px 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+      max-width: 90vw;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+  </style>
+</head>
+<body class="bg-white text-black">
+  <!-- 顶部导航栏 -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="#" class="nav-logo">白月 日和</a>
+      <ul class="nav-links">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="live.html">直播间</a></li>
+        <li><a href="about.html">介绍</a></li>
+        <li><a href="guestbook.html">留言板</a></li>
+        <li><a href="https://marshmallow-qa.com/f9nava8c2dh71k1" target="_blank">Marshmallow</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- 开屏动画 -->
+  <div id="splash-screen" class="art-splash-screen">
+  <div class="splash-circle"></div>
+  <div class="splash-tips" id="splash-tips" style="position:fixed;right:2.5vw;bottom:3vh;z-index:2100;min-width:160px;max-width:60vw;background:rgba(255,240,246,0.95);color:#e91e63;padding:10px 18px;border-radius:12px;box-shadow:0 2px 12px rgba(255,174,200,0.16);font-size:1.05em;display:none;pointer-events:none;user-select:none;text-align:left;line-height:1.7;"></div>
+</div>
+
+  <div class="container" id="mainContent">
+    <header>
+      <h1>白月 日和（しらつき ひより）</h1>
+      <span class="typed-text"></span>
+    </header>
+  
+    <!-- 公告区 -->
+    <section class="announcements">
+      <h2>公告</h2>
+      <ul>
+<<<<<<< HEAD
+        <li>留言板目前无法使用，还在测试中！正式上线后会发布在社交平台。</li>
+=======
+		  <li>留言板目前无法使用，还在测试中！正式上线后会发布在社交平台。</li>
+>>>>>>> cdd3e5b9635fd9795f9b87116367eeee369b76a8
+          <li>网页在9-22号进行了更新，大家可以去寻找一下哪里改变了～</li>
+      </ul>
+      <button id="more-announcement-btn" class="more-btn">更多</button>
+    </section>
+
+    <!-- 公告弹窗（默认隐藏） -->
+    <div id="announcement-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal" id="close-modal-btn">&times;</span>
+        <h2>全部公告</h2>
+        <ul id="modal-announcement-list">
+<<<<<<< HEAD
+          <li>留言板目前无法使用，还在测试中！正式上线后会发布在社交平台。</li>
+=======
+		  <li>留言板目前无法使用，还在测试中！正式上线后会发布在社交平台。</li>
+>>>>>>> cdd3e5b9635fd9795f9b87116367eeee369b76a8
+          <li>网页在9-22号进行了更新，大家可以去寻找一下哪里改变了～</li>
+          <li>目前立绘处于AI辅助生成，具体样貌可以等待live2D模型制作。（真的对不起，没有钱请画师）</li>
+          <li>目前没有其他公告，有兴趣的话可以去驻中国账号去看看喵～</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 引入 Font Awesome 图标库 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .social-icons a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      background-color: #ffd9ec;
+      border-radius: 50%;
+      color: #c15689;
+      font-size: 24px;
+      text-decoration: none;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .social-icons a:hover {
+      background-color: #ffc1e0;
+      color: #ffffff;
+      transform: scale(1.1);
+    }
+
+    .bilibili-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    @media (max-width: 480px) {
+      .social-icons {
+        gap: 16px;
+        padding: 16px;
+      }
+      .social-icons a {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 社交图标栏 -->
+  <div class="social-icons">
+    <a href="https://github.com/xingyuanbaoyue" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://www.youtube.com/@%E7%99%BD%E6%9C%88%E6%97%A5%E5%92%8C" target="_blank"><i class="fab fa-youtube"></i></a>
+    <a href="https://twitch.tv/hoshiharahoutsuki" target="_blank"><i class="fab fa-twitch"></i></a>
+    <a href="https://x.com/ShiratsukiV" target="_blank"><i class="fab fa-twitter"></i></a>
+    <a href="https://www.tiktok.com/@shiratsukihiyori" target="_blank"><i class="fab fa-tiktok"></i></a>
+    <a href="https://space.bilibili.com/3493270734768520?spm_id_from=333.337.0.0" target="_blank">
+      <img src="https://www.bilibili.com/favicon.ico" alt="Bilibili" class="bilibili-icon">
+	    </a>
+    <a href="https://wa.me/447756536580" target="_blank"><i class="fab fa-whatsapp"></i></a>
+	<a href="https://discord.gg/vKXdNfNA" target="_blank"><i class="fab fa-discord"></i></a>
+    <a href="https://www.pixiv.net/users/112211031" target="_blank"><i class="fab fa-pixiv"></i></a>
+  </div>
+
+   <!-- 立绘展示位 -->
+<section class="artwork" style="max-width: 1000px; margin: 0 auto;">
+  <!-- 标题单独一行 -->
+  <h2 style="text-align: center; margin-bottom: 16px;">立绘展示</h2>
+
+  <!-- 立绘展示位 -->
+<section class="artwork" style="max-width: 1000px; margin: 0 auto;">
+  <h2 style="text-align: center;">_</h2>
+  <div class="art-placeholder" style="width: 100%;">
+    <img src="../img/立绘介绍页(中国语中文).png"
+         alt="白月 日和 立绘"
+         style="width: 100%; height: auto; display: block;">
+  </div>
+</section>
+
+  <!-- 底部备案/版权信息 -->
+  <footer id="fixed-footer">
+    <div class="footer-container">
+      <div class="copyright">
+        &copy; 2025 <a href="https://home.hiyori.xx.kg" target="_blank">白月 日和（しらつき ひより）</a> - 月光小屋
+      </div>
+      <div class="icp">
+        <a href="https://icp.gov.moe/?keyword=20250460" target="_blank">萌ICP备20250460号</a>
+      </div>
+      <div class="footer-links">
+        <a href="/zh/index.html">首页</a>
+        <a href="/zh/live.html">直播间</a>
+        <a href="/zh/about.html">关于我</a>
+      </div>
+    </div>
+
+</footer>
+      
+    </div>
+  </footer>
+
+  <script>
+    // 网页运行时间（自 2025-05-01 起）
+    function updateRuntime() {
+      const start = new Date('2025-05-01T00:00:00+08:00');
+      const now = new Date();
+      let diff = Math.floor((now - start) / 1000);
+      const days = Math.floor(diff / 86400);
+      diff %= 86400;
+      const hours = Math.floor(diff / 3600);
+      diff %= 3600;
+      const mins = Math.floor(diff / 60);
+      const secs = diff % 60;
+      document.getElementById('runtime-txt').textContent = `${days}天 ${hours}小时 ${mins}分 ${secs}秒`;
+    }
+    updateRuntime();
+    setInterval(updateRuntime, 1000);
+  </script>
+
+  <!-- 开屏动画脚本 -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      // splash tips
+      const tips = [
+        '小贴士：可以通过左下角菜单切换页面哦！',
+        'Tip：关注B站和Twitch，不错过每一次直播！',
+        '记得收藏本站，获取最新动态~',
+        '本页面支持移动端自适应。',
+        '遇到问题可在Github反馈。',
+        '祝你每天开心！',
+        '白月 日和在等你来玩！',
+        '可在“介绍”页面查看更多信息。'
+      ];
+      const tipsEl = document.getElementById('splash-tips');
+      if (tipsEl) {
+        const tip = tips[Math.floor(Math.random() * tips.length)];
+        tipsEl.textContent = tip;
+        tipsEl.style.display = 'block';
+      }
+      // 动画时长1800ms
+      setTimeout(() => {
+        document.body.classList.add('splash-finished');
+        if (tipsEl) tipsEl.style.display = 'none';
+        // 动画结束隐藏开屏层
+        const splash = document.getElementById('splash-screen');
+        if (splash) splash.style.display = 'none';
+      }, 1800);
+    });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var modal = document.getElementById('announcement-modal');
+      var btn = document.getElementById('more-announcement-btn');
+      var closeBtn = document.getElementById('close-modal-btn');
+
+      if (btn && modal) {
+        btn.onclick = function() {
+          modal.style.display = "flex";
+        }
+      }
+      if (closeBtn && modal) {
+        closeBtn.onclick = function() {
+          modal.style.display = "none";
+        }
+      }
+      // 点击遮罩关闭
+      window.onclick = function(event) {
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      }
+    });
+  </script>
+  <!-- Typed.js 依赖 -->
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      new Typed(".typed-text", {
+        strings: ["喜欢你们,这句话绝对不是谎言...", "君たちが好きだよ、これは絶対に嘘じゃない..."],
+        typeSpeed: 80,
+        backSpeed: 50,
+        loop: true
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+/* Japanese site custom styles. Copy from zh/styles.css as base. */
+@import url('../zh/styles.css');
+
+/* 在这里添加日语站点专属样式覆盖，例如字体、背景等 */
+.modal-content {
+  background: #fff !important;
+}
+@font-face {
+  font-family: 'ZQKJingYaGuPu';
+  src: url('../郑庆科静雅体-古朴版.ttf') format('truetype');
+  font-display: swap;
+}
+body, .modal-content, h1, h2, h3, h4, h5, h6, button, input, textarea {
+  font-family: 'ZQKJingYaGuPu', 'Noto Sans JP', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif !important;
+}
+
+/* プロフェッショナルなフッタースタイル */
+#fixed-footer {
+  position: relative;
+  margin: 2rem 0 1rem 0;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(255, 174, 200, 0.2);
+  padding: 1rem 0;
+  margin-top: 2rem;
+  width: 100%;
+  position: relative;
+  bottom: 0;
+  z-index: 10;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.copyright {
+  font-size: 0.9rem;
+  color: #b84a73;
+  margin-bottom: 0.5rem;
+}
+
+.copyright a {
+  color: #e91e63;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.copyright a:hover {
+  color: #c2185b;
+  text-decoration: underline;
+}
+
+.icp {
+  font-size: 0.8rem;
+  color: #d81b60;
+}
+
+.icp a {
+  color: #e91e63;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.icp a:hover {
+  color: #c2185b;
+  text-decoration: underline;
+}
+
+.footer-links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.footer-links a {
+  color: #e91e63;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: #c2185b;
+  text-decoration: underline;
+}

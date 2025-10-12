@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>樱舞开场 | Sakura Splash</title>
+  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Sawarabi+Gothic&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      background: url('https://www.loliapi.com/acg/') no-repeat center center fixed;
+      background-size: cover;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      width: 100vw;
+    }
+    .sakura-spinner {
+      width: 90px;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: sakura-spin 1.2s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes sakura-spin { 100% { transform: rotate(360deg); } }
+    .sakura-spinner-img {
+      width: 90px;
+      height: 90px;
+      display: block;
+      filter: drop-shadow(0 2px 8px #f8bbd0cc);
+    }
+    .splash-tips {
+      margin-top: 16px;
+      color: #ad1457;
+      font-size: 1.08em;
+      font-family: 'ZCOOL KuaiLe','Sawarabi Gothic',sans-serif;
+      letter-spacing: 1.2px;
+      text-align: center;
+      background: rgba(255,255,255,0.85);
+      border-radius: 10px;
+      padding: 8px 12px 6px 12px;
+      box-shadow: 0 2px 12px #f8bbd044;
+      min-width: 60px;
+      max-width: 90vw;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div class="sakura-spinner">
+    <img src="1.png" alt="sakura" class="sakura-spinner-img" />
+  </div>
+  <div class="splash-tips" id="splash-tips"></div>
+  <script>
+    const tips = [
+      '可通过下方按钮选择语言版本进入主页',
+      'Tip: Choose your preferred language below!',
+      'ヒント：下のボタンから言語を選択できます！',
+      '星原抱月欢迎你！',
+      'Welcome to Hoshihara Houtsuki\'s site!',
+      'ようこそ星原抱月のページへ！',
+      '🌸 每一次相遇都是樱花飘落的奇迹',
+      '🌸 选择语言，开启你的专属旅程',
+      '🌸 Sakura brings us together',
+      '🌸 桜の花びらがあなたを歓迎します',
+      '🌸 欢迎来到多语世界！',
+      '🌸 Welcome to a multilingual world!'
+    ];
+    window.addEventListener('DOMContentLoaded', () => {
+      const tipsEl = document.getElementById('splash-tips');
+      if (tipsEl) {
+        const tip = tips[Math.floor(Math.random() * tips.length)];
+        tipsEl.textContent = tip;
+      }
+    });
+  </script>
+</body>
+</html>

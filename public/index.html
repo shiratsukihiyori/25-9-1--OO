@@ -1,0 +1,610 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>白月 日和 - 语言检测中</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="img/Q版.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/Q版.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/Q版.png">
+  <link rel="shortcut icon" href="img/Q版.png" type="image/x-icon">
+  <meta name="theme-color" content="#f48fb1">
+  <link rel="manifest" href="site.webmanifest">
+
+  <style>
+    @font-face {
+      font-family: 'ZQKJingYaGuPu';
+      src: url('郑庆科静雅体-古朴版.ttf') format('truetype');
+      font-display: swap;
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'ZQKJingYaGuPu', 'ZCOOL KuaiLe', 'Sawarabi Gothic', sans-serif;
+      background: linear-gradient(135deg, #fff0f6 0%, #ffe4ec 100%);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(255, 174, 200, 0.2);
+      max-width: 500px;
+      animation: fadeIn 1s ease-out;
+    }
+    
+    .hiyori-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #f8bbd0, #f48fb1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(244, 143, 177, 0.3);
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .hiyori-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    h1 {
+      color: #e91e63;
+      margin-bottom: 20px;
+      font-size: 2.2em;
+      background: linear-gradient(135deg, #e91e63, #ec407a, #f06292);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .message {
+      font-size: 1.2em;
+      color: #7e2957;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+    
+    .days-counter {
+      font-size: 1.1em;
+      color: #e91e63;
+      margin: 10px 0 20px;
+      font-weight: bold;
+    }
+    
+    .loading-bar {
+      width: 100%;
+      height: 6px;
+      background: #ffe4ec;
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+    
+    .progress {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #f8bbd0, #f48fb1, #ec407a);
+      border-radius: 3px;
+      transition: width 5s linear;
+    }
+    
+    .countdown {
+      font-size: 1.1em;
+      color: #ba68c8;
+      margin-top: 15px;
+    }
+    
+    .language-detected {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(248, 187, 208, 0.2);
+      border-radius: 12px;
+      border-left: 4px solid #ec407a;
+    }
+    
+    .manual-select {
+      margin-top: 20px;
+    }
+    
+    .manual-btn {
+      padding: 8px 16px;
+      background: #f48fb1;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes float {
+     0%, 100% { transform: translateY(0px); }
+     50% { transform: translateY(-10px); }
+    }
+    /* 弹窗样式 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      -webkit-overflow-scrolling: touch;
+      overflow-y: auto;
+      padding: 20px 0;
+    }
+    
+    .modal-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .modal-container {
+      background: white;
+      border-radius: 16px;
+      width: 95%;
+      max-width: 1000px;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 50px rgba(0, 0, 0, 0.2);
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+    
+    @media (min-width: 768px) {
+      .modal-container {
+        flex-direction: row;
+        width: 90%;
+      }
+    }
+    
+    .modal-overlay.show .modal-container {
+      transform: translateY(0);
+    }
+    
+    .modal-panel {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    @media (min-width: 768px) {
+      .modal-panel {
+        padding: 30px;
+      }
+    }
+    
+    .modal-panel:first-child {
+      border-right: 1px solid #f0f0f0;
+    }
+    
+    .modal-panel iframe {
+      width: 100%;
+      height: 60vh;
+      min-height: 400px;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .modal-header {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #e91e63;
+      font-size: 1.5em;
+    }
+    
+    .modal-content {
+      line-height: 1.8;
+      color: #555;
+      margin-bottom: 15px;
+    }
+    
+    .modal-countdown {
+      text-align: center;
+      color: #e91e63;
+      font-weight: bold;
+      margin: 10px 0;
+      font-size: 1.1em;
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(0,0,0,0.1);
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      color: #999;
+      transition: all 0.2s;
+      z-index: 10001; /* 确保在最上层 */
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    
+    .modal-close:hover,
+    .modal-close:active {
+      color: #e91e63;
+      background: rgba(0,0,0,0.15);
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hiyori-avatar"><img src="img/Q版.png" alt="Hiyori Avatar"></div>
+    <h1>白月 日和</h1>
+    <div class="days-counter" id="daysCounter"></div>
+    
+    <div class="message" id="status-message">
+      Hiyori正在帮你选择适合的语言页面...
+    </div>
+    
+    <div class="loading-bar">
+      <div class="progress" id="progress-bar"></div>
+    </div>
+    
+    <div class="countdown" id="countdown">
+      5秒后自动跳转
+    </div>
+    
+    <div class="language-detected" id="language-info" style="display: none;">
+      <strong id="detected-text">检测到的语言:</strong> <span id="detected-lang"></span>
+    </div>
+    
+    <div class="manual-select">
+      <button class="manual-btn" onclick="showManualSelection()">手动选择语言</button>
+    </div>
+    
+    <div id="manual-buttons" style="display: none; margin-top: 20px;">
+      <button style="margin: 5px; padding: 10px 20px; background: #f8bbd0; border: none; border-radius: 8px; cursor: pointer;" onclick="redirectTo('zh')">简体中文</button>
+      <button style="margin: 5px; padding: 10px 20px; background: #f8bbd0; border: none; border-radius: 8px; cursor: pointer;" onclick="redirectTo('ja')">日本語</button>
+      <button style="margin: 5px; padding: 10px 20px; background: #f8bbd0; border: none; border-radius: 8px; cursor: pointer;" onclick="redirectTo('en')">English</button>
+    </div>
+    
+    <div class="manual-select" style="margin-top: 20px;">
+      <button class="manual-btn" onclick="window.location.href='hiyori/hiyori.html'">Hiyori Project</button>
+    </div>
+  </div>
+
+  <!-- 日语弹窗 -->
+  <div class="modal-overlay" id="japaneseModal">
+    <div class="modal-container">
+      <div class="modal-panel">
+        <button class="modal-close" onclick="closeJapaneseModal()">&times;</button>
+        <div class="modal-header">日本語のご案内</div>
+        <div class="modal-content">
+          <p>こんにちは！白月ひよりと申します。</p>
+          <p>このページでは、私のプロフィールや活動内容をご紹介しています。</p>
+          <p>左側には私の自己紹介、右側には他のプラットフォームでの活動をご覧いただけます。</p>
+          <p style="color: #e91e63; font-weight: bold;">※ 日本語の閉じるボタンに問題があったため、表示時間を長くしています。ご不便をおかけして申し訳ありません。</p>
+          <p>10秒後に自動的に閉じますが、閉じるボタンでいつでも閉じることができます。</p>
+          <p>ご理解のほど、よろしくお願いいたします！</p>
+        </div>
+        <div class="modal-countdown" id="modalCountdown">10秒後に閉じます</div>
+      </div>
+      <div class="modal-panel" style="cursor: pointer;" onclick="window.open('https://lit.link/Hiyori', '_blank')">
+        <div style="position: relative; height: 100%;">
+          <iframe src="https://lit.link/Hiyori" title="Hiyori's Links" style="pointer-events: none;"></iframe>
+          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 多语言消息配置
+    const messages = {
+      'zh': {
+        title: '白月 日和 - 语言检测中',
+        status: 'Hiyori正在帮你选择适合的语言页面...',
+        detected: '检测到的语言:',
+        countdown: '秒后自动跳转',
+        redirecting: '正在准备跳转...'
+      },
+      'ja': {
+        title: '白月 日和 - 言語検出中',
+        status: 'ひよりが適切な言語ページを選択しています...',
+        detected: '検出された言語:',
+        countdown: '秒後に自動的に移動します',
+        redirecting: '移動の準備をしています...'
+      },
+      'en': {
+        title: 'Shiratsuki Hiyori - Language Detection',
+        status: 'Hiyori is selecting the appropriate language page for you...',
+        detected: 'Detected language:',
+        countdown: 'seconds until automatic redirect',
+        redirecting: 'Preparing to redirect...'
+      }
+    };
+
+    // 语言检测
+    function detectLanguage() {
+      const userLang = navigator.language || navigator.userLanguage;
+      let targetLang = 'zh'; // 默认中文
+      
+      // 检测浏览器语言
+      if (userLang.includes('ja') || userLang.includes('jp')) {
+        targetLang = 'ja'; // 日语
+      } else if (userLang.includes('en')) {
+        targetLang = 'en'; // 英语
+      }
+      
+      return targetLang;
+    }
+    
+    // 显示日语弹窗
+    function showJapaneseModal() {
+      const modal = document.getElementById('japaneseModal');
+      const countdownElement = document.getElementById('modalCountdown');
+      let countdown = 10;
+      
+      // 清除可能存在的旧计时器
+      if (window.modalCountdownInterval) {
+        clearInterval(window.modalCountdownInterval);
+      }
+      
+      // 更新倒计时显示
+      const updateCountdown = () => {
+        if (countdown >= 0) {
+          countdownElement.textContent = `${countdown}秒後に自動的に閉じます`;
+          countdown--;
+        } else {
+          clearInterval(window.modalCountdownInterval);
+          closeJapaneseModal();
+          // 倒计时结束后跳转到日语页面
+          window.location.href = 'ja/index.html';
+        }
+      };
+      
+      // 初始显示
+      updateCountdown();
+      
+      // 开始倒计时
+      window.modalCountdownInterval = setInterval(updateCountdown, 1000);
+      
+      // 显示弹窗
+      modal.classList.add('show');
+      
+      // 暂停主倒计时
+      if (window.mainCountdownInterval) {
+        clearInterval(window.mainCountdownInterval);
+        window.mainCountdownInterval = null;
+      }
+      
+      // 立即更新一次倒计时显示
+      updateCountdown();
+    }
+    
+    // 关闭日语弹窗
+    function closeJapaneseModal() {
+      const modal = document.getElementById('japaneseModal');
+      if (!modal) return;
+      
+      // 清除弹窗倒计时
+      if (window.modalCountdownInterval) {
+        clearInterval(window.modalCountdownInterval);
+        window.modalCountdownInterval = null;
+      }
+      
+      // 添加关闭动画
+      modal.classList.remove('show');
+      
+      // 恢复主倒计时
+      const targetLang = detectLanguage();
+      startCountdown(targetLang);
+      
+      // 防止事件冒泡
+      return false;
+    }
+    
+    // 添加全局点击事件处理
+    document.addEventListener('click', function(event) {
+      const modal = document.getElementById('japaneseModal');
+      const closeBtn = document.querySelector('.modal-close');
+      
+      // 如果点击的是关闭按钮
+      if (closeBtn && closeBtn.contains(event.target)) {
+        event.preventDefault();
+        event.stopPropagation();
+        closeJapaneseModal();
+      }
+      // 如果点击了模态框外部
+      else if (modal && modal.classList.contains('show') && !modal.contains(event.target)) {
+        closeJapaneseModal();
+      }
+    });
+    
+    function setLanguageContent(lang) {
+      const langData = messages[lang];
+      document.title = langData.title;
+      document.getElementById('status-message').textContent = langData.status;
+      document.getElementById('detected-text').textContent = langData.detected;
+      document.getElementById('countdown').textContent = `5${langData.countdown}`;
+    }
+    
+    let countdownInterval = null;
+    let seconds = 5;
+    window.mainCountdownInterval = null; // 用于存储主倒计时引用
+    
+    function startCountdown(targetLang = null) {
+      targetLang = targetLang || detectLanguage();
+      const langNames = {
+        'zh': '简体中文',
+        'ja': '日本語', 
+        'en': 'English'
+      };
+      
+      // 设置对应语言的内容
+      setLanguageContent(targetLang);
+      
+      // 显示检测结果
+      document.getElementById('detected-lang').textContent = langNames[targetLang];
+      document.getElementById('language-info').style.display = 'block';
+      
+      // 开始进度条动画
+      const progressBar = document.getElementById('progress-bar');
+      progressBar.style.width = '100%';
+      progressBar.style.transition = 'none';
+      
+      // 清除已有的倒计时
+      if (window.mainCountdownInterval) {
+        clearInterval(window.mainCountdownInterval);
+        window.mainCountdownInterval = null;
+      }
+      
+      // 设置倒计时总秒数
+      const totalSeconds = targetLang === 'ja' ? 10 : 5;
+      let remainingSeconds = totalSeconds;
+      
+      // 倒计时显示
+      const countdownElement = document.getElementById('countdown');
+      
+      // 更新倒计时显示和进度条
+      const updateDisplay = () => {
+        countdownElement.textContent = `${remainingSeconds}${messages[targetLang].countdown}`;
+        const progress = (remainingSeconds / totalSeconds) * 100;
+        progressBar.style.transition = 'width 0.3s linear';
+        progressBar.style.width = `${progress}%`;
+      };
+      
+      // 初始显示
+      updateDisplay();
+      
+      // 开始新的倒计时
+      window.mainCountdownInterval = setInterval(() => {
+        remainingSeconds--;
+        updateDisplay();
+        
+        // 如果是日语且倒计时到5秒，显示弹窗
+        if (targetLang === 'ja' && remainingSeconds === 5) {
+          showJapaneseModal();
+        }
+        
+        if (remainingSeconds <= 0) {
+          clearInterval(window.mainCountdownInterval);
+          window.location.href = `${targetLang}/index.html`;
+        }
+      }, 1000);
+      
+      // 允许用户手动跳过等待
+      document.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          clearInterval(window.mainCountdownInterval);
+          window.location.href = `${targetLang}/index.html`;
+        }
+      });
+    }
+    
+    function showManualSelection() {
+      clearInterval(countdownInterval);
+      document.getElementById('manual-buttons').style.display = 'block';
+      document.querySelector('.manual-select').style.display = 'none';
+    }
+    
+    function redirectTo(lang) {
+      // 重置倒计时
+      if (window.mainCountdownInterval) {
+        clearInterval(window.mainCountdownInterval);
+        window.mainCountdownInterval = null;
+      }
+      
+      if (lang === 'ja') {
+        // 手动切换到日语时，也显示弹窗
+        const totalSeconds = 10;
+        startCountdown('ja', totalSeconds);
+        // 立即显示弹窗
+        setTimeout(() => showJapaneseModal(), 100);
+      } else {
+        window.location.href = `${lang}/index.html`;
+      }
+    }
+    
+    // 获取当前语言
+    function getCurrentLanguage() {
+      // 这里可以根据您的实际语言切换逻辑来获取当前语言
+      // 例如从localStorage或URL参数中获取
+      const lang = localStorage.getItem('userLanguage') || 'zh';
+      return lang;
+    }
+    
+    // 计算并显示天数
+    function updateDaysCounter() {
+      const birthDate = new Date('2025-05-01T00:00:00+09:00');
+      const now = new Date();
+      const diffTime = now - birthDate;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      // 根据当前语言显示不同文本
+      const lang = getCurrentLanguage();
+      let counterText = '';
+      
+      switch(lang) {
+        case 'en':
+          counterText = `Hiyori has been seeing the world for ${diffDays} days`;
+          break;
+        case 'ja':
+          counterText = `ひよりが世界を見てから${diffDays}日目`;
+          break;
+        case 'zh':
+        default:
+          counterText = `日和见到世界的第${diffDays}天`;
+      }
+      
+      const counterElement = document.getElementById('daysCounter');
+      if (counterElement) {
+        counterElement.textContent = counterText;
+      }
+      
+      // 设置每分钟更新一次
+      setTimeout(updateDaysCounter, 60000 - (now % 60000));
+    }
+
+    // 页面加载后开始倒计时
+    document.addEventListener('DOMContentLoaded', () => {
+      updateDaysCounter();
+      const targetLang = detectLanguage();
+      // 如果是日语浏览器，使用10秒倒计时，其他语言保持5秒
+      const delay = (targetLang === 'ja') ? 10000 : 5000;
+      startCountdown(targetLang, delay);
+    });
+  </script>
+</body>
+</html>
