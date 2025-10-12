@@ -1,19 +1,17 @@
 name = "guestbook"
-main = "_worker.js"
 compatibility_date = "2023-10-11"
-
-# D1 数据库绑定
-[[d1_databases]]
-binding = "DB"
-database_name = "guestbook-db"
-database_id = "14b03b98-a188-4e05-ba67-073d879e3779"
+pages_build_output_dir = "."
 
 # 环境变量
 [vars]
-NODE_ENV = "production"
-PAGES_URL = "https://guestbook-static.pages.dev"  # 更新为您的 Pages URL
+# 默认环境变量（开发环境）
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = "admin123"
+ADMIN_API_KEY = "your-api-key-here"
 
-# 开发服务器配置
-[dev]
-port = 8787
-local_protocol = "http"
+# 生产环境变量（通过 Cloudflare 仪表板设置）
+[env.production]
+# 这些变量需要在 Cloudflare 仪表板中设置为环境变量
+# ADMIN_USERNAME = ""
+# ADMIN_PASSWORD = ""
+# ADMIN_API_KEY = ""

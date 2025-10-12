@@ -148,7 +148,7 @@
       <div class="form-group">
         <label for="username">用户名</label>
         <input type="text" id="username" class="form-control" required>
-        <div id="username-error" class="error-message"></div>
+        <div id="usernameError" class="error-message"></div>
       </div>
 
       <div class="form-group">
@@ -159,11 +159,8 @@
              style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #999;">
           </i>
         </div>
-        <div id="password-error" class="error-message"></div>
+        <div id="passwordError" class="error-message"></div>
       </div>
-
-      <!-- 登录错误提示 -->
-      <div id="login-error" class="error-message" style="text-align: center; margin-bottom: 15px;"></div>
 
       <div class="form-group">
         <button type="submit" id="loginBtn" class="btn">
@@ -178,6 +175,7 @@
         <a href="#" id="forgotPassword">忘记密码？</a>
       </div>
     </form>
+
     <div class="back-to-home">
       <a href="/"><i class="fas fa-arrow-left"></i> 返回首页</a>
     </div>
@@ -224,38 +222,21 @@
         loginBtn.disabled = true;
         loginBtn.textContent = '登录中...';
         
-        try {
-          // 调试信息
-          console.log('登录尝试:', { username, config: window.APP_CONFIG });
-          
-          // 从环境变量中获取凭据
-          const adminUsername = window.APP_CONFIG?.adminUsername || 'hiyori';
-          const adminPassword = window.APP_CONFIG?.adminPassword || 'hiyori';
-          
-          console.log('验证凭据:', { 
-            input: { username, password },
-            expected: { adminUsername, adminPassword }
-          });
-          
-          // 验证用户名和密码
-          if (username === adminUsername && password === adminPassword) {
-            console.log('登录成功');
-            // 登录成功，保存登录状态到localStorage
-            localStorage.setItem('isLoggedIn', 'true');
-            // 保存管理员用户名，以便在其他页面显示
-            localStorage.setItem('adminUsername', username);
-            // 跳转到仪表盘页面
-            const baseUrl = window.location.href.split('/admin/')[0];
-            window.location.href = `${baseUrl}/admin/dashboard.html`;
-          } else {
-            console.log('登录失败: 用户名或密码错误');
-            // 登录失败，显示错误信息
-            showError('login-error', '登录失败，用户名或密码错误');
-          }
-        } catch (error) {
-          console.error('登录过程中出错:', error);
-          showError('login-error', '登录过程中发生错误: ' + error.message);
-        } finally {
+        // 从环境变量中获取凭据
+        const adminUsername = window.APP_CONFIG?.adminUsername || 'admin';
+        const adminPassword = window.APP_CONFIG?.adminPassword || 'admin123';
+        
+        // 验证用户名和密码
+        if (username === adminUsername && password === adminPassword) {
+          // 登录成功，保存登录状态到localStorage
+          localStorage.setItem('isLoggedIn', 'true');
+          // 保存管理员用户名，以便在其他页面显示
+          localStorage.setItem('adminUsername', username);
+          // 跳转到管理页面
+          window.location.href = 'index.html';
+        } else {
+          // 登录失败，显示错误信息
+          showError('login-error', '登录失败，用户名或密码错误');
           // 恢复登录按钮
           loginBtn.disabled = false;
           loginBtn.textContent = '登录';

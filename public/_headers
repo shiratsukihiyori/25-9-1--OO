@@ -1,9 +1,0 @@
-# Cache static assets for 1 year
-/*
-  Cache-Control: public, max-age=31536000, immutable
-
-# Enable CORS for API requests
-/api/*
-  Access-Control-Allow-Origin: *
-  Access-Control-Allow-Methods: GET, POST, OPTIONS
-  Access-Control-Allow-Headers: *
