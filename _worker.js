@@ -110,41 +110,65 @@ async function handleStaticRequest(request, env) {
   const url = new URL(request.url);
   
   try {
-    // 尝试直接获取请求的文件
-    let response = await env.ASSETS.fetch(request);
-    if (response.status !== 404) {
-      return response;
-    }
-    
-    // 处理根路径
-    if (url.pathname === '/' || url.pathname === '') {
-      const indexRequest = new Request(new URL('/index.html', request.url));
-      response = await env.ASSETS.fetch(indexRequest);
+    // 如果 env.ASSETS 可用，使用它来获取静态文件
+    if (env.ASSETS) {
+      let response = await env.ASSETS.fetch(request);
       if (response.status !== 404) {
         return response;
       }
-    }
-    
-    // 处理目录请求
-    if (!url.pathname.includes('.')) {
-      const indexRequest = new Request(
-        new URL(`${url.pathname.replace(/\.html$/, '')}/index.html`, request.url)
-      );
-      response = await env.ASSETS.fetch(indexRequest);
-      if (response.status !== 404) {
-        return response;
+      
+      // 处理根路径
+      if (url.pathname === '/' || url.pathname === '') {
+        const indexRequest = new Request(new URL('/index.html', request.url));
+        response = await env.ASSETS.fetch(indexRequest);
+        if (response.status !== 404) {
+          return response;
+        }
+      }
+      
+      // 处理目录请求
+      if (!url.pathname.includes('.')) {
+        const indexRequest = new Request(
+          new URL(`${url.pathname.replace(/\.html$/, '')}/index.html`, request.url)
+        );
+        response = await env.ASSETS.fetch(indexRequest);
+        if (response.status !== 404) {
+          return response;
+        }
+      }
+      
+      // 处理 .html 扩展名
+      if (!url.pathname.endsWith('.html') && !url.pathname.includes('.')) {
+        const htmlRequest = new Request(
+          new URL(`${url.pathname}.html`, request.url)
+        );
+        response = await env.ASSETS.fetch(htmlRequest);
+        if (response.status !== 404) {
+          return response;
+        }
       }
     }
     
-    // 处理 .html 扩展名
-    if (!url.pathname.endsWith('.html') && !url.pathname.includes('.')) {
-      const htmlRequest = new Request(
-        new URL(`${url.pathname}.html`, request.url)
-      );
-      response = await env.ASSETS.fetch(htmlRequest);
-      if (response.status !== 404) {
+    // 如果 env.ASSETS 不可用或未找到文件，尝试使用 fetch
+    try {
+      // 构建文件路径
+      let filePath = url.pathname.replace(/^\/+/, ''); // 移除开头的斜杠
+      if (!filePath) filePath = 'index.html';
+      
+      // 如果是目录，尝试添加 index.html
+      if (!filePath.includes('.')) {
+        filePath = `${filePath.replace(/\.html$/, '')}/index.html`;
+      } else if (!filePath.endsWith('.html') && !filePath.includes('.')) {
+        filePath = `${filePath}.html`;
+      }
+      
+      // 从 public 目录获取文件
+      const response = await fetch(new URL(`./public/${filePath}`, import.meta.url));
+      if (response.ok) {
         return response;
       }
+    } catch (error) {
+      console.error('Error fetching static file:', error);
     }
     
     // 未找到文件
