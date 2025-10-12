@@ -12,13 +12,9 @@ binding = "DB"
 database_name = "guestbook-db"
 database_id = "14b03b98-a188-4e05-ba67-073d879e3779"
 
-# 路由配置
-[build.upload]
-format = "service-worker"
-
-# 自定义域名配置
-# 注意：在 Cloudflare 控制台中设置自定义域名，而不是在这里
-# 这里只保留基本配置
+# 构建配置
+[build]
+command = "npm run build"
 
 # 开发服务器配置
 [dev]
