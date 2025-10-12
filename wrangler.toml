@@ -21,9 +21,14 @@ command = "npm run build"
 format = "modules"
 main = "./_worker.js"
 
-# 添加 assets 绑定
+# 添加 SQLite 类迁移
 [[migrations]]
 tag = "v1"
+new_sqlite_classes = ["guestbook-db"]
+
+# 添加 assets 绑定
+[[migrations]]
+tag = "v2"
 new_classes = ["ASSETS"]
 
 # 开发服务器配置
