@@ -2,25 +2,18 @@ name = "guestbook"
 main = "_worker.js"
 compatibility_date = "2023-10-11"
 
-# 静态网站配置
-[site]
-bucket = "./public"
-
 # D1 数据库绑定
 [[d1_databases]]
 binding = "DB"
 database_name = "guestbook-db"
 database_id = "14b03b98-a188-4e05-ba67-073d879e3779"
 
-# 构建配置
-[build]
-command = "npm run build"
+# 环境变量
+[vars]
+NODE_ENV = "production"
+PAGES_URL = "https://guestbook-static.pages.dev"  # 更新为您的 Pages URL
 
 # 开发服务器配置
 [dev]
 port = 8787
 local_protocol = "http"
-
-# 环境变量
-[vars]
-NODE_ENV = "production"
