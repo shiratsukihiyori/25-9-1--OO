@@ -16,21 +16,6 @@ database_id = "14b03b98-a188-4e05-ba67-073d879e3779"
 [build]
 command = "npm run build"
 
-# 上传配置
-[build.upload]
-format = "modules"
-main = "./_worker.js"
-
-# 添加 SQLite 类迁移
-[[migrations]]
-tag = "v1"
-new_sqlite_classes = ["guestbook-db"]
-
-# 添加 assets 绑定
-[[migrations]]
-tag = "v2"
-new_classes = ["ASSETS"]
-
 # 开发服务器配置
 [dev]
 port = 8787
