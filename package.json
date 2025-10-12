@@ -2,6 +2,7 @@
   "name": "guestbook",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "wrangler pages dev public",
     "build": "npm run db:generate",
@@ -16,7 +17,7 @@
     "sql.js": "^1.8.0"
   },
   "devDependencies": {
-    "wrangler": "^3.0.0"
+    "wrangler": "^4.42.2"
   },
   "engines": {
     "node": ">=16.0.0"

@@ -1,57 +1,14 @@
 name = "guestbook"
 compatibility_date = "2023-10-11"
 
-# 构建命令和输出目录
+# 静态网站配置
+[site]
+bucket = "."
+
+# 构建命令
 [build]
 command = "npm run build"
-publish = "public"
 
 # 环境变量
 [vars]
-NODE_ENV = "production"
-
-# 构建输出目录（Cloudflare Pages 专用）
-[site]
-bucket = "public"
-
-# 静态资源处理
-[[build.upload.rules]]
-glob = "**/*"
-type = "ESModule"
-
-# 路由规则
-[[routes]]
-pattern = "/*"
-script_name = "_worker.js"
-
-# 静态资源缓存
-[[headers]]
-for = "/*"
-[browser_ttl]
-  default = 3600
-  [headers.values]
-  "Cache-Control" = "public, max-age=3600"
-
-# 排除不需要的文件
-[build.upload]
-exclude = ["node_modules/**", "**/.*"]
-
-# 路由配置
-[[routes]]
-pattern = "/*"
-script_name = "_worker.js"
-
-# 静态资源缓存配置
-[[build.upload.rules]]
-glob = "**/*.{js,css,html,json}"  # 缓存所有静态资源
-
-# 数据库配置
-[[d1_databases]]
-binding = "DB"
-database_name = "guestbook-db"
-database_id = ""  # 部署后从 Cloudflare 控制台获取
-
-# 部署配置
-[site]
-bucket = "."
-entry-point = "."
+NODE_ENV = "development"

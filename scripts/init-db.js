@@ -1,15 +1,19 @@
-const fs = require('fs');
-const path = require('path');
-const sql = require('sql.js');
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import fs from 'fs';
+import initSqlJs from 'sql.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // 确保数据目录存在
-const dbDir = path.join(__dirname, '../data');
+const dbDir = join(__dirname, '../data');
 if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
 // 数据库路径
-const dbPath = path.join(dbDir, 'messages.db');
+const dbPath = join(dbDir, 'messages.db');
 
 // 如果数据库已存在，先删除
 if (fs.existsSync(dbPath)) {
@@ -22,10 +26,8 @@ console.log('正在创建新数据库...');
 
 async function initDatabase() {
   try {
-    // 初始化 SQL.js
-    const SQL = await sql.initSqlJs({
-      locateFile: file => `https://sql.js.org/dist/${file}`
-    });
+    // 使用 SQL.js 的默认配置
+    const SQL = await initSqlJs();
     
     // 创建新数据库
     const db = new SQL.Database();
@@ -84,4 +86,4 @@ async function initDatabase() {
 }
 
 // 执行初始化
-initDatabase();
+initDatabase().catch(console.error);

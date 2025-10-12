@@ -1,8 +1,29 @@
 // 初始化DOM元素
-const messageForm = document.getElementById('messageForm');
-const messagesList = document.getElementById('messagesList');
-const notification = document.getElementById('notification');
-const refreshButton = document.getElementById('refreshMessages');
+let messageForm, messagesList, notification, refreshButton;
+
+// 安全地获取DOM元素
+function getElementSafely(id) {
+    const element = document.getElementById(id);
+    if (!element) {
+        console.error(`Element with id '${id}' not found`);
+    }
+    return element;
+}
+
+// 初始化DOM元素引用
+function initElements() {
+    messageForm = getElementSafely('messageForm');
+    messagesList = getElementSafely('messagesList');
+    notification = getElementSafely('notification');
+    refreshButton = getElementSafely('refreshMessages');
+    
+    // 检查必要的元素是否存在
+    if (!messageForm || !messagesList) {
+        console.error('Required elements not found. Make sure the page has the correct structure.');
+        return false;
+    }
+    return true;
+}
 
 // 主题切换按钮
 const themeSwitch = document.createElement('div');
@@ -10,7 +31,7 @@ themeSwitch.className = 'theme-switch';
 themeSwitch.innerHTML = '<i class="fas fa-moon"></i>';
 document.body.appendChild(themeSwitch);
 
-// 消息数据路径
+// 消息数据路径 - 指向项目根目录下的 data 文件夹
 const MESSAGES_JSON_PATH = '/data/messages.json';
 
 // 全局消息数组
@@ -62,16 +83,23 @@ function updateThemeIcon(theme) {
 // 显示通知
 function showNotification(message, type = 'success') {
     const notification = document.getElementById('notification');
-    notification.textContent = typeof message === 'string' ? t(message) : '';
+    if (!notification) {
+        console.error('通知元素未找到');
+        return;
+    }
+    
+    // 直接显示消息，不使用 t() 函数
+    notification.textContent = typeof message === 'string' ? message : '';
     notification.className = `notification ${type}`;
     notification.style.display = 'block';
+    notification.style.opacity = '1';
     
-    // 3秒后自动隐藏
+    // 3秒后开始淡出
     setTimeout(() => {
         notification.style.opacity = '0';
+        // 淡出动画完成后隐藏
         setTimeout(() => {
             notification.style.display = 'none';
-            notification.style.opacity = '1';
         }, 500);
     }, 3000);
 }
@@ -128,21 +156,76 @@ function formatDate(dateString) {
 
 // 渲染留言列表
 async function renderMessages() {
+    // 确保 messagesList 已初始化
+    const messagesList = document.getElementById('messagesList');
+    if (!messagesList) {
+        console.error('无法找到留言列表容器');
+        return;
+    }
+    
     try {
         // 显示加载中
         messagesList.innerHTML = `
             <div class="loading-messages">
-                <i class="fas fa-spinner fa-spin"></i> ${t('loadingMessages')}
+                <i class="fas fa-spinner fa-spin"></i> 正在加载留言...
             </div>`;
             
-        // 从静态JSON文件加载数据
-        const response = await fetch(MESSAGES_JSON_PATH);
-        
-        if (!response.ok) {
-            throw new Error(`加载失败: ${response.status} ${response.statusText}`);
+        // 尝试从服务器加载留言
+        try {
+            console.log('正在从服务器加载留言数据，路径:', MESSAGES_JSON_PATH);
+            const response = await fetch(MESSAGES_JSON_PATH, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Cache-Control': 'no-cache'
+                },
+                cache: 'no-cache'
+            });
+            
+            if (response.ok) {
+                const responseText = await response.text();
+                console.log('从服务器收到响应:', responseText.substring(0, 200) + (responseText.length > 200 ? '...' : ''));
+                
+                try {
+                    messages = JSON.parse(responseText);
+                    console.log('成功从服务器加载留言数据，数量:', messages.length);
+                    
+                    // 保存到本地存储作为备份
+                    try {
+                        localStorage.setItem('guestbook_messages', JSON.stringify(messages));
+                    } catch (localError) {
+                        console.warn('无法保存留言到本地存储:', localError);
+                    }
+                    
+                } catch (parseError) {
+                    console.error('解析服务器返回的JSON时出错:', parseError);
+                    throw new Error(`解析留言数据失败: ${parseError.message}`);
+                }
+            } else {
+                // 如果服务器请求失败，尝试从本地存储加载
+                console.warn('从服务器加载留言失败，尝试从本地存储加载...');
+                throw new Error('无法从服务器加载留言');
+            }
+            
+        } catch (serverError) {
+            console.warn('从服务器加载留言失败:', serverError);
+            
+            // 尝试从本地存储加载
+            try {
+                const savedMessages = localStorage.getItem('guestbook_messages');
+                if (savedMessages) {
+                    messages = JSON.parse(savedMessages);
+                    console.log('从本地存储加载留言数据，数量:', messages.length);
+                    showNotification('已从本地缓存加载留言', 'info');
+                } else {
+                    console.log('本地存储中没有留言数据');
+                    messages = [];
+                }
+            } catch (localError) {
+                console.error('从本地存储加载留言失败:', localError);
+                messages = [];
+                throw new Error('无法加载留言，请检查网络连接后刷新页面重试');
+            }
         }
-        
-        messages = await response.json();
         
         if (!Array.isArray(messages)) {
             throw new Error('数据格式不正确');
@@ -154,45 +237,65 @@ async function renderMessages() {
             messagesList.innerHTML = `
                 <div class="no-messages">
                     <i class="fas fa-comment-slash"></i>
-                    <p>${t('noMessages')}</p>
+                    <p>暂无留言，快来留下第一条吧！</p>
                 </div>`;
             return;
         }
         
-        // 按时间倒序排序
-        messages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        
-        messagesList.innerHTML = messages.map(msg => `
-            <div class="message-card" data-id="${msg.id}">
-                <div class="message-header">
-                    <span class="message-name">${msg.name}</span>
-                    <span class="message-time">${formatDate(msg.created_at)}</span>
+        try {
+            // 按时间倒序排序
+            messages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            
+            messagesList.innerHTML = messages.map(msg => `
+                <div class="message-card" data-id="${msg.id || ''}">
+                    <div class="message-header">
+                        <span class="message-name">${msg.name || '匿名用户'}</span>
+                        <span class="message-time">${msg.created_at ? formatDate(msg.created_at) : '未知时间'}</span>
+                    </div>
+                    <div class="message-content">${msg.message ? msg.message.replace(/\n/g, '<br>') : ''}</div>
+                    ${msg.is_admin_reply ? `<div class="admin-reply-badge"><i class="fas fa-shield-alt"></i> 管理员回复</div>` : ''}
                 </div>
-                <div class="message-content">${msg.message ? msg.message.replace(/\n/g, '<br>') : ''}</div>
-                ${msg.is_admin_reply ? `<div class="admin-reply-badge"><i class="fas fa-shield-alt"></i> ${t('adminReply')}</div>` : ''}
-            </div>
-        `).join('');
+            `).join('');
+        } catch (renderError) {
+            console.error('渲染留言时出错:', renderError);
+            throw new Error('渲染留言时出错: ' + renderError.message);
+        }
     } catch (error) {
         console.error('加载留言失败:', error);
-        messagesList.innerHTML = `
+        // 直接使用中文提示，不依赖 t() 函数
+        const errorMessage = `
             <div class="error-message">
                 <i class="fas fa-exclamation-triangle"></i>
-                <p>${t('loadError')} <a href="javascript:location.reload()">${t('refreshPage')}</a></p>
-                <p class="error-details" style="font-size: 12px; color: #999; margin-top: 5px;">${error.message}</p>
+                <p>加载留言失败，请<a href="javascript:location.reload()">刷新页面</a>重试</p>
+                <p class="error-details" style="font-size: 12px; color: #999; margin-top: 5px;">${error.message || '未知错误'}</p>
             </div>`;
+            
+        if (messagesList && messagesList.innerHTML !== undefined) {
+            messagesList.innerHTML = errorMessage;
+        } else {
+            console.error('无法显示错误信息: messagesList 未定义');
+        }
     }
 }
 
 // 添加新留言
 async function addMessage(name, email, message) {
+    // 确保 messagesList 存在
+    const messagesList = document.getElementById('messagesList');
+    if (!messagesList) {
+        console.error('留言列表容器未找到');
+        showNotification('无法找到留言列表容器', 'error');
+        return;
+    }
+    
     try {
         // 显示加载状态
-        showNotification(t('sendingMessage'), 'info');
+        showNotification('正在提交留言...', 'info');
         
         // 创建新留言对象
         const newMessage = {
             id: Date.now(), // 临时ID
-            name: name.trim(),
+            name: name.trim() || '匿名用户',
             email: email.trim() || 'guest@example.com',
             message: message.trim(),
             status: 'pending',
@@ -200,23 +303,77 @@ async function addMessage(name, email, message) {
             is_admin_reply: false
         };
         
+        console.log('添加新留言:', newMessage);
+        
         // 添加到本地数组
+        if (!Array.isArray(messages)) {
+            messages = [];
+        }
         messages.unshift(newMessage);
         
-        // 更新UI
-        await renderMessages();
+        // 立即更新UI
+        try {
+            // 创建新的留言元素
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message-card';
+            messageElement.dataset.id = newMessage.id;
+            messageElement.innerHTML = `
+                <div class="message-header">
+                    <span class="message-name">${newMessage.name}</span>
+                    <span class="message-time">刚刚</span>
+                </div>
+                <div class="message-content">${newMessage.message.replace(/\n/g, '<br>')}</div>
+            `;
+            
+            // 添加到列表顶部
+            if (messagesList.firstChild) {
+                messagesList.insertBefore(messageElement, messagesList.firstChild);
+            } else {
+                messagesList.appendChild(messageElement);
+            }
+            
+            // 显示成功消息
+            showNotification('留言提交成功！');
+            
+        } catch (renderError) {
+            console.error('更新UI时出错:', renderError);
+            // 如果UI更新失败，尝试重新渲染整个列表
+            await renderMessages();
+        }
         
-        // 显示成功消息
-        showNotification(t('messageSent'));
+        // 保存到本地存储
+        try {
+            localStorage.setItem('guestbook_messages', JSON.stringify(messages));
+        } catch (localError) {
+            console.error('保存到本地存储失败:', localError);
+            showNotification('留言已提交，但无法保存到本地存储', 'warning');
+        }
         
         // 清空表单
         if (messageForm) {
             messageForm.reset();
         }
         
-        // 注意：在实际部署时，您需要实现一个API端点来处理留言提交
-        // 或者使用表单提交到表单处理服务（如Formspree、Netlify Forms等）
-        console.warn('留言已添加到本地，但需要配置后端API以保存到数据库');
+        // 尝试保存到服务器（如果有后端API）
+        try {
+            const response = await fetch('/api/save-message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newMessage)
+            });
+            
+            if (!response.ok) {
+                throw new Error('保存留言到服务器失败');
+            }
+            
+            console.log('留言已保存到服务器');
+            
+        } catch (saveError) {
+            console.error('保存留言到服务器失败:', saveError);
+            // 这里不显示错误信息，因为已经在本地保存成功
+        }
         
     } catch (error) {
         console.error('发送留言失败:', error);
@@ -663,9 +820,83 @@ function init() {
     setTimeout(checkHoliday, 1000);
 }
 
-// 页面加载完成后初始化
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-} else {
-    init();
+// 显示错误信息
+function showError(message) {
+    console.error(message);
+    // 尝试在页面上显示错误信息
+    const errorContainer = document.getElementById('errorContainer');
+    if (errorContainer) {
+        errorContainer.style.display = 'block';
+        const errorMessage = errorContainer.querySelector('p');
+        if (errorMessage) {
+            errorMessage.textContent = message;
+        }
+    }
+    
+    // 同时也在控制台输出
+    console.error(message);
 }
+
+// 页面加载完成后初始化
+console.log('Guestbook script loaded');
+
+// 确保DOM完全加载后再初始化
+function onDOMContentLoaded() {
+    console.log('DOM fully loaded, initializing guestbook...');
+    try {
+        // 确保必要的 DOM 元素存在
+        if (!document.getElementById('messagesList')) {
+            throw new Error('无法找到留言列表容器');
+        }
+        
+        // 初始化元素
+        if (!initElements()) {
+            throw new Error('初始化页面元素失败');
+        }
+        
+        // 初始化应用
+        init();
+    } catch (error) {
+        console.error('Failed to initialize guestbook:', error);
+        showError(`初始化留言板失败: ${error.message || '未知错误'}`);
+    }
+}
+
+// 添加 DOM 加载完成事件监听
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onDOMContentLoaded);
+} else {
+    // DOMContentLoaded has already fired
+    onDOMContentLoaded();
+}
+
+// 添加全局错误处理
+window.addEventListener('error', function(event) {
+    const error = event.error || event;
+    const errorMessage = error.message || '发生未知错误';
+    console.error('Unhandled error:', error);
+    
+    // 显示错误通知
+    const notification = document.getElementById('notification');
+    if (notification) {
+        notification.textContent = `错误: ${errorMessage}`;
+        notification.className = 'notification error';
+        notification.style.display = 'block';
+        
+        // 5秒后自动隐藏
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 5000);
+    }
+    
+    // 使用 showError 显示错误
+    showError(`发生错误: ${errorMessage}`);
+    return false;
+});
+
+// 添加未捕获的Promise错误处理
+window.addEventListener('unhandledrejection', function(event) {
+    console.error('Unhandled promise rejection:', event.reason);
+    showError(`操作失败: ${event.reason?.message || '未知错误'}`);
+    event.preventDefault();
+});
