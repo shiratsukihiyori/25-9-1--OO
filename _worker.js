@@ -32,7 +32,10 @@ export default {
           request: request.clone(), // 克隆请求以便后续使用
           env: {
             DB: env.DB,
-            ADMIN_API_KEY: env.ADMIN_API_KEY
+            ADMIN_API_KEY: env.ADMIN_API_KEY,
+            SUPABASE_URL: env.SUPABASE_URL,
+            SUPABASE_ANON_KEY: env.SUPABASE_ANON_KEY,
+            SUPABASE_SERVICE_ROLE_KEY: env.SUPABASE_SERVICE_ROLE_KEY
           }
         });
 
@@ -86,18 +89,20 @@ export default {
           let html = await response.text();
           
           // 从环境变量获取凭据
-          const adminUsername = env.ADMIN_USERNAME || 'hiyori';
-          const adminPassword = env.ADMIN_PASSWORD || 'hiyori';
+          const adminUsername = env.ADMIN_USERNAME || 'admin';
+          const adminPassword = env.ADMIN_PASSWORD || 'admin123';
           const adminApiKey = env.ADMIN_API_KEY || '';
+          
+          const injectedConfig = {
+            adminUsername,
+            adminPassword,
+            adminApiKey
+          };
           
           // 注入环境变量到 HTML 中
           html = html.replace('</head>', `
             <script>
-              window.APP_CONFIG = {
-                adminUsername: '${adminUsername.replace(/'/g, '\'')}',
-                adminPassword: '${adminPassword.replace(/'/g, '\'')}',
-                adminApiKey: '${adminApiKey.replace(/'/g, '\'')}'
-              };
+              window.APP_CONFIG = ${JSON.stringify(injectedConfig)};
             </script>
           </head>`);
           
