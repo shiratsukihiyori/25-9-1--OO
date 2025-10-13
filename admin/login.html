@@ -209,37 +209,39 @@
         
         // 验证输入
         if (!username) {
-          showError('username-error', '请输入用户名');
+          showError('usernameError', '请输入用户名');
           return;
         }
         
         if (!password) {
-          showError('password-error', '请输入密码');
+          showError('passwordError', '请输入密码');
           return;
         }
         
         // 禁用登录按钮
         loginBtn.disabled = true;
-        loginBtn.textContent = '登录中...';
+        loginText.style.display = 'none';
+        loginSpinner.style.display = 'inline-block';
         
         // 从环境变量中获取凭据
         const adminUsername = window.APP_CONFIG?.adminUsername || 'admin';
         const adminPassword = window.APP_CONFIG?.adminPassword || 'admin123';
-        
+        const adminApiKey = window.APP_CONFIG?.adminApiKey || '';
+
         // 验证用户名和密码
         if (username === adminUsername && password === adminPassword) {
-          // 登录成功，保存登录状态到localStorage
-          localStorage.setItem('isLoggedIn', 'true');
-          // 保存管理员用户名，以便在其他页面显示
+          if (!adminApiKey) {
+            showError('loginError', '管理员 API Key 未配置');
+            resetButton();
+            return;
+          }
+
+          localStorage.setItem('admin_token', adminApiKey);
           localStorage.setItem('adminUsername', username);
-          // 跳转到管理页面
-          window.location.href = 'index.html';
+          window.location.href = 'dashboard.html';
         } else {
-          // 登录失败，显示错误信息
-          showError('login-error', '登录失败，用户名或密码错误');
-          // 恢复登录按钮
-          loginBtn.disabled = false;
-          loginBtn.textContent = '登录';
+          showError('loginError', '登录失败，用户名或密码错误');
+          resetButton();
         }
       });
       
@@ -249,20 +251,6 @@
         alert('请联系系统管理员重置密码');
       });
       
-      // 显示错误信息
-      function showError(elementId, message) {
-        const element = document.getElementById(elementId);
-        if (element) {
-          element.textContent = message;
-          element.style.display = 'block';
-          
-          // 3秒后隐藏错误信息
-          setTimeout(() => {
-            element.style.display = 'none';
-          }, 3000);
-        }
-      }
-      
       // 自动填充测试凭据（仅开发环境）
       if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
         // 从环境变量中获取凭据，如果不存在则使用默认值
@@ -271,6 +259,27 @@
         
         usernameInput.value = defaultUsername;
         passwordInput.value = defaultPassword;
+      }
+      function resetButton() {
+        loginBtn.disabled = false;
+        loginText.style.display = 'inline';
+        loginSpinner.style.display = 'none';
+      }
+
+      const loginError = document.createElement('div');
+      loginError.id = 'loginError';
+      loginError.className = 'error-message';
+      loginBtn.parentElement.appendChild(loginError);
+
+      function showError(elementId, message) {
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.textContent = message;
+          element.style.display = 'block';
+          setTimeout(() => {
+            element.style.display = 'none';
+          }, 3000);
+        }
       }
     });
   </script>

@@ -637,6 +637,15 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      const tokenKey = 'admin_token';
+      const usernameKey = 'adminUsername';
+      const pendingBadge = document.getElementById('pendingCount');
+      const headerPendingCount = document.getElementById('pendingCount');
+      const publishedCountEl = document.getElementById('publishedCount');
+      const todayCountEl = document.getElementById('todayCount');
+      const userNameEl = document.querySelector('.user-name');
+      const cardPendingCount = document.getElementById('pendingCount');
+      
       // 侧边栏切换
       const menuToggle = document.getElementById('menuToggle');
       const sidebar = document.getElementById('sidebar');
@@ -671,30 +680,68 @@
       logoutBtn.addEventListener('click', function(e) {
         e.preventDefault();
         if (confirm('确定要退出登录吗？')) {
-          localStorage.removeItem('admin_token');
+          localStorage.removeItem(tokenKey);
+          localStorage.removeItem(usernameKey);
           window.location.href = 'login.html';
         }
       });
       
       // 检查登录状态
       function checkAuth() {
-        const token = localStorage.getItem('admin_token');
+        const token = localStorage.getItem(tokenKey);
         if (!token) {
           window.location.href = 'login.html';
+          return null;
+        }
+        const username = localStorage.getItem(usernameKey);
+        if (username && userNameEl) {
+          userNameEl.textContent = username;
+        }
+        return token;
+      }
+      
+      function getAuthHeaders() {
+        const token = localStorage.getItem(tokenKey);
+        return {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        };
+      }
+      
+      function updateDashboardStats(messages) {
+        const totalPending = messages.filter(item => (item.status || '').toLowerCase() === 'pending').length;
+        const totalApproved = messages.filter(item => (item.status || '').toLowerCase() === 'approved' || !item.status).length;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayCount = messages.filter(item => {
+          if (!item.created_at) return false;
+          const created = new Date(item.created_at);
+          return created >= today;
+        }).length;
+        if (pendingBadge) {
+          pendingBadge.textContent = totalPending;
+        }
+        if (cardPendingCount) {
+          cardPendingCount.textContent = totalPending;
+        }
+        if (publishedCountEl) {
+          publishedCountEl.textContent = totalApproved;
+        }
+        if (todayCountEl) {
+          todayCountEl.textContent = todayCount;
         }
       }
       
       // 加载所有留言
-      async function loadMessages() {
+      async function loadMessages(filterStatus = null) {
         try {
           const response = await fetch('/api/admin/messages', {
             headers: {
-              'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
+              'Authorization': 'Bearer ' + localStorage.getItem(tokenKey)
             }
           });
           
           if (response.status === 401) {
-            // 未授权，跳转到登录页
             window.location.href = 'login.html';
             return;
           }
@@ -705,11 +752,20 @@
             throw new Error(data.error || '加载留言失败');
           }
           
-          renderMessages(data.data || []);
+          const messages = Array.isArray(data.data) ? data.data : [];
+          updateDashboardStats(messages);
+
+          let list = messages;
+          if (filterStatus) {
+            const target = filterStatus.toLowerCase();
+            list = messages.filter(item => (item.status || '').toLowerCase() === target);
+          }
+
+          renderMessages(list);
           
         } catch (error) {
           console.error('加载留言失败:', error);
-          alert('加载留言失败: ' + error.message);
+          showNotification('加载留言失败: ' + error.message, 'error');
         }
       }
       
@@ -729,12 +785,15 @@
           return;
         }
         
-        // 按时间倒序排序
         const sortedMessages = [...messages].sort((a, b) => 
           new Date(b.created_at) - new Date(a.created_at)
         );
         
-        tbody.innerHTML = sortedMessages.map(message => `
+        tbody.innerHTML = sortedMessages.map(message => {
+          const statusValue = (message.status || 'approved').toLowerCase();
+          const statusLabel = statusValue === 'approved' ? '已显示' : statusValue === 'rejected' ? '已拒绝' : '待审核';
+          const statusClass = statusValue === 'approved' ? 'badge-success' : statusValue === 'rejected' ? 'badge-danger' : 'badge-warning';
+          return `
           <tr class="fade-in">
             <td>#${message.id}</td>
             <td>
@@ -757,8 +816,8 @@
             <td>${formatDate(message.created_at)}</td>
             <td>${escapeHtml((message.language || '').toString() || 'global').toUpperCase()}</td>
             <td>
-              <span class="badge ${message.status === 'approved' ? 'badge-success' : 'badge-secondary'}" style="padding: 5px 8px; border-radius: 12px; font-size: 12px;">
-                ${message.status === 'approved' ? '已显示' : '已隐藏'}
+              <span class="badge ${statusClass}" style="padding: 5px 8px; border-radius: 12px; font-size: 12px;">
+                ${statusLabel}
               </span>
             </td>
             <td class="action-buttons" style="white-space: nowrap;">
@@ -770,7 +829,8 @@
               </button>
             </td>
           </tr>
-        `).join('');
+        `;
+        }).join('');
       }
       
       // 删除留言
@@ -783,7 +843,7 @@
           const response = await fetch(`/api/admin/messages/${messageId}`, {
             method: 'DELETE',
             headers: {
-              'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
+              'Authorization': 'Bearer ' + localStorage.getItem(tokenKey)
             }
           });
           
@@ -799,7 +859,7 @@
           }
           
           showNotification('留言已删除', 'success');
-          loadMessages(); // 重新加载留言列表
+          loadMessages();
           
         } catch (error) {
           console.error('删除留言失败:', error);
@@ -807,21 +867,20 @@
         }
       }
       
-      // 初始化
+      function loadPendingMessages() {
+        loadMessages('pending');
+      }
+      
       checkAuth();
       loadMessages();
       
-      // 全局函数，用于在按钮点击时调用
       window.approveMessage = async function(messageId) {
         if (!confirm('确定要通过这条留言吗？')) return;
         
         try {
           const response = await fetch('/api/admin/review', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
-            },
+            headers: getAuthHeaders(),
             body: JSON.stringify({
               id: messageId,
               action: 'approve'
@@ -834,10 +893,7 @@
             throw new Error(data.error || '操作失败');
           }
           
-          // 重新加载留言
-          loadPendingMessages();
-          
-          // 显示成功消息
+          loadMessages();
           showNotification('留言已通过审核', 'success');
           
         } catch (error) {
@@ -852,10 +908,7 @@
         try {
           const response = await fetch('/api/admin/review', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
-            },
+            headers: getAuthHeaders(),
             body: JSON.stringify({
               id: messageId,
               action: 'reject'
@@ -868,10 +921,7 @@
             throw new Error(data.error || '操作失败');
           }
           
-          // 重新加载留言
-          loadPendingMessages();
-          
-          // 显示成功消息
+          loadMessages();
           showNotification('留言已拒绝', 'success');
           
         } catch (error) {
