@@ -10,7 +10,7 @@ themeSwitch.innerHTML = '<i class="fas fa-moon"></i>';
 document.body.appendChild(themeSwitch);
 
 // 初始化留言数据（使用网站范围的存储）
-let messages = JSON.parse(localStorage.getItem('hiyori_guestbook_messages')) || [];
+let messages = [];
 
 // 获取当前语言
 function getCurrentLanguage() {
@@ -61,6 +61,40 @@ const i18n = {
 function t(key) {
   const lang = getCurrentLanguage();
   return i18n[lang]?.[key] || i18n.zh[key] || key;
+}
+
+function escapeHtml(value) {
+  if (value === null || value === undefined) return '';
+  return value
+    .toString()
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function formatMessageContent(text) {
+  if (!text) return '';
+  return escapeHtml(text).replace(/\n/g, '<br>');
+}
+
+async function loadMessagesFromServer() {
+  const queryLang = 'all';
+  try {
+    const response = await fetch(`/api/messages?lang=${queryLang}`);
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || '加载留言失败');
+    }
+    messages = Array.isArray(result.data) ? result.data : [];
+    renderMessages();
+  } catch (error) {
+    console.error('加载留言失败:', error);
+    messages = [];
+    renderMessages();
+    showNotification(error.message || '加载留言失败');
+  }
 }
 
 // 初始化主题
@@ -152,7 +186,7 @@ function formatDate(dateString) {
 
 // 渲染留言列表
 function renderMessages() {
-    if (messages.length === 0) {
+    if (!messages || messages.length === 0) {
         messagesList.innerHTML = `
             <div class="no-messages">
                 <i class="fas fa-comment-slash"></i>
@@ -161,35 +195,67 @@ function renderMessages() {
         return;
     }
     
-    messagesList.innerHTML = messages.map((msg, index) => `
-        <div class="message-card" data-id="${index}">
+    messagesList.innerHTML = messages.map((msg, index) => {
+        const timestamp = msg.created_at || msg.timestamp || new Date().toISOString();
+        const currentLang = getCurrentLanguage();
+        const languageCode = (msg.language || '').toString().trim() || 'global';
+        const languageLabel = languageCode.toUpperCase();
+        const rawName = msg.name && msg.name.trim() ? msg.name.trim() : (currentLang === 'ja' ? '匿名' : currentLang === 'en' ? 'Guest' : '匿名');
+        const safeName = escapeHtml(rawName);
+        const content = formatMessageContent(msg.message || '');
+        const idValue = msg.id ?? index;
+        return `
+        <div class="message-card" data-id="${idValue}">
             <div class="message-header">
-                <span class="message-name">${msg.name}</span>
-                <span class="message-time">${formatDate(msg.timestamp)}</span>
+                <span class="message-name">${safeName}${languageLabel ? `<span class="message-language">${languageLabel}</span>` : ''}</span>
+                <span class="message-time">${formatDate(timestamp)}</span>
             </div>
-            <div class="message-content">${msg.message}</div>
-        </div>
-    `).join('');
+            <div class="message-content">${content}</div>
+        </div>`;
+    }).join('');
 }
 
 // 添加新留言
-function addMessage(name, email, message) {
+async function addMessage(name, email, message) {
     const newMessage = {
         name: name.trim(),
         email: email.trim(),
         message: message.trim(),
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        language: getCurrentLanguage()
     };
     
-    messages.unshift(newMessage);
-    // 保存到共享存储，使用网站范围的键名
-  localStorage.setItem('hiyori_guestbook_messages', JSON.stringify(messages));
-    
-    // 重新渲染留言列表
-    renderMessages();
-    
-    // 显示成功消息
-  showNotification(t('messageSent'));
+    try {
+        const response = await fetch('/api/messages', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: newMessage.name,
+                email: newMessage.email || null,
+                message: newMessage.message,
+                language: newMessage.language
+            })
+        });
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.error || '提交留言失败');
+        }
+        messages.unshift(result.data || { ...newMessage, id: result.data?.id });
+        
+        // 重新渲染留言列表
+        renderMessages();
+        
+        // 显示成功消息
+      showNotification(t('messageSent'));
+        await loadMessagesFromServer();
+        return true;
+    } catch (error) {
+        console.error('提交留言失败:', error);
+        showNotification(error.message || '提交留言失败');
+        return false;
+    }
 }
 
 // 检查节日
@@ -447,7 +513,7 @@ function initEventListeners() {
     if (!messageForm) return;
     
     // 表单提交
-    messageForm.addEventListener('submit', (e) => {
+    messageForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const nameInput = document.getElementById('name');
@@ -461,12 +527,14 @@ function initEventListeners() {
         }
         
         // 添加留言
-        addMessage(nameInput.value, emailInput.value, messageInput.value);
+        const success = await addMessage(nameInput.value, emailInput.value, messageInput.value);
         
-        // 清空表单
-        nameInput.value = '';
-        messageInput.value = '';
-        emailInput.value = '';
+        if (success) {
+            // 清空表单
+            nameInput.value = '';
+            messageInput.value = '';
+            emailInput.value = '';
+        }
     });
     
     // 表情点击
@@ -651,6 +719,7 @@ function init() {
     initTheme();
     initEventListeners();
     renderMessages();
+    loadMessagesFromServer();
     
     // 检查节日（延迟执行，避免影响页面加载）
     setTimeout(checkHoliday, 1000);

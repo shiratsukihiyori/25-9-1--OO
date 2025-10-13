@@ -612,6 +612,7 @@
                     <th>用户</th>
                     <th>留言内容</th>
                     <th>时间</th>
+                    <th>语言</th>
                     <th>状态</th>
                     <th>操作</th>
                   </tr>
@@ -714,12 +715,12 @@
       
       // 渲染留言列表
       function renderMessages(messages) {
-        const tbody = document.getElementById('pendingMessagesBody');
+        const tbody = document.getElementById('messagesBody');
         
         if (!messages || messages.length === 0) {
           tbody.innerHTML = `
             <tr>
-              <td colspan="6" class="text-center py-4">
+              <td colspan="7" class="text-center py-4">
                 <i class="far fa-comment-dots" style="font-size: 2rem; color: #6c757d; margin-bottom: 10px;"></i>
                 <p>暂无留言</p>
               </td>
@@ -754,6 +755,7 @@
               </div>
             </td>
             <td>${formatDate(message.created_at)}</td>
+            <td>${escapeHtml((message.language || '').toString() || 'global').toUpperCase()}</td>
             <td>
               <span class="badge ${message.status === 'approved' ? 'badge-success' : 'badge-secondary'}" style="padding: 5px 8px; border-radius: 12px; font-size: 12px;">
                 ${message.status === 'approved' ? '已显示' : '已隐藏'}
