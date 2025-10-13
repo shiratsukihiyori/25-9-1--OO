@@ -37,6 +37,43 @@ function normalizeLanguage(input) {
   return value.toLowerCase();
 }
 
+async function fetchAggregatedMessages(supabase, languageFilter = 'all') {
+  const { data, error } = await supabase
+    .from('guestbook_messages')
+    .select('id,name,email,message,language,created_at,parent_id,is_admin_reply')
+    .order('created_at', { ascending: false })
+    .limit(1000);
+
+  if (error) {
+    throw error;
+  }
+
+  const repliesByParent = new Map();
+  const parents = [];
+
+  for (const row of data || []) {
+    if (row.parent_id) {
+      if (!repliesByParent.has(row.parent_id)) {
+        repliesByParent.set(row.parent_id, []);
+      }
+      repliesByParent.get(row.parent_id).push(row);
+    } else {
+      parents.push(row);
+    }
+  }
+
+  const normalizedFilter = normalizeLanguage(languageFilter);
+
+  return parents
+    .filter((message) => normalizedFilter === 'all' || normalizeLanguage(message.language) === normalizedFilter)
+    .map((message) => ({
+      ...message,
+      replies: (repliesByParent.get(message.id) || []).sort((a, b) => {
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      })
+    }));
+}
+
 async function requireAdmin(request, env) {
   const authHeader = request.headers.get('Authorization');
   if (!authHeader || authHeader !== `Bearer ${env.ADMIN_API_KEY}`) {
@@ -62,22 +99,9 @@ export async function onRequest({ request, env }) {
   if (request.method === 'GET' && pathname === '/api/messages') {
     try {
       const lang = normalizeLanguage(searchParams.get('lang') || 'all');
-      let query = supabase
-        .from('guestbook_messages')
-        .select('id,name,email,message,language,created_at')
-        .order('created_at', { ascending: false })
-        .limit(500);
+      const messages = await fetchAggregatedMessages(supabase, lang);
 
-      if (lang !== 'all') {
-        query = query.eq('language', lang);
-      }
-
-      const { data, error } = await query;
-      if (error) {
-        throw error;
-      }
-
-      return jsonResponse({ data: data ?? [] });
+      return jsonResponse({ data: messages });
     } catch (error) {
       return jsonResponse({ error: '获取留言失败', details: error.message }, 500);
     }
@@ -107,7 +131,9 @@ export async function onRequest({ request, env }) {
             email: email || null,
             message,
             language,
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            parent_id: null,
+            is_admin_reply: false
           }
         ])
         .select()
@@ -131,16 +157,8 @@ export async function onRequest({ request, env }) {
 
     if (request.method === 'GET' && pathname === '/api/admin/messages') {
       try {
-        const { data, error } = await supabase
-          .from('guestbook_messages')
-          .select('id,name,email,message,language,created_at')
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          throw error;
-        }
-
-        return jsonResponse({ data: data ?? [] });
+        const messages = await fetchAggregatedMessages(supabase, 'all');
+        return jsonResponse({ data: messages });
       } catch (error) {
         return jsonResponse({ error: '获取留言失败', details: error.message }, 500);
       }
@@ -156,7 +174,7 @@ export async function onRequest({ request, env }) {
         const { error } = await supabase
           .from('guestbook_messages')
           .delete()
-          .eq('id', messageId);
+          .or(`id.eq.${messageId},parent_id.eq.${messageId}`);
 
         if (error) {
           throw error;
@@ -165,6 +183,60 @@ export async function onRequest({ request, env }) {
         return jsonResponse({ success: true });
       } catch (error) {
         return jsonResponse({ error: '删除留言失败', details: error.message }, 500);
+      }
+    }
+
+    if (request.method === 'POST' && pathname === '/api/admin/reply') {
+      try {
+        const payload = await request.json();
+        const parentId = Number(payload?.parent_id);
+        const replyContent = typeof payload?.message === 'string' ? payload.message.trim() : '';
+
+        if (!Number.isInteger(parentId) || parentId <= 0) {
+          return jsonResponse({ error: '无效的留言ID' }, 400);
+        }
+
+        if (!replyContent) {
+          return jsonResponse({ error: '回复内容不能为空' }, 400);
+        }
+
+        const { data: parent, error: parentError } = await supabase
+          .from('guestbook_messages')
+          .select('id, language')
+          .eq('id', parentId)
+          .maybeSingle();
+
+        if (parentError) {
+          throw parentError;
+        }
+
+        if (!parent) {
+          return jsonResponse({ error: '原始留言不存在' }, 404);
+        }
+
+        const { data, error } = await supabase
+          .from('guestbook_messages')
+          .insert([
+            {
+              name: '管理员',
+              email: null,
+              message: replyContent,
+              language: parent.language || 'global',
+              parent_id: parentId,
+              is_admin_reply: true,
+              created_at: new Date().toISOString()
+            }
+          ])
+          .select()
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        return jsonResponse({ success: true, data }, 201);
+      } catch (error) {
+        return jsonResponse({ error: '提交回复失败', details: error.message }, 500);
       }
     }
   }
