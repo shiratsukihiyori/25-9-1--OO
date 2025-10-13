@@ -211,6 +211,16 @@ function renderMessages() {
                 <span class="message-time">${formatDate(timestamp)}</span>
             </div>
             <div class="message-content">${content}</div>
+            ${msg.admin_reply ? `
+                <div class="admin-reply">
+                    <div class="admin-reply-header">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>管理员回复</span>
+                        <small>${formatDate(msg.admin_reply_at || timestamp)}</small>
+                    </div>
+                    <div class="admin-reply-content">${formatMessageContent(msg.admin_reply)}</div>
+                </div>
+            ` : ''}
         </div>`;
     }).join('');
 }

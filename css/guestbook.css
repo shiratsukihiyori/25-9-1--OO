@@ -254,3 +254,50 @@ textarea:focus {
         font-size: 20px;
     }
 }
+
+/* 管理员回复样式 */
+.admin-reply {
+    margin-top: 12px;
+    padding: 12px;
+    background-color: rgba(74, 108, 247, 0.05);
+    border-radius: 8px;
+    border-right: 3px solid #4a6cf7;
+}
+
+.admin-reply-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+    color: #4a6cf7;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.admin-reply-header i {
+    margin-right: 6px;
+}
+
+.admin-reply-header small {
+    margin-left: auto;
+    color: #888;
+    font-size: 0.8em;
+}
+
+.admin-reply-content {
+    color: #333;
+    line-height: 1.5;
+}
+
+/* 暗黑模式适配 */
+[data-theme="dark"] .admin-reply {
+    background-color: rgba(74, 108, 247, 0.15);
+    border-right-color: #5d7bf0;
+}
+
+[data-theme="dark"] .admin-reply-header {
+    color: #8ea3f0;
+}
+
+[data-theme="dark"] .admin-reply-content {
+    color: #e0e0e0;
+}
