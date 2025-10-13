@@ -301,3 +301,13 @@ textarea:focus {
 [data-theme="dark"] .admin-reply-content {
     color: #e0e0e0;
 }
+
+/* 管理员回复头像图标样式 */
+.admin-reply-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 6px;
+    box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.2);
+}

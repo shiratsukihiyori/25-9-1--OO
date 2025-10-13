@@ -214,8 +214,8 @@ function renderMessages() {
             ${msg.admin_reply ? `
                 <div class="admin-reply">
                     <div class="admin-reply-header">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>管理员回复</span>
+                        <img src="/1.png" class="admin-reply-icon" alt="白月 日和（しらつき ひより）" />
+                        <span>白月 日和（しらつき ひより）</span>
                         <small>${formatDate(msg.admin_reply_at || timestamp)}</small>
                     </div>
                     <div class="admin-reply-content">${formatMessageContent(msg.admin_reply)}</div>
