@@ -268,130 +268,115 @@ async function addMessage(name, email, message) {
     }
 }
 
-// 检查节日
 function checkHoliday() {
     const now = new Date();
     const month = now.getMonth() + 1;
     const date = now.getDate();
+    const currentLang = getCurrentLanguage();
     
-    // 多语言节日数据
-    const holidays = {
-        // 通用节日
-        '0101': { 
+    // 通用节日（所有语言版本都显示）
+    const universalHolidays = {
+        '0101': { // 元旦（联合国申遗成功）
             zh: { title: '元旦', message: '🎉 新年快乐！愿新的一年充满欢乐和惊喜！' },
             en: { title: 'New Year', message: '🎉 Happy New Year! Wishing you a year full of joy and surprises!' },
             ja: { title: '元日', message: '🎉 明けましておめでとうございます！素晴らしい1年になりますように！' },
             daysBefore: 3 
-        },
-        '0214': { 
-            zh: { title: '情人节', message: '❤️ 情人节快乐！愿你的每一天都充满爱～' },
-            en: { title: 'Valentine\'s Day', message: '❤️ Happy Valentine\'s Day! May your days be filled with love~' },
-            ja: { title: 'バレンタインデー', message: '❤️ バレンタインデーおめでとう！愛に満ちた1日を～' },
-            daysBefore: 3 
-        },
-        '1225': { 
-            zh: { title: '圣诞节', message: '🎄 圣诞快乐！愿你的生活充满温暖和喜悦～' },
-            en: { title: 'Christmas', message: '🎄 Merry Christmas! May your life be filled with warmth and joy~' },
-            ja: { title: 'クリスマス', message: '🎄 メリークリスマス！素敵な1日になりますように～' },
-            daysBefore: 7 
-        },
-        
-        // 中国特有节日
-        '1001': { 
-            zh: { title: '国庆节', message: '🇨🇳 国庆节快乐！' },
-            en: { title: 'National Day', message: '🇨🇳 Happy National Day of China!' },
-            ja: { title: '中国国慶節', message: '🇨🇳 中国の国慶節、おめでとうございます！' },
-            daysBefore: 5,
-            regions: ['zh']
-        },
-        '0501': { 
-            zh: { title: '劳动节', message: '👷 劳动节快乐！感谢你的辛勤付出～' },
-            en: { title: 'Labor Day', message: '👷 Happy Labor Day! Thank you for your hard work~' },
-            ja: { title: '労働者の日', message: '👷 労働者の日、お疲れ様です！' },
-            daysBefore: 3
-        },
-        '0601': { 
-            zh: { title: '儿童节', message: '🎈 儿童节快乐！保持童心，永远年轻～' },
-            en: { title: 'Children\'s Day', message: '🎈 Happy Children\'s Day! Stay young at heart~' },
-            ja: { title: '子供の日', message: '🎈 こどもの日おめでとう！' },
-            daysBefore: 3
-        },
-        
-        // 日本特有节日
-        '0203': {
-            zh: { title: '节分', message: '👹 节分快乐！撒豆驱鬼迎福～' },
-            en: { title: 'Setsubun', message: '👹 Happy Setsubun! Drive away evil spirits and welcome good fortune~' },
-            ja: { title: '節分', message: '👹 鬼は外！福は内！' },
-            daysBefore: 3,
-            regions: ['ja']
-        },
-        '0717': {
-            zh: { title: '海之日', message: '🌊 海之日快乐！' },
-            en: { title: 'Marine Day', message: '🌊 Happy Marine Day! Enjoy the ocean~' },
-            ja: { title: '海の日', message: '🌊 海の日、海に感謝する日です' },
-            daysBefore: 3,
-            regions: ['ja']
-        },
-        
-        // 西方节日
-        '1104': {
-            zh: { title: '感恩节', message: '🦃 感恩节快乐！感谢有你～' },
-            en: { title: 'Thanksgiving', message: '🦃 Happy Thanksgiving! So much to be thankful for~' },
-            ja: { title: '感謝祭', message: '🦃 感謝祭、日頃の感謝を伝えましょう' },
-            daysBefore: 3,
-            regions: ['en']
-        },
-        '1031': {
-            zh: { title: '万圣节', message: '🎃 万圣节快乐！不给糖就捣蛋～' },
-            en: { title: 'Halloween', message: '🎃 Happy Halloween! Trick or treat~' },
-            ja: { title: 'ハロウィン', message: '🎃 ハロウィンおめでとう！トリック・オア・トリート！' },
-            daysBefore: 3
-        },
-        
-        // 其他节日
-        '0401': { 
-            zh: { title: '愚人节', message: '🎭 今天是愚人节，小心被整蛊哦～' },
-            en: { title: 'April Fools\' Day', message: '🎭 Happy April Fools\' Day! Watch out for pranks~' },
-            ja: { title: 'エイプリルフール', message: '🎭 エイプリルフール！嘘をついてもいい日です～' },
-            daysBefore: 1 
-        },
-        '1231': { 
-            zh: { title: '除夕', message: '🎆 新年快乐！愿新的一年万事如意～' },
-            en: { title: 'New Year\'s Eve', message: '🎆 Happy New Year\'s Eve! Wishing you all the best in the coming year~' },
-            ja: { title: '大晦日', message: '🎆 良いお年をお迎えください！' },
-            daysBefore: 3 
-        },
-        '0814': {
-            zh: { title: 'Hiyori生日快乐', message: '🎂 祝Hiyori生日快乐！愿你的每一天都充满阳光和欢笑！' },
-            en: { title: 'Happy Birthday Hiyori', message: '🎂 Happy Birthday Hiyori! Wishing you a day filled with sunshine and laughter!' },
-            ja: { title: 'ひよりさん、お誕生日おめでとう', message: '🎂 ひよりさん、お誕生日おめでとうございます！素晴らしい1年になりますように！' },
-            daysBefore: 3,
-            isBirthday: true
         }
     };
+    
+    // 中国节日（仅中文版显示）
+    const chineseHolidays = {
+        '0110': { // 中国人民警察节
+            zh: { title: '中国人民警察节', message: '👮 中国人民警察节快乐！感谢您们的守护与付出！' },
+            daysBefore: 1
+        },
+        '0501': { // 劳动节
+            zh: { title: '劳动节', message: '👷 劳动节快乐！感谢你的辛勤付出～' },
+            daysBefore: 3
+        },
+        '0601': { // 儿童节
+            zh: { title: '儿童节', message: '🎈 儿童节快乐！保持童心，永远年轻～' },
+            daysBefore: 3
+        },
+        '1001': { // 国庆节
+            zh: { title: '国庆节', message: '🇨🇳 国庆节快乐！' },
+            daysBefore: 5
+        }
+    };
+    
+    // 日本节日（仅日文版显示）
+    const japaneseHolidays = {
+        '0203': { // 节分
+            ja: { title: '節分', message: '👹 鬼は外！福は内！' },
+            daysBefore: 3
+        },
+        '0717': { // 海之日
+            ja: { title: '海の日', message: '🌊 海の日、海に感謝する日です' },
+            daysBefore: 3
+        }
+    };
+    
+    // 国际节日（英文版显示）
+    const internationalHolidays = {
+        '0214': { // 情人节
+            en: { title: 'Valentine\'s Day', message: '❤️ Happy Valentine\'s Day! May your days be filled with love~' },
+            daysBefore: 3 
+        },
+        '0401': { // 愚人节
+            en: { title: 'April Fools\' Day', message: '🎭 Happy April Fools\' Day! Watch out for pranks~' },
+            daysBefore: 1 
+        },
+        '1225': { // 圣诞节
+            en: { title: 'Christmas', message: '🎄 Merry Christmas! May your life be filled with warmth and joy~' },
+            daysBefore: 7 
+        }
+    };
+    
+    // 合并当前语言对应的节日
+    let holidays = { ...universalHolidays };
+    
+    if (currentLang === 'zh') {
+        Object.assign(holidays, chineseHolidays);
+    } else if (currentLang === 'ja') {
+        Object.assign(holidays, japaneseHolidays);
+    } else { // en
+        Object.assign(holidays, internationalHolidays);
+    }
     
     // 检查今天是否是节日或节日前几天
     for (const [key, holiday] of Object.entries(holidays)) {
         const holidayMonth = parseInt(key.substring(0, 2));
         const holidayDate = parseInt(key.substring(2));
+        const holidayData = holiday[currentLang] || holiday.zh || holiday.en || holiday.ja;
+        
+        if (!holidayData || !holidayData.title) continue;
         
         // 检查是否是节日当天
         if (month === holidayMonth && date === holidayDate) {
-            showHolidayPopup(holiday.title, holiday.message);
+            showHolidayPopup(holidayData.title, holidayData.message);
             return;
         }
         
         // 检查是否是节日前几天
-        for (let i = 1; i <= holiday.daysBefore; i++) {
+        for (let i = 1; i <= (holiday.daysBefore || 0); i++) {
             const checkDate = new Date(now);
             checkDate.setDate(date + i);
             
             if (checkDate.getMonth() + 1 === holidayMonth && 
                 checkDate.getDate() === holidayDate) {
+                const daysLeft = i;
+                const daysText = currentLang === 'zh' ? `再${daysLeft}天` : 
+                               (currentLang === 'ja' ? `あと${daysLeft}日` : 
+                               `${daysLeft} day${daysLeft > 1 ? 's' : ''}`);
+                const comingSoon = currentLang === 'zh' ? '即将到来：' : 
+                                 (currentLang === 'ja' ? '間もなく：' : 'Coming soon: ');
+                
                 showHolidayPopup(
-                    `即将到来：${holiday.title}`, 
-                    `再${i}天就是${holiday.title}啦！${holiday.message}`,
-                    i
+                    `${comingSoon}${holidayData.title}`, 
+                    currentLang === 'zh' ? `${daysText}就是${holidayData.title}啦！${holidayData.message}` :
+                     (currentLang === 'ja' ? `${daysText}で${holidayData.title}！${holidayData.message}` :
+                     `${daysText} until ${holidayData.title}! ${holidayData.message}`),
+                    daysLeft
                 );
                 return;
             }
@@ -564,41 +549,358 @@ function checkHoliday() {
     const month = now.getMonth() + 1;
     const date = now.getDate();
     
+    // 多语言节日数据
     const holidays = {
-        '0101': { title: '元旦快乐', message: '🎉 新年快乐！愿新的一年充满欢乐和惊喜！', daysBefore: 3 },
-        '0214': { title: '情人节', message: '❤️ 情人节快乐！愿你的每一天都充满爱～', daysBefore: 3 },
-        '0314': { title: '白色情人节', message: '🌸 白色情人节快乐！', daysBefore: 3 },
-        '0401': { title: '愚人节', message: '🎭 今天是愚人节，小心被整蛊哦～', daysBefore: 1 },
-        '0501': { title: '劳动节', message: '👷 劳动节快乐！感谢你的辛勤付出～', daysBefore: 3 },
-        '0601': { title: '儿童节', message: '🎈 儿童节快乐！保持童心，永远年轻～', daysBefore: 3 },
-        '1001': { title: '国庆节', message: '🇨🇳 国庆节快乐！', daysBefore: 5 },
-        '1225': { title: '圣诞节', message: '🎄 圣诞快乐！愿你的生活充满温暖和喜悦～', daysBefore: 7 },
-        '1231': { title: '除夕', message: '🎆 新年快乐！愿新的一年万事如意～', daysBefore: 3 }
+        // 通用节日（所有语言均显示）
+        '0101': {
+            zh: { title: '元旦', message: '🎉 新年快乐！愿新的一年充满欢乐和惊喜！' },
+            en: { title: 'New Year', message: '🎉 Happy New Year! Wishing you a year full of joy and surprises!' },
+            ja: { title: '元日', message: '🎉 明けましておめでとうございます！素晴らしい1年になりますように！' },
+            daysBefore: 3
+        },
+
+        // 中国节日（仅中文显示）
+        '0110': { // 中国人民警察节
+            zh: { title: '中国人民警察节', message: '👮 向守护我们的人民警察致敬！节日快乐！' },
+            en: { title: '', message: '' },
+            ja: { title: '', message: '' },
+            regions: ['zh'],
+            daysBefore: 1
+        },
+        '0312': { // 植树节
+            zh: { title: '植树节', message: '🌳 植树节，让我们一起种下希望！' },
+            en: { title: '', message: '' },
+            ja: { title: '', message: '' },
+            regions: ['zh'],
+            daysBefore: 3
+        },
+        '0501': { // 劳动节 + 站点周年
+            zh: { title: '劳动节', message: '👷 劳动节快乐！感谢你的辛勤付出～ 同时也是本站周年纪念日，感谢一路相伴！' },
+            en: { title: '', message: '' },
+            ja: { title: '', message: '' },
+            regions: ['zh'],
+            daysBefore: 3
+        },
+        '0601': { // 儿童节
+            zh: { title: '儿童节', message: '🎈 儿童节快乐！保持童心，永远年轻～' },
+            en: { title: '', message: '' },
+            ja: { title: '', message: '' },
+            regions: ['zh'],
+            daysBefore: 3
+        },
+        '0910': { // 教师节
+            zh: { title: '教师节', message: '🍎 教师节快乐！感谢每一位辛勤的园丁～' },
+            en: { title: '', message: '' },
+            ja: { title: '', message: '' },
+            regions: ['zh'],
+            daysBefore: 3
+        },
+        '1024': { // 程序员节
+            zh: { title: '程序员节', message: '👨‍💻 程序员节快乐！bug 退散，效率加成！' },
+            en: { title: '', message: '' },
+            ja: { title: '', message: '' },
+            regions: ['zh'],
+            daysBefore: 3
+        },
+        '1001': { // 国庆节（仅中文显示）
+            zh: { title: '国庆节', message: '🇨🇳 国庆节快乐！' },
+            en: { title: '', message: '' },
+            ja: { title: '', message: '' },
+            regions: ['zh'],
+            daysBefore: 5
+        },
+
+        // 日本节日（仅日文版显示，非敏感）
+        '0101': { // 元日
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: '元日', message: '🎍 明けましておめでとうございます！今年もよろしくお願いします！' },
+            regions: ['ja'],
+            daysBefore: 3
+        },
+        '0110': { // 成人の日（1月第2月曜日）
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: '成人の日', message: '👔 新成人の皆さん、おめでとうございます！' },
+            regions: ['ja'],
+            daysBefore: 3
+        },
+        '0203': { // 節分
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: '節分', message: '👹 鬼は外！福は内！' },
+            regions: ['ja'],
+            daysBefore: 3
+        },
+        '0303': { // ひな祭り
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: 'ひな祭り', message: '🎎 女の子の健やかな成長を願う日です' },
+            regions: ['ja'],
+            daysBefore: 3
+        },
+        '0401': { // エイプリルフール（与通用0401并存，日文消息更口语化）
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: 'エイプリルフール', message: '🎭 今日だけは嘘をついても許される日です' },
+            regions: ['ja'],
+            daysBefore: 1
+        },
+        '0408': { // 花祭り（お釈迦様の誕生日）
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: '花祭り', message: '🌸 お釈迦様の誕生日です' },
+            regions: ['ja'],
+            daysBefore: 3
+        },
+        '0429': { // 昭和の日（文化に親しむ日）
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: '昭和の日', message: '📜 文化に親しむ日' },
+            regions: ['ja'],
+            daysBefore: 3
+        },
+        '0504': { // みどりの日
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: 'みどりの日', message: '🌳 自然に親しみ、その恩恵に感謝する日' },
+            regions: ['ja'],
+            daysBefore: 3
+        },
+        '0505': { // こどもの日
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: 'こどもの日', message: '🎏 子供の健やかな成長を願う日です' },
+            regions: ['ja'],
+            daysBefore: 3
+        },
+        '0717': { // 海の日
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: '海の日', message: '🌊 海の恩恵に感謝する日です' },
+            regions: ['ja'],
+            daysBefore: 3
+        },
+        '0811': { // 山の日
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: '山の日', message: '⛰️ 山の恵みに感謝する日です' },
+            regions: ['ja'],
+            daysBefore: 3
+        },
+        '0916': { // 敬老の日（9月第3月曜日・固定化表記）
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: '敬老の日', message: '👵 おじいちゃん、おばあちゃん、いつもありがとう' },
+            regions: ['ja'],
+            daysBefore: 3
+        },
+        '1009': { // スポーツの日（10月第2月曜日・固定化表記）
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: 'スポーツの日', message: '⚽ スポーツを楽しみ、健康な心身を育む日' },
+            regions: ['ja'],
+            daysBefore: 3
+        },
+        '1103': { // 文化の日
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: '文化の日', message: '🎨 文化を大切にする日' },
+            regions: ['ja'],
+            daysBefore: 3
+        },
+        '1115': { // 七五三
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: '七五三', message: '👘 子供の成長を祝い、これからの幸せを願う日' },
+            regions: ['ja'],
+            daysBefore: 3
+        },
+        '1224': { // クリスマスイブ
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: 'クリスマスイブ', message: '🎄 メリークリスマス！素敵な夜になりますように' },
+            regions: ['ja'],
+            daysBefore: 1
+        },
+        '1225': { // クリスマス
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: 'クリスマス', message: '🎅 メリークリスマス！' },
+            regions: ['ja'],
+            daysBefore: 3
+        },
+        '1231': { // 大晦日
+            zh: { title: '', message: '' },
+            en: { title: '', message: '' },
+            ja: { title: '大晦日', message: '🎍 今年もお世話になりました。良いお年を！' },
+            regions: ['ja'],
+            daysBefore: 3
+        },
+
+        // 国际节日（仅英文显示，非政治敏感）
+        '0308': { // 国际妇女节
+            zh: { title: '', message: '' },
+            en: { title: 'International Women\'s Day', message: '🌷 Celebrating strength and achievements.' },
+            ja: { title: '', message: '' },
+            regions: ['en'],
+            daysBefore: 3
+        },
+        '0317': { // 圣帕特里克节
+            zh: { title: '', message: '' },
+            en: { title: 'St. Patrick\'s Day', message: '🍀 May luck be with you.' },
+            ja: { title: '', message: '' },
+            regions: ['en'],
+            daysBefore: 3
+        },
+        '0401': { // 愚人节（国际普遍）
+            zh: { title: '愚人节', message: '🎭 今天是愚人节，小心被整蛊哦～' },
+            en: { title: 'April Fools\' Day', message: '🎭 Watch out for pranks~' },
+            ja: { title: 'エイプリルフール', message: '🎭 嘘をついてもいい日です～' },
+            daysBefore: 1
+        },
+        '0422': { // 地球日
+            zh: { title: '', message: '' },
+            en: { title: 'Earth Day', message: '🌍 Love our planet. Act for the Earth.' },
+            ja: { title: '', message: '' },
+            regions: ['en'],
+            daysBefore: 3
+        },
+        '0423': { // 世界读书日
+            zh: { title: '', message: '' },
+            en: { title: 'World Book Day', message: '📚 Keep reading. Keep growing.' },
+            ja: { title: '', message: '' },
+            regions: ['en'],
+            daysBefore: 3
+        },
+        '0605': { // 世界环境日
+            zh: { title: '', message: '' },
+            en: { title: 'World Environment Day', message: '🌱 Small actions, big impact.' },
+            ja: { title: '', message: '' },
+            regions: ['en'],
+            daysBefore: 3
+        },
+        '0608': { // 世界海洋日
+            zh: { title: '', message: '' },
+            en: { title: 'World Oceans Day', message: '🌊 Protect our blue planet.' },
+            ja: { title: '', message: '' },
+            regions: ['en'],
+            daysBefore: 3
+        },
+        '0621': { // 世界音乐日
+            zh: { title: '', message: '' },
+            en: { title: 'World Music Day', message: '🎶 Let the music play!' },
+            ja: { title: '', message: '' },
+            regions: ['en'],
+            daysBefore: 3
+        },
+        '0707': { // 世界巧克力日
+            zh: { title: '', message: '' },
+            en: { title: 'World Chocolate Day', message: '🍫 Sweet day! Enjoy some chocolate!' },
+            ja: { title: '', message: '' },
+            regions: ['en'],
+            daysBefore: 3
+        },
+        '0730': { // 国际友谊日
+            zh: { title: '', message: '' },
+            en: { title: 'International Day of Friendship', message: '🤝 Celebrate friendship and kindness.' },
+            ja: { title: '', message: '' },
+            regions: ['en'],
+            daysBefore: 3
+        },
+        '1004': { // 世界动物日
+            zh: { title: '', message: '' },
+            en: { title: 'World Animal Day', message: '🐾 Be kind to animals.' },
+            ja: { title: '', message: '' },
+            regions: ['en'],
+            daysBefore: 3
+        },
+        '1031': { // 万圣节
+            zh: { title: '万圣节', message: '🎃 不给糖就捣蛋～' },
+            en: { title: 'Halloween', message: '🎃 Trick or treat~' },
+            ja: { title: 'ハロウィン', message: '🎃 トリック・オア・トリート！' },
+            daysBefore: 3
+        },
+        '1225': { // 圣诞节
+            zh: { title: '圣诞节', message: '🎄 圣诞快乐！愿你的生活充满温暖和喜悦～' },
+            en: { title: 'Christmas', message: '🎄 Merry Christmas! May your life be filled with warmth and joy~' },
+            ja: { title: 'クリスマス', message: '🎄 メリークリスマス！' },
+            daysBefore: 7
+        },
+
+        // 个性化纪念日（显示在所有语言）
+        '0814': { // 站长生日
+            zh: { title: '生日快乐', message: '🎂 祝站长生日快乐！天天开心！' },
+            en: { title: 'Happy Birthday', message: '🎂 Happy Birthday to the site owner! Have a wonderful day!' },
+            ja: { title: 'お誕生日おめでとう', message: '🎂 サイト管理者さん、お誕生日おめでとうございます！' },
+            daysBefore: 3,
+            isBirthday: true
+        },
+        '1231': { // 除夕/跨年
+            zh: { title: '除夕', message: '🎆 新年快乐！愿新的一年万事如意～' },
+            en: { title: 'New Year\'s Eve', message: '🎆 Happy New Year\'s Eve! All the best in the coming year~' },
+            ja: { title: '大晦日', message: '🎆 良いお年を！' },
+            daysBefore: 3
+        }
     };
     
-    // 检查今天是否是节日或节日前几天
+    const lang = getCurrentLanguage();
+    // 检查今天是否是节日或节日前几天（支持多语言/区域）
     for (const [key, holiday] of Object.entries(holidays)) {
+        // 区域限制
+        if (holiday.regions && !holiday.regions.includes(lang === 'zh' ? 'zh' : lang)) {
+            continue;
+        }
+
         const holidayMonth = parseInt(key.substring(0, 2));
         const holidayDate = parseInt(key.substring(2));
-        
-        // 检查是否是节日当天
+
+        const data = holiday[lang] || holiday.zh || holiday.en || holiday.ja;
+        if (!data || !data.title) continue;
+
+        // 当天
         if (month === holidayMonth && date === holidayDate) {
-            showHolidayPopup(holiday.title, holiday.message);
+            let finalTitle = data.title;
+            let finalMessage = data.message;
+            if (key === '0501' && lang === 'zh') {
+                const LAUNCH = new Date('2025-05-01T00:00:00+09:00');
+                const nowLocal = new Date();
+                const diffDays = Math.floor((nowLocal - LAUNCH) / (24*3600*1000));
+                const inclusiveDays = !isNaN(diffDays) && diffDays >= 0 ? diffDays + 1 : NaN;
+                if (!isNaN(inclusiveDays)) {
+                    finalMessage = `${finalMessage} ｜ 白月 日和（しらつき ひより）网站建立${inclusiveDays}天`;
+                } else {
+                    finalMessage = `${finalMessage} ｜ 白月 日和（しらつき ひより）网站建立纪念日`;
+                }
+            }
+            showHolidayPopup(finalTitle, finalMessage);
             return;
         }
-        
-        // 检查是否是节日前几天
-        for (let i = 1; i <= holiday.daysBefore; i++) {
+
+        // 提前提醒
+        for (let i = 1; i <= (holiday.daysBefore || 0); i++) {
             const checkDate = new Date(now);
             checkDate.setDate(date + i);
-            
-            if (checkDate.getMonth() + 1 === holidayMonth && 
-                checkDate.getDate() === holidayDate) {
-                showHolidayPopup(
-                    `即将到来：${holiday.title}`, 
-                    `再${i}天就是${holiday.title}啦！${holiday.message}`,
-                    i
-                );
+
+            if ((checkDate.getMonth() + 1) === holidayMonth && checkDate.getDate() === holidayDate) {
+                const prefix = lang === 'zh' ? '即将到来：' : (lang === 'ja' ? '間もなく：' : 'Coming soon: ');
+                const daysText = lang === 'zh' ? `再${i}天` : (lang === 'ja' ? `あと${i}日` : `${i} day${i > 1 ? 's' : ''}`);
+                let baseMsg = data.message;
+                if (key === '0501' && lang === 'zh') {
+                    const LAUNCH = new Date('2025-05-01T00:00:00+09:00');
+                    const nowLocal = new Date();
+                    const diffDays = Math.floor((nowLocal - LAUNCH) / (24*3600*1000));
+                    const inclusiveDays = !isNaN(diffDays) && diffDays >= 0 ? diffDays + 1 : NaN;
+                    if (!isNaN(inclusiveDays)) {
+                        baseMsg = `${baseMsg} ｜ 白月 日和（しらつき ひより）网站建立${inclusiveDays}天`;
+                    } else {
+                        baseMsg = `${baseMsg} ｜ 白月 日和（しらつき ひより）网站建立纪念日`;
+                    }
+                }
+                const msg = lang === 'zh'
+                    ? `${daysText}就是${data.title}啦！${baseMsg}`
+                    : (lang === 'ja' ? `${daysText}で${data.title}！${data.message}` : `${daysText} until ${data.title}! ${data.message}`);
+                showHolidayPopup(`${prefix}${data.title}`, msg, i);
                 return;
             }
         }

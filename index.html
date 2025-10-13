@@ -569,7 +569,7 @@
       const birthDate = new Date('2025-05-01T00:00:00+09:00');
       const now = new Date();
       const diffTime = now - birthDate;
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; // 包含起始日（5月1日为第1天）
       
       // 根据当前语言显示不同文本
       const lang = getCurrentLanguage();
