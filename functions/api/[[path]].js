@@ -40,7 +40,7 @@ function normalizeLanguage(input) {
 async function fetchAggregatedMessages(supabase, languageFilter = 'all') {
   const { data, error } = await supabase
     .from('guestbook_messages')
-    .select('id,name,email,message,language,created_at,parent_id,is_admin_reply')
+    .select('id,name,email,message,language,created_at,parent_id,is_admin_reply,admin_reply,admin_reply_at')
     .order('created_at', { ascending: false })
     .limit(1000);
 
