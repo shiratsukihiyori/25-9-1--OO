@@ -566,10 +566,30 @@
     
     // 计算并显示天数
     function updateDaysCounter() {
+      // 使用日本时区计算日期
       const birthDate = new Date('2025-05-01T00:00:00+09:00');
+      
+      // 获取当前日本时间（使用UTC方法避免时区问题）
       const now = new Date();
-      const diffTime = now - birthDate;
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; // 包含起始日（5月1日为第1天）
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const date = now.getDate();
+      
+      // 创建日本时区的当前日期（设置为中午12点避免时区转换问题）
+      const nowJST = new Date(Date.UTC(year, month, date, 15, 0, 0)); // UTC+9 = 15:00 UTC
+      
+      // 计算完整天数
+      const timeDiff = nowJST - birthDate;
+      const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
+      
+      // 5月1日是第1天，所以直接使用Math.ceil
+      const displayDays = Math.ceil(daysDiff);
+      
+      // 调试信息
+      console.log('当前日本时间:', nowJST.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+      console.log('开始时间:', birthDate.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
+      console.log('时间差（天）:', daysDiff);
+      console.log('显示天数:', displayDays);
       
       // 根据当前语言显示不同文本
       const lang = getCurrentLanguage();
@@ -577,14 +597,14 @@
       
       switch(lang) {
         case 'en':
-          counterText = `Hiyori has been seeing the world for ${diffDays} days`;
+          counterText = `Hiyori has been seeing the world for ${displayDays} days`;
           break;
         case 'ja':
-          counterText = `ひよりが世界を見てから${diffDays}日目`;
+          counterText = `ひよりが世界を見てから${displayDays}日目`;
           break;
         case 'zh':
         default:
-          counterText = `日和见到世界的第${diffDays}天`;
+          counterText = `日和见到世界的第${displayDays}天`;
       }
       
       const counterElement = document.getElementById('daysCounter');
