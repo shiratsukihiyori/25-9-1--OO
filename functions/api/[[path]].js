@@ -197,7 +197,13 @@ export async function onRequest({ request, env }) {
         return jsonResponse({ error: 'Failed to update message status' }, 500);
       }
     }
+    
+    // 如果没有匹配的路由，返回 404
+    return jsonResponse({ error: 'Not Found' }, 404);
+    
+  } catch (error) {
+    // 捕获未处理的错误
+    console.error('Unhandled error:', error);
+    return jsonResponse({ error: 'Internal Server Error' }, 500);
   }
-
-  return jsonResponse({ error: 'Not Found' }, 404);
 }
