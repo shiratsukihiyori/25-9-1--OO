@@ -2,6 +2,12 @@ name = "guestbook"
 compatibility_date = "2023-10-13"
 pages_build_output_dir = "."
 
+# D1 数据库配置
+[[d1_databases]]
+binding = "DB"  # 在 Worker 中使用的变量名
+database_name = "guestbook"
+database_id = "5ebf843d-0f4c-4862-8d94-7e51af0989a7"
+
 # 开发环境变量
 [vars]
 ADMIN_USERNAME = "admin"

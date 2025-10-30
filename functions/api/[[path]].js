@@ -1,5 +1,3 @@
-import { createClient } from '@supabase/supabase-js';
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -14,229 +12,189 @@ function jsonResponse(data, status = 200) {
   });
 }
 
-function createSupabaseClient(env, useServiceRole = false) {
-  const url = env.SUPABASE_URL;
-  const key = useServiceRole && env.SUPABASE_SERVICE_ROLE_KEY
-    ? env.SUPABASE_SERVICE_ROLE_KEY
-    : env.SUPABASE_ANON_KEY;
-
-  if (!url || !key) {
-    throw new Error('Supabase 配置缺失。请在环境变量中设置 SUPABASE_URL 和对应的 API Key');
-  }
-
-  return createClient(url, key, {
-    auth: { persistSession: false },
-    global: { headers: { 'X-Client-Info': 'hiyori-guestbook-worker' } }
-  });
-}
-
 function normalizeLanguage(input) {
   if (!input) return 'global';
-  const value = String(input).trim();
-  if (!value) return 'global';
-  return value.toLowerCase();
+  const value = String(input).trim().toLowerCase();
+  return value || 'global';
 }
 
-async function fetchAggregatedMessages(supabase, languageFilter = 'all') {
-  const { data, error } = await supabase
-    .from('guestbook_messages')
-    .select('id,name,email,message,language,created_at,parent_id,is_admin_reply,admin_reply,admin_reply_at')
-    .order('created_at', { ascending: false })
-    .limit(1000);
+async function fetchMessages(db, language = 'all') {
+  try {
+    const query = language === 'all' 
+      ? 'SELECT * FROM guestbook_messages ORDER BY created_at DESC LIMIT 1000'
+      : 'SELECT * FROM guestbook_messages WHERE language = ? ORDER BY created_at DESC LIMIT 1000';
+      
+    const stmt = language === 'all'
+      ? db.prepare(query)
+      : db.prepare(query).bind(language);
+      
+    const { results } = await stmt.all();
+    
+    // 将回复组织成树形结构
+    function organizeReplies(messages) {
+      const repliesByParent = new Map();
+      const parents = [];
 
-  if (error) {
-    throw error;
-  }
-
-  const repliesByParent = new Map();
-  const parents = [];
-
-  for (const row of data || []) {
-    if (row.parent_id) {
-      if (!repliesByParent.has(row.parent_id)) {
-        repliesByParent.set(row.parent_id, []);
+      for (const row of messages || []) {
+        if (row.parent_id) {
+          if (!repliesByParent.has(row.parent_id)) {
+            repliesByParent.set(row.parent_id, []);
+          }
+          repliesByParent.get(row.parent_id).push(row);
+        } else {
+          parents.push({
+            ...row,
+            replies: []
+          });
+        }
       }
-      repliesByParent.get(row.parent_id).push(row);
-    } else {
-      parents.push(row);
+
+      // 将回复添加到对应的父级留言
+      for (const parent of parents) {
+        if (repliesByParent.has(parent.id)) {
+          parent.replies = repliesByParent.get(parent.id).sort(
+            (a, b) => new Date(a.created_at) - new Date(b.created_at)
+          );
+        }
+      }
+
+      return parents;
     }
+    
+    return organizeReplies(results);
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+    throw new Error('Failed to fetch messages');
   }
-
-  const normalizedFilter = normalizeLanguage(languageFilter);
-
-  return parents
-    .filter((message) => normalizedFilter === 'all' || normalizeLanguage(message.language) === normalizedFilter)
-    .map((message) => ({
-      ...message,
-      replies: (repliesByParent.get(message.id) || []).sort((a, b) => {
-        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-      })
-    }));
 }
 
-async function requireAdmin(request, env) {
+function requireAdmin(request, env) {
   const authHeader = request.headers.get('Authorization');
-  if (!authHeader || authHeader !== `Bearer ${env.ADMIN_API_KEY}`) {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return false;
   }
-  return true;
+  const token = authHeader.split(' ')[1];
+  return token === env.ADMIN_API_KEY;
 }
 
 export async function onRequest({ request, env }) {
-  const { pathname, searchParams } = new URL(request.url);
-
+  // 处理预检请求
   if (request.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders
+    });
   }
 
-  let supabase;
   try {
-    supabase = createSupabaseClient(env, true);
-  } catch (error) {
-    return jsonResponse({ error: error.message }, 500);
-  }
+    const isAdmin = requireAdmin(request, env);
+    const url = new URL(request.url);
+    const path = url.pathname.split('/').filter(Boolean).pop() || '';
+    const language = normalizeLanguage(url.searchParams.get('lang'));
 
-  if (request.method === 'GET' && pathname === '/api/messages') {
-    try {
-      const lang = normalizeLanguage(searchParams.get('lang') || 'all');
-      const messages = await fetchAggregatedMessages(supabase, lang);
-
-      return jsonResponse({ data: messages });
-    } catch (error) {
-      return jsonResponse({ error: '获取留言失败', details: error.message }, 500);
-    }
-  }
-
-  if (request.method === 'POST' && pathname === '/api/messages') {
-    try {
-      const body = await request.json();
-      const name = typeof body.name === 'string' ? body.name.trim() : '';
-      const message = typeof body.message === 'string' ? body.message.trim() : '';
-      const email = typeof body.email === 'string' ? body.email.trim() : '';
-      const language = normalizeLanguage(body.language || body.lang);
-
-      if (!name || !message) {
-        return jsonResponse({ error: '昵称和留言内容不能为空' }, 400);
-      }
-
-      if (message.length > 2000) {
-        return jsonResponse({ error: '留言内容过长，请控制在2000字符以内' }, 400);
-      }
-
-      const { data, error } = await supabase
-        .from('guestbook_messages')
-        .insert([
-          {
-            name,
-            email: email || null,
-            message,
-            language,
-            created_at: new Date().toISOString(),
-            parent_id: null,
-            is_admin_reply: false
-          }
-        ])
-        .select()
-        .single();
-
-      if (error) {
-        throw error;
-      }
-
-      return jsonResponse({ success: true, data }, 201);
-    } catch (error) {
-      return jsonResponse({ error: '提交留言失败', details: error.message }, 500);
-    }
-  }
-
-  if (pathname.startsWith('/api/admin/')) {
-    const authorized = await requireAdmin(request, env);
-    if (!authorized) {
-      return jsonResponse({ error: '未授权' }, 401);
-    }
-
-    if (request.method === 'GET' && pathname === '/api/admin/messages') {
+    // 获取留言列表
+    if (request.method === 'GET') {
       try {
-        const messages = await fetchAggregatedMessages(supabase, 'all');
-        return jsonResponse({ data: messages });
+        const messages = await fetchMessages(env.DB, language === 'all' ? 'all' : language);
+        return jsonResponse(messages);
       } catch (error) {
-        return jsonResponse({ error: '获取留言失败', details: error.message }, 500);
+        console.error('Error fetching messages:', error);
+        return jsonResponse({ error: 'Failed to fetch messages' }, 500);
       }
     }
 
-    if (request.method === 'DELETE' && pathname.startsWith('/api/admin/messages/')) {
+    // 添加新留言
+    if (request.method === 'POST') {
       try {
-        const messageId = Number(pathname.split('/').pop());
-        if (!Number.isInteger(messageId)) {
-          return jsonResponse({ error: '无效的留言ID' }, 400);
+        const data = await request.json();
+        const { name, email, message, parent_id, is_admin_reply } = data;
+
+        // 验证输入
+        if (!name || !message) {
+          return jsonResponse({ error: 'Name and message are required' }, 400);
         }
 
-        const { error } = await supabase
-          .from('guestbook_messages')
-          .delete()
-          .or(`id.eq.${messageId},parent_id.eq.${messageId}`);
-
-        if (error) {
-          throw error;
+        // 如果是管理员回复，需要验证权限
+        if (is_admin_reply && !isAdmin) {
+          return jsonResponse({ error: 'Unauthorized' }, 401);
         }
 
+        const newMessage = {
+          name,
+          email: email || null,
+          message,
+          language: language === 'all' ? 'global' : language,
+          parent_id: parent_id || null,
+          is_admin_reply: is_admin_reply ? 1 : 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          status: 'approved'
+        };
+
+        // 插入新留言
+        const columns = Object.keys(newMessage).join(', ');
+        const placeholders = Object.keys(newMessage).map(() => '?').join(', ');
+        const values = Object.values(newMessage);
+        
+        const stmt = env.DB.prepare(
+          `INSERT INTO guestbook_messages (${columns}) VALUES (${placeholders})`
+        ).bind(...values);
+        
+        const { lastRowId } = await stmt.run();
+        
+        // 获取刚插入的留言
+        const { results } = await env.DB.prepare(
+          'SELECT * FROM guestbook_messages WHERE id = ?'
+        ).bind(lastRowId).all();
+
+        const inserted = results[0];
+
+        // 如果是回复，更新父级留言的回复时间
+        if (parent_id) {
+          await env.DB.prepare(
+            'UPDATE guestbook_messages SET admin_reply_at = ?, updated_at = ? WHERE id = ?'
+          ).bind(new Date().toISOString(), new Date().toISOString(), parent_id).run();
+        }
+
+        return jsonResponse(inserted, 201);
+      } catch (error) {
+        console.error('Error adding message:', error);
+        return jsonResponse({ error: 'Failed to add message' }, 500);
+      }
+    }
+
+    // 删除留言（仅限管理员）
+    if (request.method === 'DELETE' && isAdmin) {
+      try {
+        const { id } = await request.json();
+        await env.DB.prepare('DELETE FROM guestbook_messages WHERE id = ?')
+          .bind(id)
+          .run();
+          
         return jsonResponse({ success: true });
       } catch (error) {
-        return jsonResponse({ error: '删除留言失败', details: error.message }, 500);
+        console.error('Error deleting message:', error);
+        return jsonResponse({ error: 'Failed to delete message' }, 500);
       }
     }
 
-    if (request.method === 'POST' && pathname === '/api/admin/reply') {
+    // 更新留言状态（仅限管理员）
+    if ((request.method === 'PATCH' || request.method === 'PUT') && isAdmin) {
       try {
-        const payload = await request.json();
-        const parentId = Number(payload?.parent_id);
-        const replyContent = typeof payload?.message === 'string' ? payload.message.trim() : '';
+        const { id, status } = await request.json();
+        
+        const { results } = await env.DB.prepare(
+          'UPDATE guestbook_messages SET status = ?, updated_at = ? WHERE id = ? RETURNING *'
+        ).bind(status, new Date().toISOString(), id).all();
 
-        if (!Number.isInteger(parentId) || parentId <= 0) {
-          return jsonResponse({ error: '无效的留言ID' }, 400);
+        if (!results.length) {
+          return jsonResponse({ error: 'Message not found' }, 404);
         }
-
-        if (!replyContent) {
-          return jsonResponse({ error: '回复内容不能为空' }, 400);
-        }
-
-        const { data: parent, error: parentError } = await supabase
-          .from('guestbook_messages')
-          .select('id, language')
-          .eq('id', parentId)
-          .maybeSingle();
-
-        if (parentError) {
-          throw parentError;
-        }
-
-        if (!parent) {
-          return jsonResponse({ error: '原始留言不存在' }, 404);
-        }
-
-        const { data, error } = await supabase
-          .from('guestbook_messages')
-          .insert([
-            {
-              name: '管理员',
-              email: null,
-              message: replyContent,
-              language: parent.language || 'global',
-              parent_id: parentId,
-              is_admin_reply: true,
-              created_at: new Date().toISOString()
-            }
-          ])
-          .select()
-          .single();
-
-        if (error) {
-          throw error;
-        }
-
-        return jsonResponse({ success: true, data }, 201);
+        
+        return jsonResponse(results[0]);
       } catch (error) {
-        return jsonResponse({ error: '提交回复失败', details: error.message }, 500);
+        console.error('Error updating message status:', error);
+        return jsonResponse({ error: 'Failed to update message status' }, 500);
       }
     }
   }
