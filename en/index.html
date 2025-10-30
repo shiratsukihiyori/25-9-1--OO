@@ -344,7 +344,282 @@
         backSpeed: 50,
         loop: true
       });
+      
+      // Check and show holiday popup
+      checkHoliday();
     });
+    
+    // Get current language
+    function getCurrentLanguage() {
+      const path = window.location.pathname;
+      if (path.includes('/en/')) return 'en';
+      if (path.includes('/ja/')) return 'ja';
+      return 'zh';
+    }
+    
+    // Check for holidays
+    function checkHoliday() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1;
+      const date = now.getDate();
+      
+      // Chinese New Year (Lunar New Year)
+      const lunarNewYear = getLunarDate(year, 1, 1);
+      if (month === lunarNewYear.month && date === lunarNewYear.day) {
+      
+      // New Year's Day (January 1st)
+      if (month === 1 && date === 1) {
+        showHolidayPopup("Happy New Year!", `Wishing you a wonderful ${year}! May this year bring you joy and success!`);
+        return;
+      }
+      
+      // Valentine's Day (February 14th)
+      if (month === 2 && date === 14) {
+        showHolidayPopup("Happy Valentine's Day!", "Wishing you a day filled with love, happiness, and sweet moments!");
+        return;
+      }
+      
+      // St. Patrick's Day (March 17th)
+      if (month === 3 && date === 17) {
+        showHolidayPopup("Happy St. Patrick's Day!", "May your day be filled with luck and joy!");
+        return;
+      }
+      
+      // Easter Sunday (variable date in March or April)
+      if (month === easter.month && date === easter.day) {
+        showHolidayPopup("Happy Easter!", "Wishing you a joyful and blessed Easter!");
+        return;
+      }
+      
+      // Mother's Day (Second Sunday in May)
+      if (month === 5 && date >= 8 && date <= 14 && day === 0) {
+        showHolidayPopup("Happy Mother's Day!", "Wishing all mothers a wonderful day filled with love and appreciation!");
+        return;
+      }
+      
+      // Father's Day (Third Sunday in June)
+      if (month === 6 && date >= 15 && date <= 21 && day === 0) {
+        showHolidayPopup("Happy Father's Day!", "To all the amazing dads out there, thank you for everything!");
+        return;
+      }
+      
+      // Independence Day (July 4th - US)
+      if (month === 7 && date === 4) {
+        showHolidayPopup("Happy Independence Day!", "Celebrating freedom and the spirit of independence!");
+        return;
+      }
+      
+      // Halloween (October 31st)
+      if (month === 10 && date === 31) {
+        showHolidayPopup("Happy Halloween!", "Wishing you a spooktacular day filled with treats and fun!");
+        return;
+      }
+      
+      // Thanksgiving (Fourth Thursday in November - US)
+      if (month === 11 && date >= 22 && date <= 28 && day === 4) {
+        showHolidayPopup("Happy Thanksgiving!", "Wishing you a day filled with gratitude, joy, and delicious food!");
+        return;
+      }
+      
+      // Christmas (December 25th)
+      if (month === 12 && date === 25) {
+        showHolidayPopup("Merry Christmas!", "Wishing you a holiday season filled with love, peace, and happiness!");
+        return;
+      }
+      
+      // New Year's Eve (December 31st)
+      if (month === 12 && date === 31) {
+        showHolidayPopup("Happy New Year's Eve!", "Wishing you a safe and joyful celebration as we welcome the new year!");
+        return;
+      }
+      
+      // Shiratsuki Hiyori's Birthday (August 14th)
+      if (month === 8 && date === 14) {
+        showHolidayPopup("Happy Birthday!", "Happy Birthday to Shiratsuki Hiyori! Thank you for your continued support and for bringing us so much joy!");
+        return;
+      }
+      
+      // April Fools' Day (April 1st)
+      if (month === 4 && date === 1) {
+        showHolidayPopup("April Fools' Day!", "Watch out for pranks today! But remember to keep it fun and harmless!");
+        return;
+      }
+      
+      // International Women's Day (March 8th)
+      if (month === 3 && date === 8) {
+        showHolidayPopup("Happy International Women's Day!", "Celebrating the achievements and contributions of women worldwide!");
+        return;
+      }
+    }
+    
+    // Show holiday popup
+    function showHolidayPopup(title, message) {
+      // Create popup element
+      const popup = document.createElement('div');
+      popup.className = 'holiday-popup';
+      popup.innerHTML = `
+        <div class="holiday-popup-content">
+          <span class="close-popup">&times;</span>
+          <h2>${title}</h2>
+          <p>${message}</p>
+          <div class="holiday-decorations">
+            <span class="decoration">✨</span>
+            <span class="decoration">🎉</span>
+            <span class="decoration">🎊</span>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(popup);
+      
+      // Close button event
+      const closeBtn = popup.querySelector('.close-popup');
+      closeBtn.onclick = function() {
+        document.body.removeChild(popup);
+      };
+      
+      // Close when clicking outside
+      popup.onclick = function(event) {
+        if (event.target === popup) {
+          document.body.removeChild(popup);
+        }
+      };
+      
+      // Auto close after 5 seconds
+      setTimeout(() => {
+        if (document.body.contains(popup)) {
+          popup.style.opacity = '0';
+          setTimeout(() => {
+            if (document.body.contains(popup)) {
+              document.body.removeChild(popup);
+            }
+          }, 500);
+        }
+      }, 5000);
+    }
+    
+    // Calculate Easter Sunday date for a given year
+    function getEasterDate(year) {
+      // Anonymous Gregorian algorithm
+      // https://en.wikipedia.org/wiki/Computus#Anonymous_Gregorian_algorithm
+      const a = year % 19;
+      const b = Math.floor(year / 100);
+      const c = year % 100;
+      const d = Math.floor(b / 4);
+      const e = b % 4;
+      const f = Math.floor((b + 8) / 25);
+      const g = Math.floor((b - f + 1) / 3);
+      const h = (19 * a + b - d - g + 15) % 30;
+      const i = Math.floor(c / 4);
+      const k = c % 4;
+      const l = (32 + 2 * e + 2 * i - h - k) % 7;
+      const m = Math.floor((a + 11 * h + 22 * l) / 451);
+      const month = Math.floor((h + l - 7 * m + 114) / 31);
+      const day = ((h + l - 7 * m + 114) % 31) + 1;
+      
+      return {
+        year: year,
+        month: month,
+        day: day
+      };
+    }
+    
+    // Simplified lunar date function
+    function getLunarDate(year, month, day) {
+      // This should be a complete lunar conversion function
+      // Using a simplified version for now
+      // Should be replaced with a complete lunar conversion library
+      return {
+        year: year,
+        month: month,
+        day: day
+      };
+    }
   </script>
+  
+  <style>
+    /* Holiday popup styles */
+    .holiday-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      animation: fadeIn 0.5s;
+    }
+    
+    .holiday-popup-content {
+      background: linear-gradient(135deg, #fff9c4, #ffccbc);
+      padding: 2rem;
+      border-radius: 15px;
+      text-align: center;
+      max-width: 80%;
+      position: relative;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      border: 2px solid #ff9800;
+    }
+    
+    .holiday-popup h2 {
+      color: #e91e63;
+      margin-top: 0;
+      font-size: 2rem;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .holiday-popup p {
+      font-size: 1.2rem;
+      color: #333;
+      margin: 1rem 0;
+    }
+    
+    .close-popup {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 2rem;
+      color: #e91e63;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    
+    .close-popup:hover {
+      transform: rotate(90deg);
+    }
+    
+    .holiday-decorations {
+      margin-top: 1rem;
+    }
+    
+    .decoration {
+      display: inline-block;
+      margin: 0 5px;
+      font-size: 1.5rem;
+      animation: bounce 2s infinite;
+    }
+    
+    .decoration:nth-child(2) {
+      animation-delay: 0.3s;
+    }
+    
+    .decoration:nth-child(3) {
+      animation-delay: 0.6s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
 </body>
 </html>

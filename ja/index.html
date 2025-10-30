@@ -348,7 +348,264 @@
         backSpeed: 50,
         loop: true
       });
+      
+      // 祝日をチェックしてポップアップを表示
+      checkHoliday();
     });
+    
+    // 現在の言語を取得
+    function getCurrentLanguage() {
+      const path = window.location.pathname;
+      if (path.includes('/en/')) return 'en';
+      if (path.includes('/ja/')) return 'ja';
+      return 'zh';
+    }
+    
+    // 祝日をチェック
+    function checkHoliday() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1;
+      const date = now.getDate();
+      const day = now.getDay();
+      
+      // 元旦（1月1日）
+      if (month === 1 && date === 1) {
+        showHolidayPopup("あけましておめでとうございます！", `新しい年${year}が素晴らしい年でありますように！`);
+        return;
+      }
+      
+      // 成人の日（1月の第2月曜日）
+      if (month === 1 && date >= 8 && date <= 14 && day === 1) {
+        showHolidayPopup("成人の日", "新成人の皆さん、おめでとうございます！新たな門出を祝福します！");
+        return;
+      }
+      
+      // 節分（2月3日頃）
+      if (month === 2 && date === 3) {
+        showHolidayPopup("節分", "鬼は外！福は内！豆まきで厄を払いましょう！");
+        return;
+      }
+      
+      // ひな祭り（3月3日）
+      if (month === 3 && date === 3) {
+        showHolidayPopup("ひな祭り", "女の子の健やかな成長を願う桃の節句。ひな人形を飾りましょう！");
+        return;
+      }
+      
+      // 春分の日（3月20日頃）
+      if (month === 3 && date === 21) {
+        showHolidayPopup("春分の日", "自然をたたえ、生物をいつくしむ日。新しい季節の始まりです！");
+        return;
+      }
+      
+      // こどもの日（5月5日）
+      if (month === 5 && date === 5) {
+        showHolidayPopup("こどもの日", "子供たちの健やかな成長を願う日。こいのぼりが空を泳ぎます！");
+        return;
+      }
+      
+      // 母の日（5月の第2日曜日）
+      if (month === 5 && date >= 8 && date <= 14 && day === 0) {
+        showHolidayPopup("母の日", "日頃の感謝を込めて、お母さんにありがとうを伝えましょう！");
+        return;
+      }
+      
+      // 父の日（6月の第3日曜日）
+      if (month === 6 && date >= 15 && date <= 21 && day === 0) {
+        showHolidayPopup("父の日", "お父さんへの感謝の気持ちを伝える日。");
+        return;
+      }
+      
+      // 七夕（7月7日）
+      if (month === 7 && date === 7) {
+        showHolidayPopup("七夕", "天の川に願いを込めて。短冊に願い事を書いてみましょう！");
+        return;
+      }
+      
+      // お盆（8月13日-16日）
+      if (month === 8 && (date >= 13 && date <= 16)) {
+        showHolidayPopup("お盆", "ご先祖様をお迎えする季節です。家族で過ごす大切な時間を。");
+        return;
+      }
+      
+      // 白月 ひよりの誕生日（8月14日）
+      if (month === 8 && date === 14) {
+        showHolidayPopup("お誕生日おめでとう！", "白月 ひよりの誕生日です！いつも応援ありがとうございます！");
+        return;
+      }
+      
+      // 七五三（11月15日）
+      if (month === 11 && date === 15) {
+        showHolidayPopup("七五三", "子供の成長を祝い、これからの健康を祈る日。");
+        return;
+      }
+      
+      // クリスマス（12月25日）
+      if (month === 12 && date === 25) {
+        showHolidayPopup("メリークリスマス！", "素敵なクリスマスをお過ごしください！");
+        return;
+      }
+      
+      // 大晦日（12月31日）
+      if (month === 12 && date === 31) {
+        showHolidayPopup("大晦日", "一年の締めくくりの日。良い年をお迎えください。");
+        return;
+      }
+      
+      // バレンタインデー（2月14日）
+      if (month === 2 && date === 14) {
+        showHolidayPopup("バレンタインデー", "大切な人に気持ちを伝える日。チョコレートを贈りましょう！");
+        return;
+      }
+      
+      // ホワイトデー（3月14日）
+      if (month === 3 && date === 14) {
+        showHolidayPopup("ホワイトデー", "バレンタインデーのお返しの日。お返しの気持ちを伝えましょう！");
+        return;
+      }
+    }
+    
+    // 祝日ポップアップを表示
+    function showHolidayPopup(title, message) {
+      // ポップアップ要素を作成
+      const popup = document.createElement('div');
+      popup.className = 'holiday-popup';
+      popup.innerHTML = `
+        <div class="holiday-popup-content">
+          <span class="close-popup">&times;</span>
+          <h2>${title}</h2>
+          <p>${message}</p>
+          <div class="holiday-decorations">
+            <span class="decoration">✨</span>
+            <span class="decoration">🎉</span>
+            <span class="decoration">🎊</span>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(popup);
+      
+      // 閉じるボタンのイベント
+      const closeBtn = popup.querySelector('.close-popup');
+      closeBtn.onclick = function() {
+        document.body.removeChild(popup);
+      };
+      
+      // ポップアップ外をクリックで閉じる
+      popup.onclick = function(event) {
+        if (event.target === popup) {
+          document.body.removeChild(popup);
+        }
+      };
+      
+      // 5秒後に自動で閉じる
+      setTimeout(() => {
+        if (document.body.contains(popup)) {
+          popup.style.opacity = '0';
+          setTimeout(() => {
+            if (document.body.contains(popup)) {
+              document.body.removeChild(popup);
+            }
+          }, 500);
+        }
+      }, 5000);
+    }
+    
+    // 旧暦変換関数（簡易版）
+    function getLunarDate(year, month, day) {
+      // 実際には完全な旧暦変換ライブラリを使用する必要があります
+      // ここでは簡易版を使用しています
+      return {
+        year: year,
+        month: month,
+        day: day
+      };
+    }
   </script>
+  
+  <style>
+    /* 祝日ポップアップのスタイル */
+    .holiday-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      animation: fadeIn 0.5s;
+    }
+    
+    .holiday-popup-content {
+      background: linear-gradient(135deg, #fff9c4, #ffccbc);
+      padding: 2rem;
+      border-radius: 15px;
+      text-align: center;
+      max-width: 80%;
+      position: relative;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      border: 2px solid #ff9800;
+    }
+    
+    .holiday-popup h2 {
+      color: #e91e63;
+      margin-top: 0;
+      font-size: 2rem;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .holiday-popup p {
+      font-size: 1.2rem;
+      color: #333;
+      margin: 1rem 0;
+    }
+    
+    .close-popup {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 2rem;
+      color: #e91e63;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    
+    .close-popup:hover {
+      transform: rotate(90deg);
+    }
+    
+    .holiday-decorations {
+      margin-top: 1rem;
+    }
+    
+    .decoration {
+      display: inline-block;
+      margin: 0 5px;
+      font-size: 1.5rem;
+      animation: bounce 2s infinite;
+    }
+    
+    .decoration:nth-child(2) {
+      animation-delay: 0.3s;
+    }
+    
+    .decoration:nth-child(3) {
+      animation-delay: 0.6s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
 </body>
 </html>

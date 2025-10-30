@@ -353,7 +353,206 @@
         backSpeed: 50,
         loop: true
       });
+      
+      // 检查并显示节日弹窗
+      checkHoliday();
     });
+    
+    // 获取当前语言
+    function getCurrentLanguage() {
+      const path = window.location.pathname;
+      if (path.includes('/en/')) return 'en';
+      if (path.includes('/ja/')) return 'ja';
+      return 'zh';
+    }
+    
+    // 检查节日
+    function checkHoliday() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1;
+      const date = now.getDate();
+      
+      // 春节（农历正月初一）
+      const lunarNewYear = getLunarDate(year, 1, 1);
+      if (month === lunarNewYear.month && date === lunarNewYear.day) {
+        showHolidayPopup("春节快乐！", "祝您新春大吉，万事如意！");
+        return;
+      }
+      
+      // 元旦（1月1日）
+      if (month === 1 && date === 1) {
+        showHolidayPopup("新年快乐！", `祝您${year}年新年快乐，万事如意！`);
+        return;
+      }
+      
+      // 情人节（2月14日）
+      if (month === 2 && date === 14) {
+        showHolidayPopup("情人节快乐！", "愿你的每一天都充满爱与甜蜜！");
+        return;
+      }
+      
+      // 中秋节（农历八月十五）
+      const midAutumn = getLunarDate(year, 8, 15);
+      if (month === midAutumn.month && date === midAutumn.day) {
+        showHolidayPopup("中秋节快乐！", "月圆人团圆，祝您中秋快乐！");
+        return;
+      }
+      
+      // 圣诞节（12月25日）
+      if (month === 12 && date === 25) {
+        showHolidayPopup("圣诞节快乐！", "愿您度过一个温馨快乐的圣诞节！");
+        return;
+      }
+      
+      // 白月 日和的生日（8月14日）
+      if (month === 8 && date === 14) {
+        showHolidayPopup("生日快乐！", "祝白月 日和生日快乐！感谢您一直以来的支持！");
+        return;
+      }
+    }
+    
+    // 显示节日弹窗
+    function showHolidayPopup(title, message) {
+      // 创建弹窗元素
+      const popup = document.createElement('div');
+      popup.className = 'holiday-popup';
+      popup.innerHTML = `
+        <div class="holiday-popup-content">
+          <span class="close-popup">&times;</span>
+          <h2>${title}</h2>
+          <p>${message}</p>
+          <div class="holiday-decorations">
+            <span class="decoration">✨</span>
+            <span class="decoration">🎉</span>
+            <span class="decoration">🎊</span>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(popup);
+      
+      // 关闭按钮事件
+      const closeBtn = popup.querySelector('.close-popup');
+      closeBtn.onclick = function() {
+        document.body.removeChild(popup);
+      };
+      
+      // 点击弹窗外部关闭
+      popup.onclick = function(event) {
+        if (event.target === popup) {
+          document.body.removeChild(popup);
+        }
+      };
+      
+      // 5秒后自动关闭
+      setTimeout(() => {
+        if (document.body.contains(popup)) {
+          popup.style.opacity = '0';
+          setTimeout(() => {
+            if (document.body.contains(popup)) {
+              document.body.removeChild(popup);
+            }
+          }, 500);
+        }
+      }, 5000);
+    }
+    
+    // 农历转换函数（简化版）
+    function getLunarDate(year, month, day) {
+      // 这里应该是一个完整的农历转换函数
+      // 由于实现较复杂，这里使用一个简化的版本
+      // 实际使用时应该替换为完整的农历转换库
+      return {
+        year: year,
+        month: month,
+        day: day
+      };
+    }
   </script>
+  
+  <style>
+    /* 节日弹窗样式 */
+    .holiday-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      animation: fadeIn 0.5s;
+    }
+    
+    .holiday-popup-content {
+      background: linear-gradient(135deg, #fff9c4, #ffccbc);
+      padding: 2rem;
+      border-radius: 15px;
+      text-align: center;
+      max-width: 80%;
+      position: relative;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      border: 2px solid #ff9800;
+    }
+    
+    .holiday-popup h2 {
+      color: #e91e63;
+      margin-top: 0;
+      font-size: 2rem;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .holiday-popup p {
+      font-size: 1.2rem;
+      color: #333;
+      margin: 1rem 0;
+    }
+    
+    .close-popup {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 2rem;
+      color: #e91e63;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    
+    .close-popup:hover {
+      transform: rotate(90deg);
+    }
+    
+    .holiday-decorations {
+      margin-top: 1rem;
+    }
+    
+    .decoration {
+      display: inline-block;
+      margin: 0 5px;
+      font-size: 1.5rem;
+      animation: bounce 2s infinite;
+    }
+    
+    .decoration:nth-child(2) {
+      animation-delay: 0.3s;
+    }
+    
+    .decoration:nth-child(3) {
+      animation-delay: 0.6s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
 </body>
 </html>
