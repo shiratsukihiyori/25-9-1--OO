@@ -16,10 +16,20 @@ function normalizeLanguage(input) {
 async function fetchMessages(db, language = 'all') {
   try {
     console.log('Fetching messages with language:', language);
-    console.log('DB instance:', db ? 'exists' : 'undefined');
+    console.log('DB instance type:', typeof db);
+    console.log('DB methods:', Object.keys(db || {}));
     
     if (!db) {
       throw new Error('Database connection is not available');
+    }
+
+    // 测试数据库连接
+    try {
+      const testResult = await db.prepare('SELECT 1 as test').first();
+      console.log('Database connection test:', testResult);
+    } catch (testError) {
+      console.error('Database connection test failed:', testError);
+      throw new Error(`Database connection test failed: ${testError.message}`);
     }
 
     const query = language === 'all' 
@@ -28,14 +38,37 @@ async function fetchMessages(db, language = 'all') {
     
     console.log('Preparing query:', query);
     
-    const stmt = language === 'all'
-      ? db.prepare(query)
-      : db.prepare(query).bind(language);
+    let stmt;
+    try {
+      stmt = language === 'all'
+        ? db.prepare(query)
+        : db.prepare(query).bind(language);
+    } catch (prepareError) {
+      console.error('Error preparing statement:', prepareError);
+      throw new Error(`Failed to prepare statement: ${prepareError.message}`);
+    }
     
     console.log('Executing statement...');
-    const result = await stmt.all();
-    const results = result?.results || [];
+    let result;
+    try {
+      result = await stmt.all();
+    } catch (execError) {
+      console.error('Error executing query:', execError);
+      // 检查表是否存在
+      try {
+        const tables = await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='guestbook_messages'").all();
+        console.log('Tables in database:', tables);
+        if (!tables.results.length) {
+          throw new Error('guestbook_messages table does not exist');
+        }
+      } catch (tableCheckError) {
+        console.error('Error checking tables:', tableCheckError);
+        throw new Error(`Table check failed: ${tableCheckError.message}`);
+      }
+      throw new Error(`Query execution failed: ${execError.message}`);
+    }
     
+    const results = result?.results || [];
     console.log(`Fetched ${results.length} messages`);
     
     // 将回复组织成树形结构

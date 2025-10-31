@@ -5,71 +5,74 @@ export default {
     
     // 处理API请求
     if (url.pathname.startsWith('/api/')) {
+      // 获取请求来源
+      const origin = request.headers.get('Origin') || '';
+      
+      // 设置CORS头
+      const corsHeaders = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+        'Content-Type': 'application/json',
+      };
+
+      // 处理预检请求
+      if (request.method === 'OPTIONS') {
+        return new Response(null, { 
+          status: 204,
+          headers: {
+            ...corsHeaders,
+            'Access-Control-Max-Age': '86400' // 24小时
+          }
+        });
+      }
+
       try {
-        // 获取请求来源
-        const origin = request.headers.get('Origin') || '';
-        const allowedOrigins = [
-          'https://hiyori.webn.cc',
-          'https://home.hiyori.xx.kg',
-          'https://*.pages.dev'
-        ];
-        
-        // 检查请求来源是否在允许的域名列表中
-        const isAllowedOrigin = allowedOrigins.some(allowed => 
-          origin === allowed || 
-          (allowed.startsWith('*') && origin.endsWith(allowed.slice(1))) ||
-          (allowed.endsWith('*') && origin.startsWith(allowed.slice(0, -1)))
-        );
-
-        // 设置CORS头
-        const corsHeaders = {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
-          'Access-Control-Allow-Credentials': 'true',
-          'Content-Type': 'application/json',
-        };
-
-        // 处理预检请求
-        if (request.method === 'OPTIONS') {
-          return new Response(null, { 
-            status: 204,
-            headers: {
-              ...corsHeaders,
-              'Access-Control-Max-Age': '86400' // 24小时
-            }
-          });
-        }
-
         // 记录请求信息
         console.log(`[${new Date().toISOString()}] ${request.method} ${url.pathname}`);
+        console.log('Environment keys:', Object.keys(env));
+        console.log('DB binding exists:', !!env.DB);
         
         // 导入API处理函数
         const { onRequest } = await import('./functions/api/[[path]].js');
         
-        // 处理API请求
-        const response = await onRequest({
-          request: request.clone(), // 克隆请求以便后续使用
-          env: {
-            DB: env.DB,
-            ADMIN_API_KEY: env.ADMIN_API_KEY,
-            SUPABASE_URL: env.SUPABASE_URL,
-            SUPABASE_ANON_KEY: env.SUPABASE_ANON_KEY,
-            SUPABASE_SERVICE_ROLE_KEY: env.SUPABASE_SERVICE_ROLE_KEY
-          }
-        });
-
-        // 确保响应是 Response 对象
-        if (!(response instanceof Response)) {
-          throw new Error('API 处理函数未返回有效的 Response 对象');
-        }
-
-        // 获取响应体文本（用于日志记录）
-        const responseText = await response.text();
-        console.log(`[${new Date().toISOString()}] 响应状态: ${response.status} ${response.statusText}`);
-        console.log(`[${new Date().toISOString()}] 响应体:`, responseText);
+        // 准备环境变量
+        const apiEnv = {
+          ...env,
+          DB: env.DB,
+          ADMIN_API_KEY: env.ADMIN_API_KEY || "",
+          SUPABASE_URL: env.SUPABASE_URL || "",
+          SUPABASE_ANON_KEY: env.SUPABASE_ANON_KEY || "",
+          SUPABASE_SERVICE_ROLE_KEY: env.SUPABASE_SERVICE_ROLE_KEY || ""
+        };
         
-        // 添加CORS头到响应
+        // 处理API请求
+        let response;
+        try {
+          response = await onRequest({
+            request: request.clone(),
+            env: apiEnv
+          });
+          
+          if (!(response instanceof Response)) {
+            throw new Error('API handler did not return a valid Response object');
+          }
+        } catch (error) {
+          console.error('Error in API handler:', error);
+          response = new Response(JSON.stringify({
+            success: false,
+            error: 'Internal Server Error',
+            message: error.message
+          }), {
+            status: 500,
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            }
+          });
+        }
+        
+        // 确保响应头包含 CORS 头
         const responseHeaders = new Headers(response.headers);
         for (const [key, value] of Object.entries(corsHeaders)) {
           if (!responseHeaders.has(key)) {
@@ -77,7 +80,11 @@ export default {
           }
         }
         
-        // 返回新的响应，确保包含原始响应体
+        // 记录响应信息
+        const responseText = await response.text();
+        console.log(`[${new Date().toISOString()}] 响应状态: ${response.status} ${response.statusText}`);
+        
+        // 返回新的响应，确保包含原始响应体和正确的头
         return new Response(responseText, {
           status: response.status,
           statusText: response.statusText,
