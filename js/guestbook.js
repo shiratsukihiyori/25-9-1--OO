@@ -199,8 +199,10 @@ function renderMessages() {
     messagesList.innerHTML = messages.map((msg, index) => {
         const timestamp = msg.created_at || msg.timestamp || new Date().toISOString();
         const currentLang = getCurrentLanguage();
-        const languageCode = (msg.language || '').toString().trim() || 'global';
-        const languageLabel = languageCode.toUpperCase();
+        const languageCode = (msg.language || '').toString().trim().toLowerCase();
+        // Only show language label for actual language codes, not for 'global' or empty
+        const showLanguageLabel = languageCode && languageCode !== 'global' && languageCode !== '';
+        const languageLabel = showLanguageLabel ? languageCode.toUpperCase() : '';
         const rawName = msg.name && msg.name.trim() ? msg.name.trim() : (currentLang === 'ja' ? '匿名' : currentLang === 'en' ? 'Guest' : '匿名');
         const safeName = escapeHtml(rawName);
         const content = formatMessageContent(msg.message || '');
