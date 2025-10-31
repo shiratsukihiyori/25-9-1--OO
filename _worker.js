@@ -6,12 +6,28 @@ export default {
     // 处理API请求
     if (url.pathname.startsWith('/api/')) {
       try {
-        // 添加CORS头
+        // 获取请求来源
+        const origin = request.headers.get('Origin') || '';
+        const allowedOrigins = [
+          'https://hiyori.webn.cc',
+          'https://home.hiyori.xx.kg',
+          'https://*.pages.dev'
+        ];
+        
+        // 检查请求来源是否在允许的域名列表中
+        const isAllowedOrigin = allowedOrigins.some(allowed => 
+          origin === allowed || 
+          (allowed.startsWith('*') && origin.endsWith(allowed.slice(1))) ||
+          (allowed.endsWith('*') && origin.startsWith(allowed.slice(0, -1)))
+        );
+
+        // 设置CORS头
         const corsHeaders = {
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': isAllowedOrigin ? origin : allowedOrigins[0],
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type, Authorization',
           'Access-Control-Allow-Credentials': 'true',
+          'Vary': 'Origin',
           'Content-Type': 'application/json',
         };
 
