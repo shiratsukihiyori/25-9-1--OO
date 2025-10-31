@@ -15,15 +15,28 @@ function normalizeLanguage(input) {
 
 async function fetchMessages(db, language = 'all') {
   try {
+    console.log('Fetching messages with language:', language);
+    console.log('DB instance:', db ? 'exists' : 'undefined');
+    
+    if (!db) {
+      throw new Error('Database connection is not available');
+    }
+
     const query = language === 'all' 
       ? 'SELECT * FROM guestbook_messages ORDER BY created_at DESC LIMIT 1000'
       : 'SELECT * FROM guestbook_messages WHERE language = ? ORDER BY created_at DESC LIMIT 1000';
-      
+    
+    console.log('Preparing query:', query);
+    
     const stmt = language === 'all'
       ? db.prepare(query)
       : db.prepare(query).bind(language);
-      
-    const { results } = await stmt.all();
+    
+    console.log('Executing statement...');
+    const result = await stmt.all();
+    const results = result?.results || [];
+    
+    console.log(`Fetched ${results.length} messages`);
     
     // 将回复组织成树形结构
     function organizeReplies(messages) {
@@ -78,26 +91,46 @@ export async function onRequest({ request, env }) {
     return new Response(null, {
       status: 204,
       headers: {
-        ...corsHeaders,
-        'Access-Control-Max-Age': '86400'  // 24小时
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Max-Age': '86400',  // 24小时
+        'Content-Type': 'application/json'
       }
     });
   }
 
   try {
+    console.log('Received request:', {
+      method: request.method,
+      url: request.url,
+      headers: Object.fromEntries(request.headers.entries())
+    });
+
     const isAdmin = requireAdmin(request, env);
     const url = new URL(request.url);
     const path = url.pathname.split('/').filter(Boolean).pop() || '';
     const language = normalizeLanguage(url.searchParams.get('lang'));
 
+    console.log('Request details:', { path, language, isAdmin });
+
     // 获取留言列表
     if (request.method === 'GET') {
       try {
+        console.log('DB binding:', env.DB ? 'exists' : 'undefined');
         const messages = await fetchMessages(env.DB, language === 'all' ? 'all' : language);
         return jsonResponse(messages);
       } catch (error) {
-        console.error('Error fetching messages:', error);
-        return jsonResponse({ error: 'Failed to fetch messages' }, 500);
+        console.error('Error in GET /api/messages:', {
+          error: error.message,
+          stack: error.stack,
+          envKeys: Object.keys(env)
+        });
+        return jsonResponse({ 
+          error: 'Failed to fetch messages',
+          details: error.message 
+        }, 500);
       }
     }
 
