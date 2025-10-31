@@ -80,7 +80,8 @@ function formatMessageContent(text) {
 }
 
 async function loadMessagesFromServer() {
-  const queryLang = 'all';
+  // 使用当前语言而不是 'all'，这样服务器会过滤掉语言为 'global' 的留言
+  const queryLang = getCurrentLanguage();
   try {
     const response = await fetch(`/api/messages?lang=${queryLang}`);
     if (!response.ok) {
@@ -88,6 +89,7 @@ async function loadMessagesFromServer() {
       throw new Error(error.error || '加载留言失败');
     }
     const result = await response.json();
+    // 确保处理可能的空结果
     messages = Array.isArray(result) ? result : [];
     renderMessages();
   } catch (error) {
