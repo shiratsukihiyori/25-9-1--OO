@@ -82,15 +82,39 @@ function formatMessageContent(text) {
 async function loadMessagesFromServer() {
   // 使用当前语言而不是 'all'，这样服务器会过滤掉语言为 'global' 的留言
   const queryLang = getCurrentLanguage();
+  console.log('Loading messages for language:', queryLang);
+  
   try {
-    const response = await fetch(`/api/messages?lang=${queryLang}`);
+    const apiUrl = `/api/messages?lang=${queryLang}`;
+    console.log('Fetching from:', apiUrl);
+    
+    const response = await fetch(apiUrl, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      }
+    });
+    
+    console.log('Response status:', response.status);
+    
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || '加载留言失败');
+      let errorMsg = `HTTP error! status: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        errorMsg = errorData.error || errorData.message || JSON.stringify(errorData);
+      } catch (e) {
+        const text = await response.text();
+        errorMsg = text || errorMsg;
+      }
+      throw new Error(`加载留言失败: ${errorMsg}`);
     }
+    
     const result = await response.json();
+    console.log('Received messages:', result);
+    
     // 确保处理可能的空结果
     messages = Array.isArray(result) ? result : [];
+    console.log(`Loaded ${messages.length} messages`);
     renderMessages();
   } catch (error) {
     console.error('加载留言失败:', error);
