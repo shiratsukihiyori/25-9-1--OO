@@ -32,17 +32,14 @@ async function fetchMessages(db, language = 'all') {
       throw new Error(`Database connection test failed: ${testError.message}`);
     }
 
-    const query = language === 'all' 
-      ? 'SELECT * FROM guestbook_messages ORDER BY created_at DESC LIMIT 1000'
-      : 'SELECT * FROM guestbook_messages WHERE language = ? ORDER BY created_at DESC LIMIT 1000';
+    // 总是获取所有留言，忽略语言参数
+    const query = 'SELECT * FROM guestbook_messages ORDER BY created_at DESC LIMIT 1000';
     
     console.log('Preparing query:', query);
     
     let stmt;
     try {
-      stmt = language === 'all'
-        ? db.prepare(query)
-        : db.prepare(query).bind(language);
+      stmt = db.prepare(query);
     } catch (prepareError) {
       console.error('Error preparing statement:', prepareError);
       throw new Error(`Failed to prepare statement: ${prepareError.message}`);

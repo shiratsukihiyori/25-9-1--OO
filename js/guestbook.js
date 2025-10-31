@@ -80,14 +80,11 @@ function formatMessageContent(text) {
 }
 
 async function loadMessagesFromServer() {
-  // 获取当前语言，如果不在支持的语言中则使用 'all' 获取所有留言
-  const currentLang = getCurrentLanguage();
-  // 如果当前语言不是支持的语言，则获取所有留言（包括global）
-  const queryLang = ['zh', 'en', 'ja'].includes(currentLang) ? currentLang : 'all';
-  console.log('Loading messages for language:', queryLang);
+  // 获取所有留言，不进行语言筛选
+  console.log('Loading all messages (no language filter)');
   
   try {
-    const apiUrl = `/api/messages?lang=${queryLang}`;
+    const apiUrl = '/api/messages?lang=all';
     console.log('Fetching from:', apiUrl);
     
     const response = await fetch(apiUrl, {
@@ -258,10 +255,10 @@ function renderMessages() {
 async function addMessage(name, email, message) {
     const newMessage = {
         name: name.trim(),
-        email: email.trim(),
+        email: email ? email.trim() : null,
         message: message.trim(),
-        timestamp: new Date().toISOString(),
-        language: getCurrentLanguage()
+        language: 'global',  // 固定为 global，不区分语言
+        timestamp: new Date().toISOString()
     };
     
     try {
