@@ -23,11 +23,9 @@ export default {
 
         // 设置CORS头
         const corsHeaders = {
-          'Access-Control-Allow-Origin': isAllowedOrigin ? origin : allowedOrigins[0],
+          'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-          'Access-Control-Allow-Credentials': 'true',
-          'Vary': 'Origin',
           'Content-Type': 'application/json',
         };
 
