@@ -12,7 +12,7 @@ database_id = "5ebf843d-0f4c-4862-8d94-7e51af0989a7"
 [vars]
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "admin123"
-ADMIN_API_KEY = "6caa82d8c83cd38d66fb92944c75367b7bddece4f5a2a6d1f7794b0ad9ce1f92"
+# ADMIN_API_KEY 已在 Cloudflare 仪表板中设置
 SUPABASE_URL = ""
 SUPABASE_ANON_KEY = ""
 SUPABASE_SERVICE_ROLE_KEY = ""
