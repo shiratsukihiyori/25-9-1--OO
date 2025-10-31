@@ -58,14 +58,28 @@ async function fetchMessages(db, language = 'all') {
       try {
         const tables = await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='guestbook_messages'").all();
         console.log('Tables in database:', tables);
-        if (!tables.results.length) {
+        if (!tables.results || !tables.results.length) {
           throw new Error('guestbook_messages table does not exist');
         }
       } catch (tableCheckError) {
         console.error('Error checking tables:', tableCheckError);
-        throw new Error(`Table check failed: ${tableCheckError.message}`);
+        const error = new Error('Database error');
+        error.details = {
+          type: 'table_check_failed',
+          message: tableCheckError.message,
+          stack: tableCheckError.stack
+        };
+        throw error;
       }
-      throw new Error(`Query execution failed: ${execError.message}`);
+      const error = new Error('Query execution failed');
+      error.details = {
+        type: 'query_execution_failed',
+        message: execError.message,
+        query: query,
+        language: language,
+        stack: execError.stack
+      };
+      throw error;
     }
     
     const results = result?.results || [];
@@ -105,7 +119,9 @@ async function fetchMessages(db, language = 'all') {
     return organizeReplies(results);
   } catch (error) {
     console.error('Error fetching messages:', error);
-    throw new Error('Failed to fetch messages');
+    const errorToThrow = new Error(error.details?.message || 'Failed to fetch messages');
+    errorToThrow.details = error.details || { type: 'unknown_error' };
+    throw errorToThrow;
   }
 }
 
@@ -157,12 +173,14 @@ export async function onRequest({ request, env }) {
       } catch (error) {
         console.error('Error in GET /api/messages:', {
           error: error.message,
+          details: error.details,
           stack: error.stack,
           envKeys: Object.keys(env)
         });
         return jsonResponse({ 
           error: 'Failed to fetch messages',
-          details: error.message 
+          message: error.message,
+          details: process.env.NODE_ENV === 'development' ? error.details : undefined
         }, 500);
       }
     }
