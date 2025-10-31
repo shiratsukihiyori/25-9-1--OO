@@ -20,6 +20,7 @@ database_id = "5ebf843d-0f4c-4862-8d94-7e51af0989a7"
 # 生产环境配置
 [env.production]
 # 环境变量（通过 Cloudflare 仪表板设置）
+[vars]
 ADMIN_USERNAME = ""
 ADMIN_PASSWORD = ""
 ADMIN_API_KEY = ""
@@ -28,7 +29,7 @@ SUPABASE_ANON_KEY = ""
 SUPABASE_SERVICE_ROLE_KEY = ""
 
 # D1 数据库配置（生产环境）
-[[env.production.d1_databases]]
+[[d1_databases]]
 binding = "DB"
 database_name = "guestbook"
 database_id = "5ebf843d-0f4c-4862-8d94-7e51af0989a7"  # 请确保这是生产环境的数据库 ID
