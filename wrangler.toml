@@ -3,7 +3,7 @@ compatibility_date = "2023-10-13"
 pages_build_output_dir = "."
 
 # 生产环境配置
-[env.production]
+[production]
 # D1 数据库配置
 [[d1_databases]]
 binding = "DB"  # 在 Worker 中使用的变量名
@@ -18,15 +18,15 @@ SUPABASE_URL = ""
 SUPABASE_ANON_KEY = ""
 SUPABASE_SERVICE_ROLE_KEY = ""
 
-# 开发环境变量
-[env.development]
+# 预览环境配置（用于 PR 预览等）
+[preview]
 # D1 数据库配置
 [[d1_databases]]
 binding = "DB"
 database_name = "guestbook"
 database_id = "5ebf843d-0f4c-4862-8d94-7e51af0989a7"
 
-# 开发环境变量
+# 预览环境变量
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "admin123"
 ADMIN_API_KEY = "6caa82d8c83cd38d66fb92944c75367b7bddece4f5a2a6d1f7794b0ad9ce1f92"
