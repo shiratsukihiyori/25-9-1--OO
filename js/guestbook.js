@@ -80,8 +80,10 @@ function formatMessageContent(text) {
 }
 
 async function loadMessagesFromServer() {
-  // 使用当前语言而不是 'all'，这样服务器会过滤掉语言为 'global' 的留言
-  const queryLang = getCurrentLanguage();
+  // 获取当前语言，如果不在支持的语言中则使用 'all' 获取所有留言
+  const currentLang = getCurrentLanguage();
+  // 如果当前语言不是支持的语言，则获取所有留言（包括global）
+  const queryLang = ['zh', 'en', 'ja'].includes(currentLang) ? currentLang : 'all';
   console.log('Loading messages for language:', queryLang);
   
   try {
@@ -225,10 +227,8 @@ function renderMessages() {
     messagesList.innerHTML = messages.map((msg, index) => {
         const timestamp = msg.created_at || msg.timestamp || new Date().toISOString();
         const currentLang = getCurrentLanguage();
-        const languageCode = (msg.language || '').toString().trim().toLowerCase();
-        // Only show language label for actual language codes, not for 'global' or empty
-        const showLanguageLabel = languageCode && languageCode !== 'global' && languageCode !== '';
-        const languageLabel = showLanguageLabel ? languageCode.toUpperCase() : '';
+        // 不显示语言标签
+        const languageLabel = '';
         const rawName = msg.name && msg.name.trim() ? msg.name.trim() : (currentLang === 'ja' ? '匿名' : currentLang === 'en' ? 'Guest' : '匿名');
         const safeName = escapeHtml(rawName);
         const content = formatMessageContent(msg.message || '');
