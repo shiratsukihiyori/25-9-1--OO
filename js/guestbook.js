@@ -83,11 +83,12 @@ async function loadMessagesFromServer() {
   const queryLang = 'all';
   try {
     const response = await fetch(`/api/messages?lang=${queryLang}`);
-    const result = await response.json();
     if (!response.ok) {
-      throw new Error(result.error || '加载留言失败');
+      const error = await response.json();
+      throw new Error(error.error || '加载留言失败');
     }
-    messages = Array.isArray(result.data) ? result.data : [];
+    const result = await response.json();
+    messages = Array.isArray(result) ? result : [];
     renderMessages();
   } catch (error) {
     console.error('加载留言失败:', error);

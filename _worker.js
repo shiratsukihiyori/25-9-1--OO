@@ -11,12 +11,14 @@ export default {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          'Access-Control-Allow-Credentials': 'true',
           'Content-Type': 'application/json',
         };
 
         // 处理预检请求
         if (request.method === 'OPTIONS') {
           return new Response(null, { 
+            status: 204,
             headers: corsHeaders 
           });
         }
@@ -52,7 +54,9 @@ export default {
         // 添加CORS头到响应
         const responseHeaders = new Headers(response.headers);
         for (const [key, value] of Object.entries(corsHeaders)) {
-          responseHeaders.set(key, value);
+          if (!responseHeaders.has(key)) {
+            responseHeaders.set(key, value);
+          }
         }
         
         // 返回新的响应，确保包含原始响应体
