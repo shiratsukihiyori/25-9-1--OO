@@ -335,6 +335,11 @@ function initEventListeners() {
 
 // 检查并显示生日祝福
 function checkBirthday() {
+  // 只在留言板页面显示生日提示
+  if (!window.location.pathname.includes('guestbook.html')) {
+    return;
+  }
+  
   const now = new Date();
   const month = now.getMonth() + 1; // 0-11 → 1-12
   const date = now.getDate();

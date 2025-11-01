@@ -355,7 +355,10 @@
       });
       
       // 检查并显示节日弹窗
-      checkHoliday();
+      // 使用setTimeout确保DOM完全加载
+      setTimeout(() => {
+        checkHoliday();
+      }, 1000);
     });
     
     // 获取当前语言

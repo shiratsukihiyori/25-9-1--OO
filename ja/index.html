@@ -350,7 +350,10 @@
       });
       
       // 祝日をチェックしてポップアップを表示
-      checkHoliday();
+      // DOMが完全に読み込まれたことを確認するためにsetTimeoutを使用
+      setTimeout(() => {
+        checkHoliday();
+      }, 1000);
     });
     
     // 現在の言語を取得
